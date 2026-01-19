@@ -4,6 +4,7 @@
 import * as arrFunctions from "https://cdn.jsdelivr.net/gh/TheRedElement/LuStCodeSnippets@dev/lustCodeSnippets_js/arrFunctions.js"
 import { reshapeArr } from "../utils.js"
 import { getGlobalOptions } from "./globalOptions.js";
+import { parseMath } from "../parsers/mathparser.js";
 
 /**constants */
 const resizeObservers = [];
@@ -45,6 +46,16 @@ export function plotImg(img, thumbnailElement, layout, config, {
     plotlyPlot.id = plotlyId;
     plotlyPlotWrapper.appendChild(plotlyPlot);
     
+
+    //apply pixel math
+    for (let i = 0; i < img.length; i++) {
+        const row = img[i];
+        for (let j = 0; j < row.length; j++) {
+            img[i][j] = parseMath(globalOptions["pixelmath"], {x: img[i][j]});
+        };
+    };
+
+    //define trace
     let traces = [
         {
             z: img,
@@ -53,9 +64,9 @@ export function plotImg(img, thumbnailElement, layout, config, {
             colorscale: "Viridis",
             zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
             zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),
-        }
-    ]
-    Plotly.newPlot(plotlyPlot, traces, layout, config)
+        },
+    ];
+    Plotly.newPlot(plotlyPlot, traces, layout, config);
 
     //resize plots after build to ensure all plots are contained in cells
     let ro = new ResizeObserver(() => {
@@ -148,7 +159,7 @@ export function fillGrid({
 
             //generate placeholder data
             // let img = arrFunctions.randomNormal({num: resW*resH});
-            let img = arrFunctions.linspace(0,resW*resH,resW*resH)
+            let img = arrFunctions.linspace(-resW*resH/2,resW*resH/2,resW*resH)
             img = reshapeArr(img, [resW,resH]);
 
             //plot thumbnail

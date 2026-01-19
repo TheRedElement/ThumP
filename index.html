@@ -26,6 +26,10 @@
                     <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="fillGrid({redraw:true})">
                     <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="fillGrid({redraw:true})">
                 </div>
+                <div class="parameter">
+                    <label for="pixelmath">Pixel Math</label>
+                    <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="x">
+                </div>
             </div>
             <div class="global-selection">
                 <span>Subset</span>
@@ -77,7 +81,9 @@
 	</script>
 
     <!-- plotly -->
-    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>    
+    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>   
+    <!-- expr-eval -->
+    <script src="https://unpkg.com/expr-eval@2.0.2/dist/bundle.min.js"></script>
     
     <!-- custom -->
     <script src="https://github.com/TheRedElement/LuStCodeSnippets/blob/dev/lustCodeSnippets_js/arrFunctions.js"></script>

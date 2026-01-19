@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thumbnail Visualization</title>
+
+    <link rel="stylesheet" href="style/thump.css">
+</head>
+<body>
+    <nav></nav>
+    
+    <main>
+        <div class="controls">
+                <label for="rowwidth">Row Width [px]</label>
+                <input class="global-option" id="rowwidth"  type="number" step="1" value="100" placeholder="Row width [px]" onchange="updateGrid()">
+                <label for="rowheight">Row Height [px]</label>
+                <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGrid()">
+                <button>Export Selection</button>
+            </div>
+            <p>
+                Navigation:
+                zoom: click + drag, pan: shift + click + drag, reset view: double click
+            </p>
+        <section id="thumbnail-mosaic" class="thumbnail-mosaic">
+            <!-- <h1>Thumbnails</h1> -->
+            <div class="mosaic-grid">
+                <!-- <div class="cell">
+                    <div class="thumbnail"></div>
+                    <div class="thumbnail"></div>
+                    <div class="thumbnail"></div>
+                </div> -->
+            </div>
+        </section>
+    </main>
+
+
+    <footer></footer>
+
+    <!-- ############################################# -->
+    <!-- scripts -->
+	<!-- mathjax -->
+	<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+	<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	<script>
+			MathJax = {
+			tex: {
+				inlineMath: [['$', '$'], ['\\(', '\\)']],
+				displayMath: [['$$', '$$'], ['\\[', '\\]']]
+			}
+		};
+	</script>
+
+    <!-- plotly -->
+    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>    
+    
+    <!-- custom -->
+    <script src="https://github.com/TheRedElement/LuStCodeSnippets/blob/dev/lustCodeSnippets_js/arrFunctions.js"></script>
+    <script type="module" src="./scripts/thump.js"></script>
+</body>
+</html>

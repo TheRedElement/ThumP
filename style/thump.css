@@ -1,0 +1,74 @@
+
+:root {
+    --c_bg: #000000;
+    --c_body_text: #ffffff
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: var(--c_bg);
+    color: var(--c_body_text);
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+div.controls {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+}
+
+section.thumbnail-mosaic {
+    height: auto;
+    width: 100%;
+    overflow-x: scroll;
+}
+
+.mosaic-grid {
+    height: 100%;
+    width: fit-content;
+    grid-auto-flow: column;
+    display: grid;
+    gap: 15px;
+    grid-auto-columns: 1fr;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    justify-items: center;
+    overflow-y: hidden;
+    overflow-x: visible;
+    background-color: transparent;
+}
+.mosaic-grid .cell {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 10px;
+    margin: 10px;
+    background-color: red;
+    align-items: center;
+    justify-items: center;
+    /* fallback (set in js) */
+    grid-auto-columns: repeat(auto-fit, minmax(0, 1fr));
+}
+.mosaic-grid .cell .thumbnail {
+    display: contents;
+    background-color: gray;
+    width: 100%;
+    height: 100%;
+    outline: 1px blue solid;
+}
+
+.plotly-wrapper {
+    display: block;
+    /* set dynamically in JS */
+    /* width: 100px; */
+    /* height: 100px; */
+    overflow: hidden;
+}
+.plotly-plot {
+    display: block;
+    width: 100%;
+    height: 100%;
+}

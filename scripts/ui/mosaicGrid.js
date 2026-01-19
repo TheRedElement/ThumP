@@ -2,7 +2,7 @@
 
 /**imports */
 import * as arrFunctions from "https://cdn.jsdelivr.net/gh/TheRedElement/LuStCodeSnippets@dev/lustCodeSnippets_js/arrFunctions.js"
-import { reshapeArr } from "../utils.js"
+import { randInt, reshapeArr } from "../utils.js"
 import { getGlobalOptions } from "./globalOptions.js";
 import { parseMath } from "../parsers/mathparser.js";
 
@@ -158,9 +158,11 @@ export function fillGrid({
             cellElement.appendChild(thumbnailElement);
 
             //generate placeholder data
-            // let img = arrFunctions.randomNormal({num: resW*resH});
-            let img = arrFunctions.linspace(-resW*resH/2,resW*resH/2,resW*resH)
-            img = reshapeArr(img, [resW,resH]);
+            let imgW = randInt(resW-5, resW+5);
+            let imgH = randInt(resH-5, resH+5);
+            // let img = arrFunctions.randomNormal({num: imgW*imgH});
+            let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
+            img = reshapeArr(img, [imgW,imgH]);
 
             //plot thumbnail
             plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})

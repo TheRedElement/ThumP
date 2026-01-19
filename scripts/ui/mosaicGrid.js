@@ -121,10 +121,16 @@ export function fillGrid({
         },
         xaxis: {
             showticklabels: false,
+            visible: false,
         },
         yaxis: {
             showticklabels: false,
+            visible: false,
+            scaleanchor: "x",
+            scaleratio: 1,
         },
+        paper_bgcolor: "#00000000",
+        plot_bgcolor: "#00000000",
     };
     const config = {
         responsive: true,
@@ -158,8 +164,8 @@ export function fillGrid({
             cellElement.appendChild(thumbnailElement);
 
             //generate placeholder data
-            let imgW = randInt(resW-5, resW+5);
-            let imgH = randInt(resH-5, resH+5);
+            let imgW = randInt(resW-5, resW+5); //thumbnail sizes can change across thumbnails
+            let imgH = randInt(resH-5, resH+5); //thumbnail sizes can change across thumbnails
             // let img = arrFunctions.randomNormal({num: imgW*imgH});
             let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
             img = reshapeArr(img, [imgW,imgH]);

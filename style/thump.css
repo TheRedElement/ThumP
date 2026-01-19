@@ -65,6 +65,9 @@ section.thumbnail-mosaic {
     grid-template-columns: 1fr;
 }
 
+.invert-selection {
+    font-weight: bold;
+}
 .good {
     accent-color: #00ff00;
     background-color: #00ff00;
@@ -76,6 +79,7 @@ section.thumbnail-mosaic {
 .ugly {
     accent-color: #0000ff;
     background-color: #0000ff;
+    color: #ffffff;
 }
 
 .mosaic-grid .cell .thumbnail {

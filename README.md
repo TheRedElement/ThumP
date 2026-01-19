@@ -1,6 +1,7 @@
 # ThumP, Thumbnail Preview
 
 ## TODO
+- [ ] color-limit selector
 - [ ] create fink client account
 
 ## Approach

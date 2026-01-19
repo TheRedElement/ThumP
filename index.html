@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thumbnail Visualization</title>
+    <title>Thump!</title>
 
     <link rel="stylesheet" href="style/thump.css">
 </head>
@@ -23,14 +23,14 @@
                     <span>Select All</span>
                     <span>Invert</span>
                     <label for="select-all-good">Good</label>
-                    <input type="checkbox" id="select-all-good" class="select-all good", checked>
-                    <button id="invert-selection-good" class="invert-selection good"></button>
+                    <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" checked>
+                    <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
                     <label for="select-all-bad">Bad</label>
-                    <input type="checkbox" id="select-all-bad" class="select-all bad", checked>
-                    <button id="invert-selection-bad" class="invert-selection bad"></button>
+                    <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" checked>
+                    <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
                     <label for="select-all-ugly">Ugly</label>
-                    <input type="checkbox" id="select-all-ugly" class="select-all ugly", checked>
-                    <button id="invert-selection-ugly" class="invert-selection ugly"></button>
+                    <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" checked>
+                    <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
                 </div>
                 <button>Export Selection</button>
                 <p>
@@ -41,7 +41,7 @@
         </section>
         <section id="thumbnail-mosaic" class="thumbnail-mosaic">
             <!-- <h1>Thumbnails</h1> -->
-            <div class="mosaic-grid">
+            <div id="mosaic-grid" class="mosaic-grid">
                 <!-- <div class="cell">
                     <div class="thumbnail"></div>
                     <div class="thumbnail"></div>

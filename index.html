@@ -13,31 +13,39 @@
     <main>
         <section id="controls">
             <div class="global-controls">
+                <div class="parameter">
                     <label for="rowwidth">Row Width [px]</label>
                     <input class="global-option" id="rowwidth"  type="number" step="1" value="100" placeholder="Row width [px]" onchange="updateGrid()">
+                </div>
+                <div class="parameter">
                     <label for="rowheight">Row Height [px]</label>
                     <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGrid()">
                 </div>
-                <div class="global-selection">
-                    <span>Subset</span>
-                    <span>Select All</span>
-                    <span>Invert</span>
-                    <label for="select-all-good">Good</label>
-                    <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" checked>
-                    <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
-                    <label for="select-all-bad">Bad</label>
-                    <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" checked>
-                    <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
-                    <label for="select-all-ugly">Ugly</label>
-                    <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" checked>
-                    <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
+                <div class="parameter">
+                    <label for="zmin">Color Limits</label>
+                    <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="fillGrid({redraw:true})">
+                    <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="fillGrid({redraw:true})">
                 </div>
-                <button>Export Selection</button>
-                <p>
-                    Navigation:
-                    zoom: click + drag, pan: shift + click + drag, reset view: double click
-                </p>
-
+            </div>
+            <div class="global-selection">
+                <span>Subset</span>
+                <span>Select All</span>
+                <span>Invert</span>
+                <label for="select-all-good">Good</label>
+                <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" checked>
+                <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
+                <label for="select-all-bad">Bad</label>
+                <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" checked>
+                <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
+                <label for="select-all-ugly">Ugly</label>
+                <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" checked>
+                <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
+            </div>
+            <button>Export Selection</button>
+            <p>
+                Navigation:
+                zoom: click + drag, pan: shift + click + drag, reset view: double click
+            </p>
         </section>
         <section id="thumbnail-mosaic" class="thumbnail-mosaic">
             <!-- <h1>Thumbnails</h1> -->

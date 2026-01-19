@@ -5,6 +5,8 @@ import * as arrFunctions from "https://cdn.jsdelivr.net/gh/TheRedElement/LuStCod
 import { reshapeArr } from "../utils.js"
 import { getGlobalOptions } from "./globalOptions.js";
 
+/**constants */
+const resizeObservers = [];
 
 /**definitions */
 /**
@@ -19,14 +21,12 @@ import { getGlobalOptions } from "./globalOptions.js";
  *  - layout to use for plotly when creating the plot
  * @param {Object} config
  *  - config to use in plotly when creating the plot 
- * @param {Object} wrapperStyle
+ * @param {Object} globalOptions
  *  - kwargs, optional
- *  - style override parameters for the wrapper containing the plotly plot
- *  - contained parameters used to dynamically update plot style based on UI input
- *  - the default is `{width: "100px", height: "100px"}` 
+ *  - global options extracted from the UI input
  */
 export function plotImg(img, thumbnailElement, layout, config, {
-    wrapperStyle={width: "100px", height: "100px"}
+    globalOptions={rowwidth: 100, rowheight: 100, zmin: "", zmax: ""},
     } = {}) {
     
     //get ID
@@ -35,10 +35,8 @@ export function plotImg(img, thumbnailElement, layout, config, {
     //create a plotly wrapper (for global formatting)
     const plotlyPlotWrapper = document.createElement("div");
     plotlyPlotWrapper.classList = ["plotly-wrapper"];
-    for (const k of Object.keys(wrapperStyle)) {
-        //dynamically adjust style (i.e. set thumbnail dimensions in pixels)
-        plotlyPlotWrapper.style.setProperty(k, wrapperStyle[k]);
-    };
+    plotlyPlotWrapper.style.setProperty("width", `${globalOptions["rowwidth"]}px`)
+    plotlyPlotWrapper.style.setProperty("height", `${globalOptions["rowheight"]}px`)
     thumbnailElement.appendChild(plotlyPlotWrapper);
 
     //create the actual plot
@@ -52,6 +50,9 @@ export function plotImg(img, thumbnailElement, layout, config, {
             z: img,
             type: "heatmap",
             showscale: false,
+            colorscale: "Viridis",
+            zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
+            zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),
         }
     ]
     Plotly.newPlot(plotlyPlot, traces, layout, config)
@@ -60,7 +61,8 @@ export function plotImg(img, thumbnailElement, layout, config, {
     let ro = new ResizeObserver(() => {
         Plotly.Plots.resize(plotlyPlot);
     });
-    ro.observe(plotlyPlotWrapper);    
+    ro.observe(plotlyPlotWrapper);
+    resizeObservers.push(ro);
 }
 
 /**
@@ -69,22 +71,18 @@ export function plotImg(img, thumbnailElement, layout, config, {
  *  - kwarg, optional
  *  - number of thumbnails per grid cell
  *  - the default is `3`
- * @param {Int} imgWidth
+ * @param {Boolean} redraw
  *  - kwarg, optional
- *  - width all displayed thumbnails shall have
- *  - in pixels
- *  - the default is `100`
- * @param {Int} imgHeight
- *  - kwarg, optional
- *  - height all displayed thumbnails shall have
- *  - in pixels
- *  - the default is `100`
+ *  - whether to redraw the entire grid
+ *      - removes all children before adding new ones
+ *  - the default is `true`
  */
 export function fillGrid({
     nThumbnails = 3,
-    imgWidth = 100,
-    imgHeight = 100,
+    redraw = false,
     } = {}) {
+
+    const globalOptions = getGlobalOptions();
     
     //setup for placeholder mesh
     const nObj = 10;    //number of placeholder objects to create
@@ -93,6 +91,13 @@ export function fillGrid({
     
     const mosaicElement = document.getElementById("thumbnail-mosaic");
     const mosaicGrid = mosaicElement.getElementsByClassName("mosaic-grid")[0];
+    
+    if (redraw) {
+        mosaicGrid.replaceChildren();       //clear children
+        for (const ro of resizeObservers) {
+            ro.disconnect();                //clear resize observers (prevents memory leaks)
+        };
+    };
 
     //plotly setup
     const layout = {
@@ -108,7 +113,7 @@ export function fillGrid({
         },
         yaxis: {
             showticklabels: false,
-        }
+        },
     };
     const config = {
         responsive: true,
@@ -146,8 +151,8 @@ export function fillGrid({
             let img = arrFunctions.linspace(0,resW*resH,resW*resH)
             img = reshapeArr(img, [resW,resH]);
 
-            //plot thumbnail 
-            plotImg(img, thumbnailElement, layout, config, {wrapperStyle: {width: `${imgWidth}px`, height: `${imgHeight}px`}})
+            //plot thumbnail
+            plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})
         };
 
         //add to parent

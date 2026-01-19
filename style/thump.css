@@ -13,9 +13,15 @@ html, body {
     overflow-y: hidden;
 }
 
-div.controls {
+div.global-controls {
     display: grid;
+    column-gap: 10px;
     grid-template-columns: repeat(2, max-content);
+}
+div.global-selection {
+    display: grid;
+    column-gap: 10px;
+    grid-template-columns: repeat(3, max-content);
 }
 
 section.thumbnail-mosaic {
@@ -43,6 +49,7 @@ section.thumbnail-mosaic {
     width: 100%;
     display: grid;
     grid-auto-flow: column;
+    /* grid-template-rows: minmax(0, 1fr); */
     grid-template-rows: minmax(0, 1fr);
     gap: 10px;
     margin: 10px;
@@ -52,6 +59,25 @@ section.thumbnail-mosaic {
     /* fallback (set in js) */
     grid-auto-columns: repeat(auto-fit, minmax(0, 1fr));
 }
+
+.mosaic-grid .cell .selection-container {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.good {
+    accent-color: #00ff00;
+    background-color: #00ff00;
+}
+.bad {
+    accent-color: #ff8800;
+    background-color: #ff8800;
+}
+.ugly {
+    accent-color: #0000ff;
+    background-color: #0000ff;
+}
+
 .mosaic-grid .cell .thumbnail {
     display: contents;
     background-color: gray;

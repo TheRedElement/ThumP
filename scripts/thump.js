@@ -5,6 +5,24 @@ import * as arrFunctions from "https://cdn.jsdelivr.net/gh/TheRedElement/LuStCod
 import { reshapeArr } from "./utils.js"
 
 /**definitions */
+/**
+ * - plots `img` in `thumbnailElement` 
+ * @param {Array} img
+ *  - 2d-array
+ *  - image to be displayed in a heatmap 
+ * @param {HTMLElement} thumbnailElement 
+ *  - element that contains the `img`
+ *  - can be styled in `css`
+ * @param {Object} layout 
+ *  - layout to use for plotly when creating the plot
+ * @param {Object} config
+ *  - config to use in plotly when creating the plot 
+ * @param {Object} wrapperStyle
+ *  - kwargs, optional
+ *  - style override parameters for the wrapper containing the plotly plot
+ *  - contained parameters used to dynamically update plot style based on UI input
+ *  - the default is `{width: "100px", height: "100px"}` 
+ */
 function plotImg(img, thumbnailElement, layout, config, {
     wrapperStyle={width: "100px", height: "100px"}
     } = {}) {
@@ -96,11 +114,25 @@ function fillGrid({
     };
 
     for (let i = 0; i < nObj; i++) {
+        //create grid cell (contains selection checkboxes, plot)
         const cellElement = document.createElement("div");
         cellElement.id = `cell-${i}`;
         cellElement.classList = ["cell"];
         cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
 
+        //ui-elements
+        const selectionContainer = document.createElement("div");
+        selectionContainer.classList = ["selection-container"];
+        for (const kind of ["good", "bad", "ugly"]) {
+            const selection = document.createElement("input");
+            selection.type = "checkbox";
+            selection.className = [`select-object ${kind}`];
+            selectionContainer.appendChild(selection);
+            selection.checked = true;
+        }
+        cellElement.appendChild(selectionContainer);
+
+        //add thumbnails (plots)
         for (let thi = 0; thi < nThumbnails; thi++) {
             const thumbnailElement = document.createElement("div");
             thumbnailElement.id = `thumbnail-${i}-${thi}`;

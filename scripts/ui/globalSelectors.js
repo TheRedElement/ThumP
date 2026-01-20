@@ -51,18 +51,31 @@ export function invertSelection(element) {
  * function to export all selected objects into tables
  */
 export function exportSelection() {
+    const objClassification = document.querySelectorAll("input[name='select-object']:checked");  //get all selected object
+
+    let objClass = [
+        ["object_id", "class"]
+    ];  //array for object classes
+    for (const obj of objClassification) {
+        objClass.push(
+            [obj.dataset["objectId"], obj.value]
+        )
+        // console.log(obj.dataset["objectId"] + " " + obj.value)
+    };
+    downloadArrAsCsv(objClass, "thump_classification")
+    
     //get relevant selector elements
-    for (const kind of ["good", "bad", "ugly"]) {
-        const gridSelectors = document.getElementsByClassName(`select-object ${kind}`);
-        let selectionArr = [];
-        for (const selector of gridSelectors) {
-            if (selector.checked) {
-                //add to respective table if checked
-                selectionArr.push([
-                    selector.dataset["objectId"],
-                ]);
-            }
-        };
-        downloadArrAsCsv(selectionArr, `${kind}`)
-    }
+    // for (const kind of ["good", "bad", "ugly"]) {
+    //     const gridSelectors = document.getElementsByClassName(`select-object ${kind}`);
+    //     let selectionArr = [];
+    //     for (const selector of gridSelectors) {
+    //         if (selector.checked) {
+    //             //add to respective table if checked
+    //             selectionArr.push([
+    //                 selector.dataset["objectId"],
+    //             ]);
+    //         }
+    //     };
+    //     downloadArrAsCsv(selectionArr, `${kind}`)
+    // };
 }

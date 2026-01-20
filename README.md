@@ -3,16 +3,22 @@
 ## TODO
 - [x] color-limit selector
 - [x] create fink client account
-- [ ] allow to set number of rows and columns in UI
-    - maybe instead of image width and height (scale image automatically)
-- [ ] scroll
-    - load when scrolling (only have current page objects in memory)
-    - save when moving to next page
-- [ ] only 2 buttons (buttons are exclusive - only one can be selected -- dropdown?)
+- [x] plot by source ID instead of object ID (first alert: sourceID == objID)
+- [x] only 2 buttons (buttons are exclusive - only one can be selected -- radio?)
     - everything is bad by default
     - good
     - maybe
-- [ ] plot by source ID instead of object ID (first alert: sourceID == objID)
+- [ ] only redraw plots upon request/page reload
+    -  otherwise just update (https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Client-side_APIs/Client-side_storage)
+- [ ] allow setting number of rows and columns in UI
+    - maybe instead of image width and height (scale image automatically)
+- [ ] scroll
+    - save when moving to next page
+    - [load when scrolling (only have current page objects in memory)]
+- [ ] store data on client side 
+    - only retrieve currently relevant objects
+    - more memory efficient
+
 
 ## Approach
 - html website + js for loading and writing

@@ -63,8 +63,13 @@ def compile_file(ldf:pl.LazyFrame):
         # ], rows=[1,1,1], cols=[1,2,3])
         # fig.show()
 
-        data_json[str(row["diaObject"][0]["diaObjectId"])] = dict(
-            diaSourceId=str(row["diaSource"][0]["diaSourceId"]),
+        data_json[str(row["diaSource"][0]["diaSourceId"])] = dict(
+            comments=[
+                f"ids: [{row['diaSource'][0]['diaSourceId']}, {row['diaObject'][0]['diaObjectId']}]",
+            ],
+            link=f"https://lsst.fink-portal.org/{row['diaObject'][0]['diaObjectId']}",
+            # diaSourceId=str(row["diaSource"][0]["diaSourceId"]),
+            # diaObjectId=str(row["diaObject"][0]["diaObjectId"]),
             thumbnails=[
                 science.tolist(),
                 template.tolist(),

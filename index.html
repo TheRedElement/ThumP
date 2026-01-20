@@ -11,7 +11,7 @@
     <nav></nav>
     
     <main>
-        <h1>ThumP! Thumbnail Preselector</h1>
+        <h1>ThumP! (Thumbnails? Prescreen!)</h1>
         <section id="controls">
             <h2 id="controls-head" class="controls-title">Controls</h2>
             <div id="controls-wrapper" class="controls-wrapper">
@@ -52,23 +52,23 @@
                             Some examples include `z` (display raw data); `log10(z)` (logscale); `abs(z)` (absolute of z).
                             Updates on change (You might have to hit enter/return).
                         </div>                        
-                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="x" onchange="fillGrid({redraw:true})">
+                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="fillGrid({redraw:true})">
                     </div>
                 </div>
-                <div class="global-selection">
+                <!-- <div class="global-selection">
                     <span class="heading">Subset</span>
                     <span class="heading">Select All</span>
                     <span class="heading">Invert</span>
                     <label for="select-all-good">Good</label>
                     <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" >
                     <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
+                    <label for="select-all-maybe">Maybe</label>
+                    <input type="checkbox" id="select-all-maybe" class="select-all maybe" onchange="selectAll(this)" >
+                    <button id="invert-selection-maybe" class="invert-selection maybe" onclick="invertSelection(this)">&#10003;</button>
                     <label for="select-all-bad">Bad</label>
                     <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" >
                     <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
-                    <label for="select-all-ugly">Ugly</label>
-                    <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" >
-                    <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
-                </div>
+                </div> -->
                 <div class="file-upload">
                     <label for="file-upload">Upload Files</label>
                     <input type="file" id="file-upload" onchange="uploadFiles()" multiple>

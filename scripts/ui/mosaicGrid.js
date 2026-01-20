@@ -152,19 +152,22 @@ export async function fillGrid({
         //label
         const labelElement = document.createElement("a");
         labelElement.textContent = objIds[i];
-        labelElement.href = `https://lsst.fink-portal.org/${objIds[i]}`;
+        labelElement.href = THUMBNAILS[objIds[i]]["link"];
         cellElement.appendChild(labelElement);
 
         //ui-elements
-        const selectionContainer = document.createElement("div");
+        const selectionContainer = document.createElement("form");
         selectionContainer.classList = ["selection-container"];
-        for (const kind of ["good", "bad", "ugly"]) {
+        selectionContainer.id = `selection-container-${i}`;
+        for (const kind of ["good", "maybe", "bad"]) {
             const selection = document.createElement("input");
-            selection.type = "checkbox";
+            selection.type = "radio";                           //radio for exclusive selection
+            selection.name = [`select-object`];                 //all have the same name (exclusive selection)
             selection.className = [`select-object ${kind}`];
-            selection.checked = false;
+            selection.checked = (kind == "bad");                //all are bad by default
             // selection.checked = Boolean(Math.round(Math.random(),0));    //random selection (for testing)
-            selection.dataset["objectId"] = objIds[i];
+            selection.value = kind;                             //for determining the quality/category
+            selection.dataset["objectId"] = objIds[i];          //for saving the objId
             selectionContainer.appendChild(selection);
         }
         cellElement.appendChild(selectionContainer);

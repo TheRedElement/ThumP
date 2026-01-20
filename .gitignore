@@ -1,5 +1,9 @@
+
 temp*
 data/*
+
+#do not ignore
+!data/schema.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

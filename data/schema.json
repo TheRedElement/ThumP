@@ -1,0 +1,50 @@
+{
+    "$schema": {
+        "objectId": [
+            "string. ",
+            "id of the object to be displayed above each cell in the thumbnail mosaic. "
+        ],
+        "link": [
+            "string. ",
+            "link to some other webpage related to the object. ",
+            "will be set as `href` for `objectId. ",
+            "for example link to a online database that has additional information (i.e., fink -- ztf.fink-portal.org). "
+        ],
+        "comments": [
+            "list. ",
+            "each list entry is one unique comment. ",
+            "additional comments you might have. ",
+            "i.e.: alternate IDs. "
+        ],
+        "thumbnails": [
+            "list[array[array]]. ",
+            "list of 2d-arrays. ",
+            "each cell defines a single pixel in an image. ",
+            "the contained value in each cell defines it's brightness. "
+        ]
+    },
+    "<someId>": {
+        "link": "https://theredelement.github.io",
+        "comments": [
+            "exemplary entry in the data-file. ",
+            "this is another comment. "
+        ],
+        "thumbnails": [
+            [
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9]
+            ],
+            [
+                [11, 12, 13],
+                [14, 15, 16],
+                [17, 18, 19]
+            ],
+            [
+                [21, 22, 23],
+                [24, 25, 26],
+                [27, 28, 29]
+            ]
+        ]
+    } 
+}

@@ -162,8 +162,8 @@ export async function fillGrid({
             const selection = document.createElement("input");
             selection.type = "checkbox";
             selection.className = [`select-object ${kind}`];
-            // selection.checked = false;
-            selection.checked = Boolean(Math.round(Math.random(),0));
+            selection.checked = false;
+            // selection.checked = Boolean(Math.round(Math.random(),0));    //random selection (for testing)
             selection.dataset["objectId"] = objIds[i];
             selectionContainer.appendChild(selection);
         }

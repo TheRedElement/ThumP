@@ -149,6 +149,12 @@ export async function fillGrid({
         cellElement.classList = ["cell"];
         cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
 
+        //label
+        const labelElement = document.createElement("a");
+        labelElement.textContent = objIds[i];
+        labelElement.href = "https://theredelement.github.io"
+        cellElement.appendChild(labelElement);
+
         //ui-elements
         const selectionContainer = document.createElement("div");
         selectionContainer.classList = ["selection-container"];
@@ -156,18 +162,21 @@ export async function fillGrid({
             const selection = document.createElement("input");
             selection.type = "checkbox";
             selection.className = [`select-object ${kind}`];
-            selection.checked = true;
+            // selection.checked = false;
+            selection.checked = Boolean(Math.round(Math.random(),0));
             selection.dataset["objectId"] = objIds[i];
             selectionContainer.appendChild(selection);
         }
         cellElement.appendChild(selectionContainer);
 
         //add thumbnails (plots)
+        const thumbnailContainer = document.createElement("div");
+        thumbnailContainer.className = "thumbnail-container";
         for (let thi = 0; thi < nThumbnails; thi++) {
             const thumbnailElement = document.createElement("div");
             thumbnailElement.id = `thumbnail-${i}-${thi}`;
             thumbnailElement.classList = ["thumbnail"];
-            cellElement.appendChild(thumbnailElement);
+            thumbnailContainer.appendChild(thumbnailElement);
 
             // //generate placeholder data
             // let imgW = randInt(resW-5, resW+5); //thumbnail sizes can change across thumbnails
@@ -180,6 +189,7 @@ export async function fillGrid({
             //plot thumbnail
             plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})
         };
+        cellElement.appendChild(thumbnailContainer);
 
         //add to parent
         mosaicGrid.appendChild(cellElement);

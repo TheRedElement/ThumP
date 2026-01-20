@@ -26,3 +26,30 @@ window.addEventListener("resize", () => {
         Plotly.Plots.resize(div);
     });
 });
+document.addEventListener("keydown", (event) => {
+    // Prevent the default browser scrolling behavior
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+    };
+
+    const thumbnailMosaic = document.getElementById("thumbnail-mosaic");
+
+    const scrollAmount = thumbnailMosaic.offsetWidth;
+    switch (event.key) {
+        case "ArrowLeft":
+            thumbnailMosaic.scrollBy({
+                left: -scrollAmount,
+                behavior: "smooth",
+            })
+            break;
+        case "ArrowRight":
+            thumbnailMosaic.scrollBy({
+                left: scrollAmount,
+                behavior: "smooth",
+            })
+            break;
+    
+        default:
+            break;
+    }
+});

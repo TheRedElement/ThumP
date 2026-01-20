@@ -56,9 +56,12 @@ export function exportSelection() {
         const gridSelectors = document.getElementsByClassName(`select-object ${kind}`);
         let selectionArr = [];
         for (const selector of gridSelectors) {
-            selectionArr.push([
-                selector.dataset["objectId"],
-            ]);
+            if (selector.checked) {
+                //add to respective table if checked
+                selectionArr.push([
+                    selector.dataset["objectId"],
+                ]);
+            }
         };
         downloadArrAsCsv(selectionArr, `${kind}`)
     }

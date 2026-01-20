@@ -8,14 +8,16 @@
     - everything is bad by default
     - good
     - maybe
-- [ ] only redraw plots upon request/page reload
-    -  otherwise just update (https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Client-side_APIs/Client-side_storage)
+- [x] only redraw plots upon request/page reload
+    -  otherwise just update
+    - https://www.google.com/search?q=plotly+js+update+trace+data&oq=plotly+js+update+tracw+&gs_lcrp=EgZjaHJvbWUqCAgCEAAYFhgeMgYIABBFGDkyCAgBEAAYFhgeMggIAhAAGBYYHjIHCAMQABjvBTIHCAQQIRiPAjIHCAUQIRiPAjIHCAYQIRiPAtIBCDc5OThqMGo0qAIKsAIB8QVeoKkuJi3YWQ&client=ms-android-google&sourceid=chrome-mobile&ie=UTF-8&aimos=1#lfId=ChxjMe
 - [ ] allow setting number of rows and columns in UI
     - maybe instead of image width and height (scale image automatically)
 - [ ] scroll
     - save when moving to next page
     - [load when scrolling (only have current page objects in memory)]
 - [ ] store data on client side 
+    - https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Client-side_APIs/Client-side_storage
     - only retrieve currently relevant objects
     - more memory efficient
 

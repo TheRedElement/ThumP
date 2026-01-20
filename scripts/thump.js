@@ -45,6 +45,7 @@ async function uploadFiles() {
     };
     //update grid with uploaded objects
     fillGrid();
+    updateGrid();
 }
 window.uploadFiles = uploadFiles;
 
@@ -52,6 +53,7 @@ window.uploadFiles = uploadFiles;
 /**executions */
 Object.assign(THUMBNAILS, await loadJSON("/data/processed/processed.json"));    //local file upload at startup
 fillGrid();
+updateGrid();
 
 /**listeners */
 window.addEventListener("resize", () => {
@@ -73,13 +75,13 @@ document.addEventListener("keydown", (event) => {
             case "ArrowLeft":
                 thumbnailMosaic.scrollBy({
                     left: -scrollAmount,
-                    behavior: "smooth",
+                    behavior: "instant",
                 });
                 break;
             case "ArrowRight":
                 thumbnailMosaic.scrollBy({
                     left: scrollAmount,
-                    behavior: "smooth",
+                    behavior: "instant",
                 });
                 break;
         

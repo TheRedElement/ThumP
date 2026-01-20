@@ -40,8 +40,8 @@
                             zmax sets the lower bound of the color-map (everything below that will be colored as the color representing the maximum).
                             Updates on change (You might have to hit enter/return).
                         </div>
-                        <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="fillGrid({redraw:true})">
-                        <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="fillGrid({redraw:true})">
+                        <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="updateGrid()">
+                        <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="updateGrid()">
                     </div>
                     <div class="parameter">
                         <label for="pixelmath">Pixel Math</label>
@@ -52,7 +52,7 @@
                             Some examples include `z` (display raw data); `log10(z)` (logscale); `abs(z)` (absolute of z).
                             Updates on change (You might have to hit enter/return).
                         </div>                        
-                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="fillGrid({redraw:true})">
+                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGrid()">
                     </div>
                 </div>
                 <!-- <div class="global-selection">
@@ -95,16 +95,16 @@
 
             </div>
         </section>
+        <h2>Thumbnails</h2>
         <section id="thumbnail-mosaic" class="thumbnail-mosaic">
-            <h2>Thumbnails</h2>
             <div id="mosaic-grid" class="mosaic-grid">
                 <!-- filled via JS -->
                 <!-- <div class="cell">
                     <a href="...">ObjId</a>
                     <div class="selection-container">
-                        <input type="checkbox" class="select-oobject good">
-                        <input type="checkbox" class="select-oobject bad">
-                        <input type="checkbox" class="select-oobject ugly">
+                        <input type="radar" class="select-object good">
+                        <input type="radar" class="select-object bad">
+                        <input type="radar" class="select-object maybe">
                     </div>
                     <div class="thumbnail-container">
                         <div class="thumbnail">

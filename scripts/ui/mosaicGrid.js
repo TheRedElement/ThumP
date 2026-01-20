@@ -47,28 +47,12 @@ export function plotImg(img, thumbnailElement, layout, config, {
     plotlyPlot.id = plotlyId;
     plotlyPlotWrapper.appendChild(plotlyPlot);
     
-
-    //apply pixel math
-    for (let i = 0; i < img.length; i++) {
-        const row = img[i];
-        for (let j = 0; j < row.length; j++) {
-            img[i][j] = parseMath(globalOptions["pixelmath"], {z: img[i][j]});
-        };
-    };
-
     //define trace
     let traces = [
         {
             z: img,
             type: "heatmap",
             showscale: false,
-            colorscale: [
-                [0, "#15284F"],
-                [0.5, "#3C8DFF"],
-                [1.0, "#D5D5D3"],
-            ],
-            zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
-            zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),
         },
     ];
     Plotly.newPlot(plotlyPlot, traces, layout, config);
@@ -87,7 +71,7 @@ export function plotImg(img, thumbnailElement, layout, config, {
  *  - kwarg, optional
  *  - whether to redraw the entire grid
  *      - removes all children before adding new ones
- *  - the default is `true`
+ *  - the default is `false`
  */
 export async function fillGrid({
     redraw = false,
@@ -176,9 +160,14 @@ export async function fillGrid({
         const thumbnailContainer = document.createElement("div");
         thumbnailContainer.className = "thumbnail-container";
         for (let thi = 0; thi < nThumbnails; thi++) {
+            //get current thumbnail
+            let img = THUMBNAILS[objIds[i]]["thumbnails"][thi];
+            
             const thumbnailElement = document.createElement("div");
             thumbnailElement.id = `thumbnail-${i}-${thi}`;
             thumbnailElement.classList = ["thumbnail"];
+            thumbnailElement.dataset["objectId"] = objIds[i];   //save to have reference into `THUMBNAILS` for retrieving original data
+            thumbnailElement.dataset["thumbnailId"] = thi;      //save to have reference into `THUMBNAILS` for retrieving original data
             thumbnailContainer.appendChild(thumbnailElement);
 
             // //generate placeholder data
@@ -187,7 +176,6 @@ export async function fillGrid({
             // // let img = arrFunctions.randomNormal({num: imgW*imgH});
             // let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
             // img = reshapeArr(img, [imgW,imgH]);
-            let img = THUMBNAILS[objIds[i]]["thumbnails"][thi];
 
             //plot thumbnail
             plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})
@@ -205,9 +193,56 @@ export async function fillGrid({
 export function updateGrid() {
     const globalOptions = getGlobalOptions();
 
-    const thumbnailElements = document.getElementsByClassName("plotly-wrapper");
+    // const thumbnailElements = document.getElementsByClassName("plotly-wrapper");
+    // for (const thElement of thumbnailElements) {
+    //     thElement.style.setProperty("width", `${globalOptions["colwidth"]}px`);
+    //     thElement.style.setProperty("height", `${globalOptions["rowheight"]}px`);
+    // };
+
+
+
+    const thumbnailElements = document.getElementsByClassName("thumbnail");
+    // const plotlyPlots = document.getElementsByClassName("plotly-plot");
     for (const thElement of thumbnailElements) {
-        thElement.style.setProperty("width", `${globalOptions["colwidth"]}px`);
-        thElement.style.setProperty("height", `${globalOptions["rowheight"]}px`);
-    };
+        
+        //update layout
+        thElement.getElementsByClassName("plotly-wrapper")[0].style.setProperty("width", `${globalOptions["colwidth"]}px`);
+        thElement.getElementsByClassName("plotly-wrapper")[0].style.setProperty("height", `${globalOptions["rowheight"]}px`);
+
+        //get indices pointing into `THUMBNAILS`
+        const objId = thElement.dataset["objectId"];    //indices pointing into `THUMBNAILS`
+        const thId = thElement.dataset["thumbnailId"];  //indices pointing into `THUMBNAILS`
+        // console.log(objId, thId)
+
+        //apply pixel math
+        let img = structuredClone(THUMBNAILS[objId]["thumbnails"][thId]);    //original data (copy to not modify original)
+        for (let i = 0; i < img.length; i++) {
+            const row = img[i];
+            for (let j = 0; j < row.length; j++) {
+                img[i][j] = parseMath(globalOptions["pixelmath"], {z: img[i][j]});
+            };
+        };
+
+        //apply updates to traces
+        let update = {
+            z: [
+                img
+            ],
+            colorscale: [
+                [
+                    [0, "#15284F"],
+                    [0.5, "#3C8DFF"],
+                    [1.0, "#D5D5D3"],
+                ],
+            ],
+            zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
+            zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            
+        }
+
+        const plotlyPlot = thElement.getElementsByClassName("plotly-plot")[0];
+        Plotly.restyle(
+            plotlyPlot,
+            update, [0]
+        )
+    }
 }

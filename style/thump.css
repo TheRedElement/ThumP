@@ -1,7 +1,12 @@
 
 :root {
-    --c_bg: #000000;
-    --c_body_text: #ffffff
+    --c_bg: #ffffff;
+    --c_body_text: #303030;
+    --c_tre: #c80000;
+    --c_fink_1: #15284F;
+    --c_fink_2: #3C8DFF;
+    --c_fink_3: #D5D5D3;
+    --c_fink_4: #F5622E;
 }
 
 html, body {
@@ -11,6 +16,40 @@ html, body {
     color: var(--c_body_text);
     overflow-x: hidden;
     overflow-y: hidden;
+}
+
+a {
+    color: var(--c_fink_2);
+    text-decoration: none;
+}
+a:hover {
+    color: color-mix(in srgb, var(--c_fink_2) 70%, var(--c_body_text) 30%);
+    text-decoration: underline;
+}
+a:visited {
+    color: color-mix(in srgb, var(--c_fink_2) 70%, var(--c_bg) 30%);
+}
+
+button {
+    font-weight: bold;
+    border-radius: 4px;
+    height: max-content;
+    width: max-content;
+}
+button.io {
+    margin-top: 15px;
+    font-size: 1.5em;
+    background-color: var(--c_tre);
+    color: #ffffff;
+    pad: 5px;
+    border-radius: 7px;
+}
+button.io:hover {
+    cursor: pointer;
+    background-color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_fink_3) 30%);
+}
+.heading {
+    font-weight: bold;
 }
 
 div.global-controls {
@@ -43,6 +82,7 @@ section.thumbnail-mosaic {
     overflow-y: hidden;
     overflow-x: visible;
     background-color: transparent;
+    padding: 5px;
 }
 .mosaic-grid .cell {
     height: 100%;
@@ -53,11 +93,14 @@ section.thumbnail-mosaic {
     grid-template-rows: repeat(3,minmax(0, max-content));
     gap: 10px;
     margin: 10px;
-    background-color: red;
+    background-color: color-mix(in srgb, var(--c_fink_4) 10%, var(--c_bg) 90%);
+    outline: 1px var(--c_fink_3) solid;
+    border-radius: 15px;
     align-items: center;
     justify-items: center;
     /* fallback (set in js) */
     grid-auto-columns: repeat(auto-fit, minmax(0, 1fr));
+    box-shadow: 3px 3px 15px var(--c_fink_1);
 }
 
 .mosaic-grid .cell .selection-container {
@@ -68,19 +111,19 @@ section.thumbnail-mosaic {
 
 .invert-selection {
     font-weight: bold;
+    color: #ffffff;
 }
 .good {
-    accent-color: #00ff00;
-    background-color: #00ff00;
+    accent-color: var(--c_fink_4);
+    background-color: var(--c_fink_4);
 }
 .bad {
-    accent-color: #ff8800;
-    background-color: #ff8800;
+    accent-color: var(--c_fink_1);
+    background-color: var(--c_fink_1);
 }
 .ugly {
-    accent-color: #0000ff;
-    background-color: #0000ff;
-    color: #ffffff;
+    accent-color: var(--c_fink_2);
+    background-color: var(--c_fink_2);
 }
 
 .mosaic-grid .cell .thumbnail-container {
@@ -89,10 +132,9 @@ section.thumbnail-mosaic {
 }
 
 .mosaic-grid .cell .thumbnail {
-    background-color: gray;
+    background-color: var(--c_fink_1);
     width: 100%;
     height: 100%;
-    outline: 1px blue solid;
 }
 
 .plotly-wrapper {

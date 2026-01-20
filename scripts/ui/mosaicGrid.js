@@ -5,6 +5,7 @@ import * as arrFunctions from "https://cdn.jsdelivr.net/gh/TheRedElement/LuStCod
 import { loadJSON, randInt, reshapeArr } from "../utils.js"
 import { getGlobalOptions } from "./globalOptions.js";
 import { parseMath } from "../parsers/mathparser.js";
+import { THUMBNAILS } from "../base/base.js";
 
 /**constants */
 const resizeObservers = [];
@@ -61,7 +62,11 @@ export function plotImg(img, thumbnailElement, layout, config, {
             z: img,
             type: "heatmap",
             showscale: false,
-            colorscale: "Viridis",
+            colorscale: [
+                [0, "#15284F"],
+                [0.5, "#3C8DFF"],
+                [1.0, "#D5D5D3"],
+            ],
             zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
             zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),
         },
@@ -78,10 +83,6 @@ export function plotImg(img, thumbnailElement, layout, config, {
 
 /**
  * - function to fill the grid of thumbnails
- * @param {Int} nThumbnails
- *  - kwarg, optional
- *  - number of thumbnails per grid cell
- *  - the default is `3`
  * @param {Boolean} redraw
  *  - kwarg, optional
  *  - whether to redraw the entire grid
@@ -89,7 +90,6 @@ export function plotImg(img, thumbnailElement, layout, config, {
  *  - the default is `true`
  */
 export async function fillGrid({
-    nThumbnails = 3,
     redraw = false,
     } = {}) {
 
@@ -138,8 +138,8 @@ export async function fillGrid({
     };
 
     //load data
-    const objs = await loadJSON("/data/processed/processed.json");
-    const objIds = Object.keys(objs);
+    const objIds = Object.keys(THUMBNAILS);
+    const nThumbnails = THUMBNAILS[objIds[0]]["thumbnails"].length; //infer number of thumbnails from first entry in `THUMBNAILS`
 
     const nObj = objIds.length;
     for (let i = 0; i < nObj; i++) {
@@ -152,7 +152,7 @@ export async function fillGrid({
         //label
         const labelElement = document.createElement("a");
         labelElement.textContent = objIds[i];
-        labelElement.href = "https://theredelement.github.io"
+        labelElement.href = `https://lsst.fink-portal.org/${objIds[i]}`;
         cellElement.appendChild(labelElement);
 
         //ui-elements
@@ -184,7 +184,7 @@ export async function fillGrid({
             // // let img = arrFunctions.randomNormal({num: imgW*imgH});
             // let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
             // img = reshapeArr(img, [imgW,imgH]);
-            let img = objs[objIds[i]]["thumbnails"][thi];
+            let img = THUMBNAILS[objIds[i]]["thumbnails"][thi];
 
             //plot thumbnail
             plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})

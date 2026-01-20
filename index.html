@@ -32,9 +32,9 @@
                 </div>
             </div>
             <div class="global-selection">
-                <span>Subset</span>
-                <span>Select All</span>
-                <span>Invert</span>
+                <span class="heading">Subset</span>
+                <span class="heading">Select All</span>
+                <span class="heading">Invert</span>
                 <label for="select-all-good">Good</label>
                 <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" checked>
                 <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
@@ -45,7 +45,11 @@
                 <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" checked>
                 <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
             </div>
-            <button onclick="exportSelection()">Export Selection</button>
+            <div class="file-upload">
+                <label for="file-upload">Upload Files</label>
+                <input type="file" id="file-upload" onchange="uploadFiles()" multiple>
+            </div>
+            <button onclick="exportSelection()" class="io">Export Selection</button>
             <p>
                 Navigation:
                 <ul>
@@ -74,7 +78,7 @@
     </main>
 
 
-    <footer>&copy;2026, Lukas Steinwender</footer>
+    <footer>&copy;2026, <a href="https://theredelement.github.io" style="color: var(--c_tre);">Lukas Steinwender</a></footer>
 
     <!-- ############################################# -->
     <!-- scripts -->

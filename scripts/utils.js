@@ -15,7 +15,6 @@ export function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive
 }
 
-
 /**
  * - function to load some preset
  * @param {String} preset
@@ -41,4 +40,33 @@ export async function loadJSON(path) {
         console.error("Error fetching preset:", error);
         throw error
     }
+}
+
+/**
+ * - downloads `arr` as `exportName.csv`
+ * @param {Array} arr
+ *  - data to be downloaded 
+ * @param {String} exportName 
+ *  - filename of the downloaded file
+ */
+export function downloadArrAsCsv(arr, exportName){
+
+    //define download link
+    let csvContent = "data:text/csv;charset=utf-8,"
+        + arr.map(e => e.join(",")).join("\n");
+
+    //encode to enable download in correct format
+    csvContent = encodeURI(csvContent);
+    
+    //create temporary <a> element
+    let downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href",     csvContent);
+    downloadAnchorNode.setAttribute("download", exportName + ".csv");
+    document.body.appendChild(downloadAnchorNode);  //required for firefox
+    
+    //init download
+    downloadAnchorNode.click();
+    
+    //remove temporary <a> element
+    downloadAnchorNode.remove();
 }

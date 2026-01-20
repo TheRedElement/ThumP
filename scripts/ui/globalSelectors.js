@@ -1,6 +1,7 @@
 /**globalSelections.js */
 
 /**imports */
+import { downloadArrAsCsv } from "../utils.js";
 import { getGlobalOptions } from "./globalOptions.js";
 
 /**definitions */
@@ -44,4 +45,21 @@ export function invertSelection(element) {
     for (const selector of gridSelectors) {
         selector.checked = (!selector.checked);
     };
+}
+
+/**
+ * function to export all selected objects into tables
+ */
+export function exportSelection() {
+    //get relevant selector elements
+    for (const kind of ["good", "bad", "ugly"]) {
+        const gridSelectors = document.getElementsByClassName(`select-object ${kind}`);
+        let selectionArr = [];
+        for (const selector of gridSelectors) {
+            selectionArr.push([
+                selector.dataset["objectId"],
+            ]);
+        };
+        downloadArrAsCsv(selectionArr, `${kind}`)
+    }
 }

@@ -1,14 +1,16 @@
 /**thump.js */
 
 /**imports */
-import { invertSelection, selectAll } from "./ui/globalSelectors.js";
+import { exportSelection, invertSelection, selectAll } from "./ui/globalSelectors.js";
 import { fillGrid, updateGrid } from "./ui/mosaicGrid.js";
+import { downloadArrAsCsv } from "./utils.js";
 
 /**expose to window */
 window.fillGrid = fillGrid;
 window.updateGrid = updateGrid;
 window.selectAll = selectAll;
 window.invertSelection = invertSelection;
+window.exportSelection = exportSelection;
 
 /**definitions */
 

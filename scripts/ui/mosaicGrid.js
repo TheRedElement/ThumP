@@ -140,6 +140,7 @@ export async function fillGrid({
     //load data
     const objs = await loadJSON("/data/processed/processed.json");
     const objIds = Object.keys(objs);
+
     const nObj = objIds.length;
     for (let i = 0; i < nObj; i++) {
         //create grid cell (contains selection checkboxes, plot)
@@ -155,8 +156,9 @@ export async function fillGrid({
             const selection = document.createElement("input");
             selection.type = "checkbox";
             selection.className = [`select-object ${kind}`];
-            selectionContainer.appendChild(selection);
             selection.checked = true;
+            selection.dataset["objectId"] = objIds[i];
+            selectionContainer.appendChild(selection);
         }
         cellElement.appendChild(selectionContainer);
 

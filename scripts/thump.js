@@ -88,3 +88,27 @@ document.addEventListener("keydown", (event) => {
         };
     }
 });
+const controlsHead = document.getElementById("controls-head");
+controlsHead.addEventListener("click", (event) => {
+    //toggles hidden state
+    const controlsWrapper = document.getElementById("controls-wrapper");
+    console.log("clicked")
+    
+    if ([...controlsWrapper.classList].includes("hidden")) {
+        controlsWrapper.classList.remove("hidden");
+    } else {
+        controlsWrapper.classList.add("hidden");
+    };
+});
+const navigationHead = document.getElementById("navigation-head");
+navigationHead.addEventListener("click", (event) => {
+    //toggles hidden state
+    const navigationWrapper = document.getElementById("navigation-wrapper");
+    console.log("clicked")
+    
+    if ([...navigationWrapper.classList].includes("hidden")) {
+        navigationWrapper.classList.remove("hidden");
+    } else {
+        navigationWrapper.classList.add("hidden");
+    };
+});

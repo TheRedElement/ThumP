@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thump!</title>
+    <title>ThumP!</title>
 
     <link rel="stylesheet" href="style/thump.css">
 </head>
@@ -11,47 +11,51 @@
     <nav></nav>
     
     <main>
+        <h1>ThumP! Thumbnail Preselector</h1>
         <section id="controls">
-            <div class="global-controls">
-                <div class="parameter">
-                    <label for="rowwidth">Row Width [px]</label>
-                    <input class="global-option" id="rowwidth"  type="number" step="1" value="100" placeholder="Row width [px]" onchange="updateGrid()">
+            <h2 id="controls-head" class="controls-title">Controls</h2>
+            <div id="controls-wrapper" class="controls-wrapper">
+                <div class="global-controls">
+                    <div class="parameter">
+                        <label for="rowwidth">Row Width [px]</label>
+                        <input class="global-option" id="rowwidth"  type="number" step="1" value="100" placeholder="Row width [px]" onchange="updateGrid()">
+                    </div>
+                    <div class="parameter">
+                        <label for="rowheight">Row Height [px]</label>
+                        <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGrid()">
+                    </div>
+                    <div class="parameter">
+                        <label for="zmin">Color Limits</label>
+                        <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="fillGrid({redraw:true})">
+                        <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="fillGrid({redraw:true})">
+                    </div>
+                    <div class="parameter">
+                        <label for="pixelmath">Pixel Math</label>
+                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="x" onchange="fillGrid({redraw:true})">
+                    </div>
                 </div>
-                <div class="parameter">
-                    <label for="rowheight">Row Height [px]</label>
-                    <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGrid()">
+                <div class="global-selection">
+                    <span class="heading">Subset</span>
+                    <span class="heading">Select All</span>
+                    <span class="heading">Invert</span>
+                    <label for="select-all-good">Good</label>
+                    <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" checked>
+                    <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
+                    <label for="select-all-bad">Bad</label>
+                    <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" checked>
+                    <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
+                    <label for="select-all-ugly">Ugly</label>
+                    <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" checked>
+                    <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
                 </div>
-                <div class="parameter">
-                    <label for="zmin">Color Limits</label>
-                    <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="fillGrid({redraw:true})">
-                    <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="fillGrid({redraw:true})">
+                <div class="file-upload">
+                    <label for="file-upload">Upload Files</label>
+                    <input type="file" id="file-upload" onchange="uploadFiles()" multiple>
                 </div>
-                <div class="parameter">
-                    <label for="pixelmath">Pixel Math</label>
-                    <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="x" onchange="fillGrid({redraw:true})">
-                </div>
+                <button onclick="exportSelection()" class="io">Export Selection</button>
             </div>
-            <div class="global-selection">
-                <span class="heading">Subset</span>
-                <span class="heading">Select All</span>
-                <span class="heading">Invert</span>
-                <label for="select-all-good">Good</label>
-                <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" checked>
-                <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
-                <label for="select-all-bad">Bad</label>
-                <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" checked>
-                <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
-                <label for="select-all-ugly">Ugly</label>
-                <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" checked>
-                <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
-            </div>
-            <div class="file-upload">
-                <label for="file-upload">Upload Files</label>
-                <input type="file" id="file-upload" onchange="uploadFiles()" multiple>
-            </div>
-            <button onclick="exportSelection()" class="io">Export Selection</button>
-            <p>
-                Navigation:
+            <h2 id="navigation-head" class="controls-title">Navigation</h2>
+            <div id="navigation-wrapper">
                 <ul>
                     <li>plots:
                         zoom: click + drag,
@@ -63,7 +67,8 @@
                         ctrl + left arrow: scroll entire window left,
                     </li>
                 </ul>
-            </p>
+
+            </div>
         </section>
         <section id="thumbnail-mosaic" class="thumbnail-mosaic">
             <!-- <h1>Thumbnails</h1> -->

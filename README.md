@@ -1,8 +1,8 @@
-# ThumP, Thumbnail Preview
+# ThumP, Thumbnail Preselector
 
 ## TODO
-- [ ] color-limit selector
-- [ ] create fink client account
+- [x] color-limit selector
+- [x] create fink client account
 
 ## Approach
 - html website + js for loading and writing

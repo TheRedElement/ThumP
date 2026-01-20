@@ -101,6 +101,17 @@ controlsHead.addEventListener("click", (event) => {
         controlsWrapper.classList.add("hidden");
     };
 });
+const legendHead = document.getElementById("legend-head");
+legendHead.addEventListener("click", (event) => {
+    //toggles hidden state
+    const legendWrapper = document.getElementById("legend-wrapper");
+    
+    if ([...legendWrapper.classList].includes("hidden")) {
+        legendWrapper.classList.remove("hidden");
+    } else {
+        legendWrapper.classList.add("hidden");
+    };
+});
 const navigationHead = document.getElementById("navigation-head");
 navigationHead.addEventListener("click", (event) => {
     //toggles hidden state

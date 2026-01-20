@@ -2,7 +2,7 @@
 
 /**imports */
 import * as arrFunctions from "https://cdn.jsdelivr.net/gh/TheRedElement/LuStCodeSnippets@dev/lustCodeSnippets_js/arrFunctions.js"
-import { randInt, reshapeArr } from "../utils.js"
+import { loadJSON, randInt, reshapeArr } from "../utils.js"
 import { getGlobalOptions } from "./globalOptions.js";
 import { parseMath } from "../parsers/mathparser.js";
 
@@ -88,7 +88,7 @@ export function plotImg(img, thumbnailElement, layout, config, {
  *      - removes all children before adding new ones
  *  - the default is `true`
  */
-export function fillGrid({
+export async function fillGrid({
     nThumbnails = 3,
     redraw = false,
     } = {}) {
@@ -96,9 +96,9 @@ export function fillGrid({
     const globalOptions = getGlobalOptions();
     
     //setup for placeholder mesh
-    const nObj = 10;    //number of placeholder objects to create
-    const resH = 10;     //resolution of placeholder mesh (height)
-    const resW = 10;     //resolution of placeholder mesh (width)
+    // const nObj = 10;    //number of placeholder objects to create
+    // const resH = 10;     //resolution of placeholder mesh (height)
+    // const resW = 10;     //resolution of placeholder mesh (width)
     
     const mosaicElement = document.getElementById("thumbnail-mosaic");
     const mosaicGrid = mosaicElement.getElementsByClassName("mosaic-grid")[0];
@@ -137,6 +137,10 @@ export function fillGrid({
         displayModeBar: false,
     };
 
+    //load data
+    const objs = await loadJSON("/data/processed/processed.json");
+    const objIds = Object.keys(objs);
+    const nObj = objIds.length;
     for (let i = 0; i < nObj; i++) {
         //create grid cell (contains selection checkboxes, plot)
         const cellElement = document.createElement("div");
@@ -163,12 +167,13 @@ export function fillGrid({
             thumbnailElement.classList = ["thumbnail"];
             cellElement.appendChild(thumbnailElement);
 
-            //generate placeholder data
-            let imgW = randInt(resW-5, resW+5); //thumbnail sizes can change across thumbnails
-            let imgH = randInt(resH-5, resH+5); //thumbnail sizes can change across thumbnails
-            // let img = arrFunctions.randomNormal({num: imgW*imgH});
-            let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
-            img = reshapeArr(img, [imgW,imgH]);
+            // //generate placeholder data
+            // let imgW = randInt(resW-5, resW+5); //thumbnail sizes can change across thumbnails
+            // let imgH = randInt(resH-5, resH+5); //thumbnail sizes can change across thumbnails
+            // // let img = arrFunctions.randomNormal({num: imgW*imgH});
+            // let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
+            // img = reshapeArr(img, [imgW,imgH]);
+            let img = objs[objIds[i]]["thumbnails"][thi];
 
             //plot thumbnail
             plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})

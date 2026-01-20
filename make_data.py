@@ -64,10 +64,12 @@ def compile_file(ldf:pl.LazyFrame):
         # fig.show()
 
         data_json[str(row["diaObject"][0]["diaObjectId"])] = dict(
-            diaSourceId=row["diaSource"][0]["diaSourceId"],
-            science=science.tolist(),
-            template=template.tolist(),
-            difference=difference.tolist(),
+            diaSourceId=str(row["diaSource"][0]["diaSourceId"]),
+            thumbnails=[
+                science.tolist(),
+                template.tolist(),
+                difference.tolist(),
+            ]
         )
 
     with open("./data/processed/processed.json", "w") as f:

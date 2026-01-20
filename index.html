@@ -17,20 +17,41 @@
             <div id="controls-wrapper" class="controls-wrapper">
                 <div class="global-controls">
                     <div class="parameter">
-                        <label for="rowwidth">Row Width [px]</label>
-                        <input class="global-option" id="rowwidth"  type="number" step="1" value="100" placeholder="Row width [px]" onchange="updateGrid()">
+                        <label for="colwidth">Col Width [px]</label>
+                        <div class="tooltip">
+                            Column width in pixels.
+                            Updates on change (You might have to hit enter/return).
+                        </div>
+                        <input class="global-option" id="colwidth"  type="number" step="1" value="100" placeholder="Col width [px]" onchange="updateGrid()">
                     </div>
                     <div class="parameter">
                         <label for="rowheight">Row Height [px]</label>
+                        <div class="tooltip">
+                            Row height in pixels.
+                            Updates on change (You might have to hit enter/return).
+                        </div>
                         <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGrid()">
                     </div>
                     <div class="parameter">
                         <label for="zmin">Color Limits</label>
+                        <div class="tooltip">
+                            Color limits/limits in z-direction.
+                            zmin sets the lower bound of the color-map (everything below that will be colored as the color representing the minimum).
+                            zmax sets the lower bound of the color-map (everything below that will be colored as the color representing the maximum).
+                            Updates on change (You might have to hit enter/return).
+                        </div>
                         <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="fillGrid({redraw:true})">
                         <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="fillGrid({redraw:true})">
                     </div>
                     <div class="parameter">
                         <label for="pixelmath">Pixel Math</label>
+                        <div class="tooltip">
+                            Mathematical expression to evaluate on every pixel.
+                            The pixel-value is represented by $z$.
+                            Basic mathematical functions are supported as long as they are included in the <a href="https://github.com/silentmatt/expr-eval#readme">expr-eval</a> library.
+                            Some examples include `z` (display raw data); `log10(z)` (logscale); `abs(z)` (absolute of z).
+                            Updates on change (You might have to hit enter/return).
+                        </div>                        
                         <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="x" onchange="fillGrid({redraw:true})">
                     </div>
                 </div>
@@ -39,13 +60,13 @@
                     <span class="heading">Select All</span>
                     <span class="heading">Invert</span>
                     <label for="select-all-good">Good</label>
-                    <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" checked>
+                    <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" >
                     <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
                     <label for="select-all-bad">Bad</label>
-                    <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" checked>
+                    <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" >
                     <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
                     <label for="select-all-ugly">Ugly</label>
-                    <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" checked>
+                    <input type="checkbox" id="select-all-ugly" class="select-all ugly" onchange="selectAll(this)" >
                     <button id="invert-selection-ugly" class="invert-selection ugly" onclick="invertSelection(this)">&#10003;</button>
                 </div>
                 <div class="file-upload">
@@ -58,25 +79,43 @@
             <div id="navigation-wrapper">
                 <ul>
                     <li>plots:
-                        zoom: click + drag,
-                        pan: shift + click + drag,
-                        reset view: double click
+                        <ul>
+                            <li>zoom: click + drag,</li>
+                            <li>pan: shift + click + drag,</li>
+                            <li>reset view: double click</li>
+                        </ul>
                     </li>
                     <li>thumbnail mosaic:
-                        ctrl + right arrow: scroll entire window right,
-                        ctrl + left arrow: scroll entire window left,
+                        <ul>
+                            <li>ctrl + right arrow: scroll entire window right,</li>
+                            <li>ctrl + left arrow: scroll entire window left,</li>
+                        </ul>
                     </li>
                 </ul>
 
             </div>
         </section>
         <section id="thumbnail-mosaic" class="thumbnail-mosaic">
-            <!-- <h1>Thumbnails</h1> -->
+            <h2>Thumbnails</h2>
             <div id="mosaic-grid" class="mosaic-grid">
+                <!-- filled via JS -->
                 <!-- <div class="cell">
-                    <div class="thumbnail"></div>
-                    <div class="thumbnail"></div>
-                    <div class="thumbnail"></div>
+                    <a href="...">ObjId</a>
+                    <div class="selection-container">
+                        <input type="checkbox" class="select-oobject good">
+                        <input type="checkbox" class="select-oobject bad">
+                        <input type="checkbox" class="select-oobject ugly">
+                    </div>
+                    <div class="thumbnail-container">
+                        <div class="thumbnail">
+                            <div class="plotly-wrapper">
+                                <div class="plotly-plot">
+                                    Some Plot
+                                </div>
+                            </div>
+                        </div>
+                        ... more thumbnails
+                    </div>
                 </div> -->
             </div>
         </section>

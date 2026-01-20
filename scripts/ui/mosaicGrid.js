@@ -28,7 +28,7 @@ const resizeObservers = [];
  *  - global options extracted from the UI input
  */
 export function plotImg(img, thumbnailElement, layout, config, {
-    globalOptions={rowwidth: 100, rowheight: 100, zmin: "", zmax: ""},
+    globalOptions={colwidth: 100, rowheight: 100, zmin: "", zmax: ""},
     } = {}) {
     
     //get ID
@@ -37,7 +37,7 @@ export function plotImg(img, thumbnailElement, layout, config, {
     //create a plotly wrapper (for global formatting)
     const plotlyPlotWrapper = document.createElement("div");
     plotlyPlotWrapper.classList = ["plotly-wrapper"];
-    plotlyPlotWrapper.style.setProperty("width", `${globalOptions["rowwidth"]}px`)
+    plotlyPlotWrapper.style.setProperty("width", `${globalOptions["colwidth"]}px`)
     plotlyPlotWrapper.style.setProperty("height", `${globalOptions["rowheight"]}px`)
     thumbnailElement.appendChild(plotlyPlotWrapper);
 
@@ -52,7 +52,7 @@ export function plotImg(img, thumbnailElement, layout, config, {
     for (let i = 0; i < img.length; i++) {
         const row = img[i];
         for (let j = 0; j < row.length; j++) {
-            img[i][j] = parseMath(globalOptions["pixelmath"], {x: img[i][j]});
+            img[i][j] = parseMath(globalOptions["pixelmath"], {z: img[i][j]});
         };
     };
 
@@ -204,7 +204,7 @@ export function updateGrid() {
 
     const thumbnailElements = document.getElementsByClassName("plotly-wrapper");
     for (const thElement of thumbnailElements) {
-        thElement.style.setProperty("width", `${globalOptions["rowwidth"]}px`);
+        thElement.style.setProperty("width", `${globalOptions["colwidth"]}px`);
         thElement.style.setProperty("height", `${globalOptions["rowheight"]}px`);
     };
 }

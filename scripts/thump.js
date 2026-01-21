@@ -29,7 +29,7 @@ window.downloadSchema = downloadSchema;
 async function showOverlayInfo(func, msg) {
     //temporary elements
     const overlay = document.createElement("div");
-    overlay.className = "overlay";
+    overlay.className = "overlay info";
     overlay.innerText = msg;
     document.body.appendChild(overlay);
     
@@ -46,8 +46,22 @@ async function showOverlayInfo(func, msg) {
     //remove popup
     overlay.remove();
 }
-
 window.fillThumbnails = () => {showOverlayInfo(fillThumbnails, "Loading Thumbnails... Please Wait...")};
+
+/**
+ * function to show welcome box
+ */
+function showWelcome(){
+    document.getElementById("welcome").classList.remove("hidden");
+}
+window.showWelcome = showWelcome;
+/**
+ * function to hide welcome box
+*/
+function hideWelcome() {
+    document.getElementById("welcome").classList.add("hidden");
+}
+window.hideWelcome = hideWelcome;
 
 
 /**needs to run first */

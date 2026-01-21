@@ -11,29 +11,56 @@
     <nav></nav>
     
     <main>
+        <div id="welcome" class="overlay">
+            <div class="welcome">
+                <button class="close" onclick="hideWelcome()"></button>
+                <h2 style="background-color: inherit;">Welcome to ThumP!</h2>
+                <h3 style="background-color: inherit;">&copy;2026, Lukas Steinwender</h3>
+                <p>
+                    If you find this application useful in your work, an acknowledgement would be appreciated.
+                    If you want to cite this application you can use this in your bib-refs file:
+                    <pre><code>
+@online{Steinwender2025_ThumP,
+author    = {{Steinwender}, Lukas},
+title     = {ThumP!: Thumbnails? Prescreen!},
+month     = Jan,
+year      = 2026,
+version   = {latest},
+url       = {https://theredelement.github.io/ThumP/}
+}                            
+                    </code></pre>
+                </p>
+                <ul class="hint">
+                    <li>Hover/Tap on option-labels to get a description.</li>
+                </ul>                    
+            </div>
+        </div>        
         <h1>ThumP! (Thumbnails? Prescreen!)</h1>
         <section id="controls">
             <h2 id="legend-head" class="controls-title">Legend</h2>
             <div id="legend-wrapper" class="controls-wrapper">
-                <div class="legend-selectors">
-                    <label for="legend-good">
-                        Good
-                        <input id="legend-good" type="radio" class="good" checked>
-                    </label>
-                    <label for="legend-maybe">
-                        Maybe
-                        <input id="legend-maybe" type="radio" class="maybe" checked>
-                    </label>
-                    <label for="legend-bad">
-                        Bad
-                        <input id="legend-bad" type="radio" class="bad" checked>
-                    </label>                    
-                </div>
-                <div class="hovertooltip">
-                    <button onclick="downloadSchema()">&#11015; Schema</button>
-                    <div class="tooltip">
-                        download an example file to get an idea of how compatible files should look like.
+                <div class="legend-content">
+                    <div class="legend-selectors">
+                        <label for="legend-good">
+                            Good
+                            <input id="legend-good" type="radio" class="good" checked>
+                        </label>
+                        <label for="legend-maybe">
+                            Maybe
+                            <input id="legend-maybe" type="radio" class="maybe" checked>
+                        </label>
+                        <label for="legend-bad">
+                            Bad
+                            <input id="legend-bad" type="radio" class="bad" checked>
+                        </label>
                     </div>
+                    <div class="hovertooltip">
+                        <button onclick="downloadSchema()">&#11015; Schema</button>
+                        <div class="tooltip">
+                            download an example file to get an idea of how compatible files should look like.
+                        </div>
+                    </div>
+                    <button onclick="showWelcome()">Show Welcome</button>
                 </div>
             </div>
             <h2 id="navigation-head" class="controls-title">Navigation</h2>

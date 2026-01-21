@@ -149,6 +149,22 @@ button.close::before {
 } */
 
 .overlay {
+    height: 90%;
+    position: fixed;
+    margin: 0.5em;
+    padding: 1em;
+    border-radius: 10px;
+    box-shadow: 
+        0 0 20px var(--c_body_text);
+    inset: 0;
+    background: var(--c_bg);
+    opacity: 0.9;
+    justify-content: center;
+    align-items: top;
+    overflow-y: scroll;
+    z-index: 1000;
+}
+.overlay.info {
     position: fixed;
     width: max-content;
     max-width: 70%;
@@ -182,6 +198,16 @@ button.close::before {
 }
 .controls-wrapper {
     overflow-x: auto;
+}
+.legend-content {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: auto;
+    grid-auto-columns: max-content;
+    column-gap: 10px;
+    align-content: center;
+    align-items: center;
+    outline: 1px red solid;
 }
 
 .heading {

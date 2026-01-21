@@ -3,7 +3,7 @@
 
 /**imports */
 import { BASEPATH, METADATA, THUMBNAILS } from "../base/base.js";
-import { downloadArrAsCsv, downloadObjectAsJson, loadJSON } from "../utils.js";
+import { downloadArrAsCsv, downloadObjectAsJson, loadJSON, showError } from "../utils.js";
 
 /**definitions */
 /**
@@ -63,8 +63,8 @@ export async function fillThumbnails() {
             // console.log(objIds[objIdxFile])
             // console.log(objIds[objIdxFile])
         } catch (err) {
-            showError(fileUploadElement, `Error reading ${file.name}: ${err}`);
-            console.error(`Error reading ${file.name}:`, err);
+            showError(fileUploadElement, `Error reading ${curFile.name}: ${err}`);
+            console.error(`Error reading ${curFile.name}:`, err);
         };
 
         if (curRenderedObj == 0) {

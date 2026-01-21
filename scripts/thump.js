@@ -1,10 +1,11 @@
 /**thump.js */
 
 /**imports */
-import { THUMBNAILS } from "./base/base.js";
+import { METADATA, THUMBNAILS } from "./base/base.js";
 import { exportSelection, invertSelection, selectAll } from "./ui/globalSelectors.js";
 import { fillGrid, updateGridCell, updateGridGlobal } from "./ui/mosaicGrid.js";
 import { downloadArrAsCsv, loadJSON, showError } from "./utils.js";
+
 
 /**expose to window */
 window.fillGrid = fillGrid;
@@ -52,7 +53,23 @@ async function uploadFiles() {
 window.uploadFiles = uploadFiles;
 
 
+/**needs to run first */
+window.addEventListener("DOMContentLoaded", () => {
+
+    //date and time when session started to have unique file-names that can be identified later-on
+    let currentDate = new Date();
+    currentDate = String(currentDate.getFullYear()).padStart(4, 0)
+        + String(currentDate.getMonth()+1).padStart(2, 0)
+        + String(currentDate.getDate()).padStart(2, 0)
+        + String(currentDate.getHours()).padStart(2, 0)
+        + String(currentDate.getMinutes()).padStart(2, 0)
+        + String(currentDate.getSeconds()).padStart(2, 0)
+    METADATA["sessionId"] = currentDate;
+});
+
 /**executions */
+
+
 Object.assign(THUMBNAILS, await loadJSON("/data/processed/processed.json"));    //local file upload at startup
 fillGrid();
 updateGridGlobal();

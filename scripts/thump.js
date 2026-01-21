@@ -27,11 +27,18 @@ window.downloadSchema = downloadSchema;
  *  - message to display
  */
 async function showOverlayInfo(func, msg) {
-        //temporary elements
+    //temporary elements
     const overlay = document.createElement("div");
     overlay.className = "overlay";
     overlay.innerText = msg;
     document.body.appendChild(overlay);
+    
+    //close button to not have overlay displayed when `func()` raises an error
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "close"
+    closeBtn.onclick = () => {overlay.remove()};
+    overlay.appendChild(closeBtn);
+    
 
     //async to make sure `func()` finishes before removal of popup
     await func();

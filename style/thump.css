@@ -66,6 +66,25 @@ button.io:hover {
     cursor: pointer;
     background-color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_fink_3) 30%);
 }
+button.close {
+    display: inline-block;
+    background-color: var(--c_body_text);
+    color: var(--c_tre);
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1;
+    border-radius: 50%;
+    border: 1px var(--c_body_text) solid;
+    align-content: center;
+    text-align: center;
+    vertical-align: middle;
+    pad: 0;
+    margin-left: 1em;
+    font-size: 1.3rem;
+}
+button.close::before {
+    content: "\00d7";
+}
 
 /* helpers */
 .hidden {

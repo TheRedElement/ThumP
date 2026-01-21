@@ -29,6 +29,9 @@
         - `<input type="file" webkitdirectory>`
             - no live updates
 
+## Current Best Settings
+* local: col width: 59; row height: 49; ncols: NaN; nrows: 4
+
 ## Data Loading
 ```python
 nobj=12781

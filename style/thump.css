@@ -19,6 +19,12 @@ html, body {
     overflow-y: scroll;
 }
 
+/* main {
+    display: grid;
+    grid-column: 1fr;
+    grid-auto-rows: repeat(3, max-content) 1fr;
+} */
+
 :is(h1,h2,h3) {
     margin-bottom: 0.2em;
     margin-top: 0.2em;
@@ -44,7 +50,7 @@ button {
 }
 button.io {
     margin-top: 15px;
-    font-size: 1.5em;
+    font-size: 1.5rem;
     background-color: var(--c_tre);
     color: #ffffff;
     pad: 5px;
@@ -133,12 +139,15 @@ div.global-selection {
     grid-template-columns: repeat(3, max-content);
 }
 
+.thumbnail-mosaic-wrapper {
+    /* wrapper to enable vertical scrolling of thumbnails */
+    height: 70vh;
+    overflow-y: scroll;
+}
 section.thumbnail-mosaic {
     height: auto;
     width: 100%;
     overflow-x: auto;
-    /* scroll-snap-type: x mandatory;
-    overscroll-behavior-x: contain; */
 }
 
 .mosaic-grid {

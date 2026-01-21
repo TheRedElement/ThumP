@@ -13,6 +13,42 @@
     <main>
         <h1>ThumP! (Thumbnails? Prescreen!)</h1>
         <section id="controls">
+            <h2 id="legend-head" class="controls-title">Legend</h2>
+            <div id="legend-wrapper" class="legend-wrapper">
+                <div class="legend-selectors">
+                    <label for="legend-good">
+                        Good
+                        <input type="radio" class="good" checked>
+                    </label>
+                    <label for="legend-maybe">
+                        Maybe
+                        <input type="radio" class="maybe" checked>
+                    </label>
+                    <label for="legend-bad">
+                        Bad
+                        <input type="radio" class="bad" checked>
+                    </label>                    
+                </div>
+            </div>
+            <h2 id="navigation-head" class="controls-title">Navigation</h2>
+            <div id="navigation-wrapper">
+                <ul>
+                    <li>plots:
+                        <ul>
+                            <li>zoom: click + drag,</li>
+                            <li>pan: shift + click + drag,</li>
+                            <li>reset view: double click</li>
+                        </ul>
+                    </li>
+                    <li>thumbnail mosaic:
+                        <ul>
+                            <li>ctrl + right arrow: scroll entire window right,</li>
+                            <li>ctrl + left arrow: scroll entire window left,</li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
             <h2 id="controls-head" class="controls-title">Controls</h2>
             <div id="controls-wrapper" class="controls-wrapper">
                 <div class="global-controls">
@@ -69,7 +105,7 @@
                             Some examples include `z` (display raw data); `log10(z)` (logscale); `abs(z)` (absolute of z).
                             Updates on change (You might have to hit enter/return).
                         </div>                        
-                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGridCell({replot:false})">
+                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGridCell({replot:true})">
                     </div>
                 </div>
                 <!-- <div class="global-selection">
@@ -90,46 +126,10 @@
                     <label for="file-upload">Upload Files</label>
                     <input type="file" id="file-upload" onchange="uploadFiles()" multiple>
                 </div>
-                <button onclick="exportSelection()" class="io">Export Selection</button>
-            </div>
-            <h2 id="legend-head" class="controls-title">Legend</h2>
-            <div id="legend-wrapper" class="legend-wrapper">
-                <div class="legend-selectors">
-                    <label for="legend-good">
-                        Good
-                        <input type="radio" class="good" checked>
-                    </label>
-                    <label for="legend-maybe">
-                        Maybe
-                        <input type="radio" class="maybe" checked>
-                    </label>
-                    <label for="legend-bad">
-                        Bad
-                        <input type="radio" class="bad" checked>
-                    </label>                    
-                </div>
-            </div>
-            <h2 id="navigation-head" class="controls-title">Navigation</h2>
-            <div id="navigation-wrapper">
-                <ul>
-                    <li>plots:
-                        <ul>
-                            <li>zoom: click + drag,</li>
-                            <li>pan: shift + click + drag,</li>
-                            <li>reset view: double click</li>
-                        </ul>
-                    </li>
-                    <li>thumbnail mosaic:
-                        <ul>
-                            <li>ctrl + right arrow: scroll entire window right,</li>
-                            <li>ctrl + left arrow: scroll entire window left,</li>
-                        </ul>
-                    </li>
-                </ul>
-
-            </div>
+            </div> 
         </section>
-        <h2>Thumbnails</h2>
+        <h2>Thumbnails <button onclick="exportSelection()" class="io">Export Selection</button></h2>
+        <div style="height: 70vh; overflow-y: scroll;">
         <section id="thumbnail-mosaic" class="thumbnail-mosaic">
             <div id="mosaic-grid" class="mosaic-grid">
                 <!-- filled via JS -->
@@ -153,6 +153,7 @@
                 </div> -->
             </div>
         </section>
+        </div>
     </main>
 
 

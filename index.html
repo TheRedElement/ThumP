@@ -127,35 +127,77 @@
                 </div> -->
                 <div class="file-upload">
                     <label for="file-upload">Upload Files</label>
-                    <input type="file" id="file-upload" onchange="uploadFiles()" multiple>
+                    <div class="tooltip">
+                        Upload the files that shall be displayed.
+                        Files shall be `.json` files with the following schema:
+                        <ul>
+                            <li>The key to each entry is the objectId (will be displayed on top of the thumbnail cells)</li>
+                            <li>The value of each objectId is another dictionary with the following keys:
+                                <ul>
+                                    <li>"link": some url linking to an external page (i.e. a database with auxiliary information to the object)</li>
+                                    <li>"thumbnails": a list of 2d arrays
+                                        <ul>
+                                            <li>each contained 2d array is a unique thumbnail</li>
+                                            <li>`Thump!` will automatically determine how many thumbnails shall be displayed</li>
+                                            <li>each entry in any of the 2d arrays represents a single pixel and its value the respective brightness</li>
+                                            <li>thumbnails are allowed to have different shapes for the same object and across objects (i.e., the first one is a 3x3 array, the second one 5x6 etc.)</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        Files shall have the same number of entries.
+                        Entries across all files shall have the same number of thumbnails.
+                        The first file will be used to obtain some global information about the file structure (i.e., length of all files).
+                    </div>                                    
+                    <input type="file" id="file-upload" onchange="fillThumbnails()" multiple>
                 </div>
             </div> 
         </section>
         <h2>Thumbnails <button onclick="exportSelection()" class="io">Export Selection</button></h2>
+        <div class="page-controls">
+            <div class="parameter">
+                <label for="pagenumber">Page</label>
+                <div class="tooltip">
+                    Current page number.
+                    Changing will reload the displayed thumbnails. 
+                </div>
+                <input type="number" id="pagenumber" step="1" value="0" min="0" placeholder="Current Page Number" onchange="fillThumbnails()">
+            </div>
+            <div class="parameter">
+                <label for="obj-per-page">Objects Per Page</label>
+                <div class="tooltip">
+                    Number of objects to display per page.
+                    Note that not all thumbnails might be visible (scroll to the left/right to see the rest). 
+                    Changing will reload the displayed thumbnails. 
+                </div>                                
+                <input type="number" id="obj-per-page" step="1" value="100" min="1" placeholder="Number of Objects to Render on Page" onchange="fillThumbnails()">
+            </div>
+        </div>
         <div class="thumbnail-mosaic-wrapper">
-        <section id="thumbnail-mosaic" class="thumbnail-mosaic">
-            <div id="mosaic-grid" class="mosaic-grid">
-                <!-- filled via JS -->
-                <!-- <div class="cell">
-                    <a href="...">ObjId</a>
-                    <div class="selection-container">
-                        <input type="radar" class="select-object good">
-                        <input type="radar" class="select-object bad">
-                        <input type="radar" class="select-object maybe">
-                    </div>
-                    <div class="thumbnail-container">
-                        <div class="thumbnail">
-                            <div class="plotly-wrapper">
-                                <div class="plotly-plot">
-                                    Some Plot
+            <section id="thumbnail-mosaic" class="thumbnail-mosaic">
+                <div id="mosaic-grid" class="mosaic-grid">
+                    <!-- filled via JS -->
+                    <!-- <div class="cell">
+                        <a href="...">ObjId</a>
+                        <div class="selection-container">
+                            <input type="radar" class="select-object good">
+                            <input type="radar" class="select-object bad">
+                            <input type="radar" class="select-object maybe">
+                        </div>
+                        <div class="thumbnail-container">
+                            <div class="thumbnail">
+                                <div class="plotly-wrapper">
+                                    <div class="plotly-plot">
+                                        Some Plot
+                                    </div>
                                 </div>
                             </div>
+                            ... more thumbnails
                         </div>
-                        ... more thumbnails
-                    </div>
-                </div> -->
-            </div>
-        </section>
+                    </div> -->
+                </div>
+            </section>
         </div>
     </main>
 

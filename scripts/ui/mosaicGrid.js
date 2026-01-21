@@ -37,13 +37,13 @@ export function plotImg(img, thumbnailElement, layout, config, {
     //create a plotly wrapper (for global formatting)
     const plotlyPlotWrapper = document.createElement("div");
     plotlyPlotWrapper.classList = ["plotly-wrapper"];
-    plotlyPlotWrapper.style.setProperty("width", `${globalOptions["colwidth"]}px`)
-    plotlyPlotWrapper.style.setProperty("height", `${globalOptions["rowheight"]}px`)
+    plotlyPlotWrapper.style.setProperty("width", `${globalOptions["colwidth"]}px`);
+    plotlyPlotWrapper.style.setProperty("height", `${globalOptions["rowheight"]}px`);
     thumbnailElement.appendChild(plotlyPlotWrapper);
 
     //create the actual plot
     const plotlyPlot = document.createElement("div");
-    plotlyPlot.classList = ["plotly-plot"]
+    plotlyPlot.classList = ["plotly-plot"];
     plotlyPlot.id = plotlyId;
     plotlyPlotWrapper.appendChild(plotlyPlot);
     
@@ -73,7 +73,7 @@ export function plotImg(img, thumbnailElement, layout, config, {
  *      - removes all children before adding new ones
  *  - the default is `false`
  */
-export async function fillGrid({
+export function fillGrid({
     redraw = false,
     } = {}) {
 

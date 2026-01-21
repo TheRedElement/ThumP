@@ -103,12 +103,36 @@ button.io:hover {
         visibility 0.3s ease;
 }
 
-
 .parameter:hover > .tooltip {
     /* show tooltip on hover */
     display: block;
     visibility: visible;
     opacity: 0.95;    
+}
+.file-upload:hover > .tooltip {
+    /* show tooltip on hover */
+    display: block;
+    visibility: visible;
+    opacity: 0.95;    
+}
+
+.overlay {
+    position: fixed;
+    width: max-content;
+    height: max-content;
+    top: 50%;
+    left: 50%;
+    font-size: 1.8rem;
+    border-radius: 7px;
+    padding: 0.5rem;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c_tre);
+    color: #ffffff;
+    z-index: 1000;
+    box-shadow: 10px 10px 15px var(--c_body_text);
 }
 
 /* project specific */

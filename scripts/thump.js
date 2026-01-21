@@ -2,7 +2,8 @@
 
 /**imports */
 import { BASEPATH, METADATA, THUMBNAILS } from "./base/base.js";
-import { exportSelection, invertSelection, selectAll } from "./ui/globalSelectors.js";
+import { invertSelection, selectAll } from "./ui/globalSelectors.js";
+import { exportSelection, fillThumbnails } from "./ui/io.js";
 import { fillGrid, updateGridCell, updateGridGlobal } from "./ui/mosaicGrid.js";
 import { downloadArrAsCsv, loadJSON, showError } from "./utils.js";
 
@@ -19,41 +20,27 @@ window.exportSelection = exportSelection;
 
 /**definitions */
 /**
- * - retrieves files from file upload and updates `THUMBNAILS` with new data
- * - files have to have the following schema
- *      - <objectId> : {<thumbnails>: Array[3], <other attributes>}
+ * creates temporary popup that disappears once `func` finished its execution
+ * @param {Function} func
+ *  - function to be run 
+ * @param {String} msg
+ *  - message to display
  */
-async function uploadFiles() {
-    const fileUploadElement = document.getElementById("file-upload");
+async function showOverlayInfo(func, msg) {
+        //temporary elements
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    overlay.innerText = msg;
+    document.body.appendChild(overlay);
 
-    const wrongFiles = [];      //list of wrong files (for warning message)   
-    for (const file of fileUploadElement.files) {
-        if (!file.name.toLowerCase().endsWith(".json")) {
-            //check for correct extension (take note if wrong extension)
-            wrongFiles.push(file.name);
-        } else {
-            console.log(file)
-            try {
-                const text = await file.text(); //read file
-                const data = JSON.parse(text);  //parse JSON
-                
-                Object.assign(THUMBNAILS, data);    //update `THUMBNAILS` with new uploaded data
-    
-            } catch (err) {
-                showError(fileUploadElement, `Error reading ${file.name}: ${err}`);
-                console.error(`Error reading ${file.name}:`, err);
-            };            
-        };
-    };
-    //update grid with uploaded objects
-    fillGrid();
-    updateGridGlobal();
-    updateGridCell({replot:true});
+    //async to make sure `func()` finishes before removal of popup
+    await func();
 
-    //update status bar
-    document.getElementById("numobjects").innerText = Object.keys(THUMBNAILS).length;
+    //remove popup
+    overlay.remove();
 }
-window.uploadFiles = uploadFiles;
+
+window.fillThumbnails = () => {showOverlayInfo(fillThumbnails, "Loading Thumbnails... Please Wait...")};
 
 
 /**needs to run first */
@@ -71,14 +58,15 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 /**executions */
-for (let i = 0; i < 1; i++) {
-    // console.log(`${BASEPATH}data/processed/processed_${String(i).padStart(4, "0")}.json`)
-    Object.assign(THUMBNAILS, await loadJSON(`/data/processed/processed_${String(i).padStart(4, "0")}.json`));    //local file upload at startup
-}
-document.getElementById("numobjects").innerText = Object.keys(THUMBNAILS).length;
-fillGrid();
-updateGridGlobal();
-updateGridCell({replot:true});
+// for (let i = 0; i < 1; i++) {
+//     // console.log(`${BASEPATH}data/processed/processed_${String(i).padStart(4, "0")}.json`)
+//     Object.assign(THUMBNAILS, await loadJSON(`/data/processed/processed_${String(i).padStart(4, "0")}.json`));    //local file upload at startup
+// }
+// document.getElementById("numobjects").innerText = Object.keys(THUMBNAILS).length;
+// fillGrid();
+// updateGridGlobal();
+// updateGridCell({replot:true});
+
 
 /**listeners */
 window.addEventListener("resize", () => {
@@ -158,3 +146,5 @@ navigationHead.addEventListener("click", (event) => {
         navigationWrapper.classList.add("hidden");
     };
 });
+const pageNumber = document.getElementById("pagenumber");
+

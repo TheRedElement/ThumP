@@ -52,13 +52,8 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
                 pl.col("diaSource").struct.field("diaSourceId"),
             ).collect()
         except Exception as e:
-            # print(ldf.collect()[i])
-            logger.warning(f"Exception at object {i}: {e}")
+            logger.warning(f"Exception at chunk {chunkidx}, object {i}: {e}")
             continue
-        # print(row)
-        # print(row["diaObjectId"])
-        # print(row["diaSourceId"])
-        # print(row["cutoutScience"])
         
         hdul = fits.open(BytesIO(row["cutoutScience"][0]))
         science = hdul[0].data
@@ -111,7 +106,7 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
     return
 
 def compile_files(ldf:pl.LazyFrame,
-    chunklen:int=100
+    chunklen:int=100, nchunks:int=None,
     ):
     """extracts relevant information from all files and stores that in correct schema
 
@@ -124,7 +119,7 @@ def compile_files(ldf:pl.LazyFrame,
     height = ldf.select(ldf.collect_schema().names()[0]).collect().height
     print(f"nobj={height}")
 
-    nchunks = height//chunklen + (height%chunklen>0)
+    nchunks = height//chunklen + (height%chunklen>0) if nchunks is None else nchunks
     print(f"{nchunks=}")
 
     # _ = Parallel(n_jobs=1)(delayed(lambda chunkidx, chunklen: print(chunkidx*chunklen, chunkidx*chunklen+chunklen-1))(
@@ -132,8 +127,7 @@ def compile_files(ldf:pl.LazyFrame,
         ldf=ldf.slice(chunkidx*chunklen, chunklen),
         chunkidx=chunkidx,
         chunklen=chunklen,
-    # ) for chunkidx in range(nchunks))
-    ) for chunkidx in range(10))
+    ) for chunkidx in range(nchunks))
 
     return
 
@@ -143,7 +137,7 @@ def main():
     df = read_files(fnames)
 
     # compile_file(df)
-    compile_files(df, chunklen=100)
+    compile_files(df, chunklen=100, nchunks=50)
 
     return
 

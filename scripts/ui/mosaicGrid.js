@@ -127,63 +127,70 @@ export function fillGrid({
 
     const nObj = objIds.length;
     for (let i = 0; i < nObj; i++) {
-        //create grid cell (contains selection checkboxes, plot)
-        const cellElement = document.createElement("div");
-        cellElement.id = `cell-${i}`;
-        cellElement.classList = ["cell"];
-        cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
-
-        //label
-        const labelElement = document.createElement("a");
-        labelElement.textContent = objIds[i];
-        labelElement.href = THUMBNAILS[objIds[i]]["link"];
-        cellElement.appendChild(labelElement);
-
-        //ui-elements
-        const selectionContainer = document.createElement("form");
-        selectionContainer.classList = ["selection-container"];
-        selectionContainer.id = `selection-container-${i}`;
-        for (const kind of ["good", "maybe", "bad"]) {
-            const selection = document.createElement("input");
-            selection.type = "radio";                           //radio for exclusive selection
-            selection.name = [`select-object`];                 //all have the same name (exclusive selection)
-            selection.className = [`select-object ${kind}`];
-            selection.checked = (kind == "bad");                //all are bad by default
-            // selection.checked = Boolean(Math.round(Math.random(),0));    //random selection (for testing)
-            selection.value = kind;                             //for determining the quality/category
-            selection.dataset["objectId"] = objIds[i];          //for saving the objId
-            selectionContainer.appendChild(selection);
-        }
-        cellElement.appendChild(selectionContainer);
-
-        //add thumbnails (plots)
-        const thumbnailContainer = document.createElement("div");
-        thumbnailContainer.className = "thumbnail-container";
-        for (let thi = 0; thi < nThumbnails; thi++) {
-            //get current thumbnail
-            let img = THUMBNAILS[objIds[i]]["thumbnails"][thi];
-            
-            const thumbnailElement = document.createElement("div");
-            thumbnailElement.id = `thumbnail-${i}-${thi}`;
-            thumbnailElement.classList = ["thumbnail"];
-            thumbnailElement.dataset["objectId"] = objIds[i];   //save to have reference into `THUMBNAILS` for retrieving original data
-            thumbnailElement.dataset["thumbnailId"] = thi;      //save to have reference into `THUMBNAILS` for retrieving original data
-            thumbnailContainer.appendChild(thumbnailElement);
-
-            // //generate placeholder data
-            // let imgW = randInt(resW-5, resW+5); //thumbnail sizes can change across thumbnails
-            // let imgH = randInt(resH-5, resH+5); //thumbnail sizes can change across thumbnails
-            // // let img = arrFunctions.randomNormal({num: imgW*imgH});
-            // let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
-            // img = reshapeArr(img, [imgW,imgH]);
-
-            //plot thumbnail
-            plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})
+        
+        if (objIds[i] === "undefined") {
+            //deal with problems in the dataset
+            console.warn(`objId for obj ${i} is not defined... ignoring...`)
+        } else {
+            //create grid cell (contains selection checkboxes, plot)
+            const cellElement = document.createElement("div");
+            cellElement.id = `cell-${i}`;
+            cellElement.classList = ["cell"];
+            cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
+    
+            //label
+            const labelElement = document.createElement("a");
+            labelElement.textContent = objIds[i];
+            console.log(objIds[i])
+            labelElement.href = THUMBNAILS[objIds[i]]["link"];
+            cellElement.appendChild(labelElement);
+    
+            //ui-elements
+            const selectionContainer = document.createElement("form");
+            selectionContainer.classList = ["selection-container"];
+            selectionContainer.id = `selection-container-${i}`;
+            for (const kind of ["good", "maybe", "bad"]) {
+                const selection = document.createElement("input");
+                selection.type = "radio";                           //radio for exclusive selection
+                selection.name = [`select-object`];                 //all have the same name (exclusive selection)
+                selection.className = [`select-object ${kind}`];
+                selection.checked = (kind == "bad");                //all are bad by default
+                // selection.checked = Boolean(Math.round(Math.random(),0));    //random selection (for testing)
+                selection.value = kind;                             //for determining the quality/category
+                selection.dataset["objectId"] = objIds[i];          //for saving the objId
+                selectionContainer.appendChild(selection);
+            }
+            cellElement.appendChild(selectionContainer);
+    
+            //add thumbnails (plots)
+            const thumbnailContainer = document.createElement("div");
+            thumbnailContainer.className = "thumbnail-container";
+            for (let thi = 0; thi < nThumbnails; thi++) {
+                //get current thumbnail
+                let img = THUMBNAILS[objIds[i]]["thumbnails"][thi];
+                
+                const thumbnailElement = document.createElement("div");
+                thumbnailElement.id = `thumbnail-${i}-${thi}`;
+                thumbnailElement.classList = ["thumbnail"];
+                thumbnailElement.dataset["objectId"] = objIds[i];   //save to have reference into `THUMBNAILS` for retrieving original data
+                thumbnailElement.dataset["thumbnailId"] = thi;      //save to have reference into `THUMBNAILS` for retrieving original data
+                thumbnailContainer.appendChild(thumbnailElement);
+    
+                // //generate placeholder data
+                // let imgW = randInt(resW-5, resW+5); //thumbnail sizes can change across thumbnails
+                // let imgH = randInt(resH-5, resH+5); //thumbnail sizes can change across thumbnails
+                // // let img = arrFunctions.randomNormal({num: imgW*imgH});
+                // let img = arrFunctions.linspace(-imgW*imgH/2,imgW*imgH/2,imgW*imgH)
+                // img = reshapeArr(img, [imgW,imgH]);
+    
+                //plot thumbnail
+                plotImg(img, thumbnailElement, layout, config, {globalOptions: globalOptions})
+            };
+            cellElement.appendChild(thumbnailContainer);
+    
+            //add to parent
+            mosaicGrid.appendChild(cellElement);
         };
-        cellElement.appendChild(thumbnailContainer);
-
-        //add to parent
-        mosaicGrid.appendChild(cellElement);
     };
 }
 

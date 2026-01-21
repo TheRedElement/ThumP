@@ -25,9 +25,14 @@ html, body {
     grid-auto-rows: repeat(3, max-content) 1fr;
 } */
 
+p {
+    width: max-content;
+}
+
 :is(h1,h2,h3) {
     margin-bottom: 0.2em;
     margin-top: 0.2em;
+    width: max-content;
 }
 
 a {
@@ -47,6 +52,7 @@ button {
     border-radius: 4px;
     height: max-content;
     width: max-content;
+    cursor: pointer;
 }
 button.io {
     margin-top: 15px;
@@ -103,18 +109,21 @@ button.io:hover {
         visibility 0.3s ease;
 }
 
-.parameter:hover > .tooltip {
+:where(
+    .hovertooltip:hover,
+    .parameter:hover,
+    .file-upload:hover
+ ) > .tooltip {
     /* show tooltip on hover */
     display: block;
     visibility: visible;
     opacity: 0.95;    
 }
-.file-upload:hover > .tooltip {
-    /* show tooltip on hover */
+/* .file-upload:hover > .tooltip {
     display: block;
     visibility: visible;
     opacity: 0.95;    
-}
+} */
 
 .overlay {
     position: fixed;
@@ -160,6 +169,7 @@ div.global-controls {
 
 .status {
     height: 2lh;
+    min-width: 3em;
     width: max-content;
     overflow-y: auto;
     background-color: color-mix(in srgb, var(--c_fink_4) 10%, var(--c_bg) 90%);
@@ -167,8 +177,12 @@ div.global-controls {
     padding: 10px;
     margin-bottom: 10px;
 }
-#numobjects::before {
-    content: "Objects Displayed: ";
+.status {
+    white-space: pre;
+}
+.status::before {
+    content: "Status:";
+    font-weight: bold;
 }
 /* div.global-selection {
     display: grid;

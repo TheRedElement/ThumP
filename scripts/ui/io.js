@@ -2,8 +2,8 @@
 
 
 /**imports */
-import { METADATA, THUMBNAILS } from "../base/base.js";
-import { downloadArrAsCsv } from "../utils.js";
+import { BASEPATH, METADATA, THUMBNAILS } from "../base/base.js";
+import { downloadArrAsCsv, downloadObjectAsJson, loadJSON } from "../utils.js";
 
 /**definitions */
 /**
@@ -28,6 +28,7 @@ export async function getSchema(file) {
 export async function fillThumbnails() {
 
     console.log("`fillThumbnails()`: started file upload...")
+
     //get parameters and files
     const fileUploadElement = document.getElementById("file-upload");
     const objPerPage = document.getElementById("obj-per-page").value;
@@ -42,12 +43,16 @@ export async function fillThumbnails() {
     const pageIndex = document.getElementById("pagenumber").value;
     let fileIdx = Math.trunc(objPerPage*pageIndex / fileSchema["length"]);
     let curRenderedObj = 0;
+    let fileStart = fileIdx;    //for status report
+    let objIdxFileStart = 0;    //for status report
+    let objIdx = 0;             //for status report (endpoint)
+    let objIdxFile = 0;         //for status report (endpoint)
     while (curRenderedObj < objPerPage) {
         
         //get parameters for current iteration
-        let objIdx = pageIndex*objPerPage + curRenderedObj;     //global object index
-        let curFile = fileUploadElement.files[fileIdx];         //current file
-        let objIdxFile = objIdx - fileIdx*fileSchema["length"]  //object index in the current file
+        objIdx = pageIndex*objPerPage + curRenderedObj;     //global object index
+        objIdxFile = objIdx - fileIdx*fileSchema["length"]  //object index in the current file
+        let curFile = fileUploadElement.files[fileIdx];     //current file
 
         //read relevant file
         try {
@@ -60,7 +65,12 @@ export async function fillThumbnails() {
         } catch (err) {
             showError(fileUploadElement, `Error reading ${file.name}: ${err}`);
             console.error(`Error reading ${file.name}:`, err);
-        };           
+        };
+
+        if (curRenderedObj == 0) {
+            objIdxFileStart = objIdxFile;
+        }
+
         
         //updates
         // console.log(objIdx + " " + objIdxFile)
@@ -79,7 +89,13 @@ export async function fillThumbnails() {
     updateGridCell({replot:true});
 
     //update status bar
-    document.getElementById("numobjects").innerText = Object.keys(THUMBNAILS).length;
+    document.getElementById("status-bar").innerText = `
+    Loaded Objects:
+        Global Index: ${objIdx-(objPerPage-1)} - ${objIdx}
+        File Index: File ${fileStart} Obj ${objIdxFileStart} - File ${fileIdx} Obj ${objIdxFile}
+        Displayed Number: ${Object.keys(THUMBNAILS).length}
+        Objects Per File: ${fileSchema["length"]}
+    `
     console.log("`fillThumbnails()`: finished rendering `THUMBNAILS`")
 }
 
@@ -106,7 +122,13 @@ export function exportSelection() {
     downloadArrAsCsv(objClass, `thump_classification_${METADATA["sessionId"]}_${pageNumber}`)
 }
 
-
+/**
+ * function to download schema.json
+ */
+export async function downloadSchema() {
+    const schema = await loadJSON(`${BASEPATH}data/schema.json`);
+    downloadObjectAsJson(schema, "schema");
+}
 
 // /**
 //  * - retrieves files from file upload and updates `THUMBNAILS` with new data

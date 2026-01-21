@@ -18,16 +18,22 @@
                 <div class="legend-selectors">
                     <label for="legend-good">
                         Good
-                        <input type="radio" class="good" checked>
+                        <input id="legend-good" type="radio" class="good" checked>
                     </label>
                     <label for="legend-maybe">
                         Maybe
-                        <input type="radio" class="maybe" checked>
+                        <input id="legend-maybe" type="radio" class="maybe" checked>
                     </label>
                     <label for="legend-bad">
                         Bad
-                        <input type="radio" class="bad" checked>
+                        <input id="legend-bad" type="radio" class="bad" checked>
                     </label>                    
+                </div>
+                <div class="hovertooltip">
+                    <button onclick="downloadSchema()">&#11015; Schema</button>
+                    <div class="tooltip">
+                        download an example file to get an idea of how compatible files should look like.
+                    </div>
                 </div>
             </div>
             <h2 id="navigation-head" class="controls-title">Navigation</h2>
@@ -51,8 +57,8 @@
             </div>
             <h2 id="controls-head" class="controls-title">Controls</h2>
             <div id="controls-wrapper" class="controls-wrapper">
-                <div class="status">
-                    <div id="numobjects"></div>
+                <div class="status" id="status-bar">
+                    <!-- filled with js -->
                 </div>
                 <div class="global-controls">
                     <div class="parameter">

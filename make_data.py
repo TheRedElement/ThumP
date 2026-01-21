@@ -57,15 +57,15 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
         
         hdul = fits.open(BytesIO(row["cutoutScience"][0]))
         science = hdul[0].data
-        science[np.isnan(science)] = -99
+        science = np.where(np.isnan(science), None, science)    #NaN is not supported in json
         hdul.close()
         hdul = fits.open(BytesIO(row["cutoutTemplate"][0]))
         template = hdul[0].data
-        template[np.isnan(template)] = -99
+        template = np.where(np.isnan(template), None, template) #NaN is not supported in json
         hdul.close()
         hdul = fits.open(BytesIO(row["cutoutDifference"][0]))
         difference = hdul[0].data
-        difference[np.isnan(difference)] = -99
+        difference = np.where(np.isnan(difference), None, difference)   #NaN is not supported in json
         hdul.close()
 
         """ fig = make_subplots(1, 3)
@@ -106,7 +106,8 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
     return
 
 def compile_files(ldf:pl.LazyFrame,
-    chunklen:int=100, nchunks:int=None,
+    chunklen:int=100,
+    chunk_start:int=0, nchunks:int=None,
     ):
     """extracts relevant information from all files and stores that in correct schema
 
@@ -123,11 +124,11 @@ def compile_files(ldf:pl.LazyFrame,
     print(f"{nchunks=}")
 
     # _ = Parallel(n_jobs=1)(delayed(lambda chunkidx, chunklen: print(chunkidx*chunklen, chunkidx*chunklen+chunklen-1))(
-    _ = Parallel(n_jobs=2, backend="loky", verbose=1)(delayed(compile_file)(
+    _ = Parallel(n_jobs=1, backend="loky", verbose=1)(delayed(compile_file)(
         ldf=ldf.slice(chunkidx*chunklen, chunklen),
         chunkidx=chunkidx,
         chunklen=chunklen,
-    ) for chunkidx in range(nchunks))
+    ) for chunkidx in range(chunk_start, nchunks))
 
     return
 
@@ -137,7 +138,7 @@ def main():
     df = read_files(fnames)
 
     # compile_file(df)
-    compile_files(df, chunklen=100, nchunks=50)
+    compile_files(df, chunklen=100, chunk_start=126, nchunks=None)
 
     return
 

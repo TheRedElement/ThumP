@@ -71,6 +71,33 @@ export function downloadArrAsCsv(arr, exportName){
     downloadAnchorNode.remove();
 }
 
+/**definitions */
+/**
+ * - function to download a json object from the browser
+ * @param {Object} exportObj 
+ * @param {String} exportName 
+ */
+export function downloadObjectAsJson(exportObj, exportName){
+
+    //define download link
+    let dataStr = "data:text/json;charset=utf-8," + 
+        encodeURIComponent(
+            JSON.stringify(exportObj, null, 2)
+        );
+    
+    //create temporary <a> element
+    let downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode);  //required for firefox
+    
+    //init download
+    downloadAnchorNode.click();
+    
+    //remove temporary <a> element
+    downloadAnchorNode.remove();
+}
+
 /**
  * function to show a custom error message and highlight the faulty html element 
  * @param {HTMLElement} element 

@@ -67,6 +67,9 @@ button.io:hover {
     background-color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_fink_3) 30%);
 }
 button.close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
     display: inline-block;
     background-color: var(--c_body_text);
     color: var(--c_tre);
@@ -147,6 +150,7 @@ button.close::before {
 .overlay {
     position: fixed;
     width: max-content;
+    max-width: 70%;
     height: max-content;
     top: 50%;
     left: 50%;
@@ -174,6 +178,9 @@ button.close::before {
     cursor: pointer;
     text-decoration: underline;
     color: var(--c_fink_2);
+}
+.controls-wrapper {
+    overflow-x: auto;
 }
 
 .heading {

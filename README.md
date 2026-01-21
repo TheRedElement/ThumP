@@ -15,10 +15,19 @@
 - [ ] scroll
     - save when moving to next page
     - [load when scrolling (only have current page objects in memory)]
-- [ ] store data on client side 
+- [ ] store data on client side
     - https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Client-side_APIs/Client-side_storage
     - only retrieve currently relevant objects
     - more memory efficient
+    - options
+        - File System Access API
+            - probably no firefox support
+            - https://developer.mozilla.org/en-US/docs/Web/API/File_System_API
+        - localhost + fetch
+            - `fetch("http://localhost:8000/data")`
+            - requires local server to be running
+        - `<input type="file" webkitdirectory>`
+            - no live updates
 
 
 ## Approach

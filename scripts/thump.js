@@ -1,7 +1,7 @@
 /**thump.js */
 
 /**imports */
-import { METADATA, THUMBNAILS } from "./base/base.js";
+import { BASEPATH, METADATA, THUMBNAILS } from "./base/base.js";
 import { exportSelection, invertSelection, selectAll } from "./ui/globalSelectors.js";
 import { fillGrid, updateGridCell, updateGridGlobal } from "./ui/mosaicGrid.js";
 import { downloadArrAsCsv, loadJSON, showError } from "./utils.js";
@@ -49,6 +49,9 @@ async function uploadFiles() {
     fillGrid();
     updateGridGlobal();
     updateGridCell({replot:true});
+
+    //update status bar
+    document.getElementById("numobjects").innerText = Object.keys(THUMBNAILS).length;
 }
 window.uploadFiles = uploadFiles;
 
@@ -68,9 +71,11 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 /**executions */
-
-
-Object.assign(THUMBNAILS, await loadJSON("/data/processed/processed.json"));    //local file upload at startup
+for (let i = 0; i < 1; i++) {
+    // console.log(`${BASEPATH}data/processed/processed_${String(i).padStart(4, "0")}.json`)
+    Object.assign(THUMBNAILS, await loadJSON(`/data/processed/processed_${String(i).padStart(4, "0")}.json`));    //local file upload at startup
+}
+document.getElementById("numobjects").innerText = Object.keys(THUMBNAILS).length;
 fillGrid();
 updateGridGlobal();
 updateGridCell({replot:true});

@@ -133,11 +133,24 @@ div.global-controls {
     column-gap: 10px;
     grid-template-columns: repeat(2, max-content);
 }
-div.global-selection {
+
+.status {
+    height: 2lh;
+    width: max-content;
+    overflow-y: auto;
+    background-color: color-mix(in srgb, var(--c_fink_4) 10%, var(--c_bg) 90%);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+#numobjects::before {
+    content: "Objects Displayed: ";
+}
+/* div.global-selection {
     display: grid;
     column-gap: 10px;
     grid-template-columns: repeat(3, max-content);
-}
+} */
 
 .thumbnail-mosaic-wrapper {
     /* wrapper to enable vertical scrolling of thumbnails */

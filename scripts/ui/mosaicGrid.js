@@ -141,7 +141,6 @@ export function fillGrid({
             //label
             const labelElement = document.createElement("a");
             labelElement.textContent = objIds[i];
-            console.log(objIds[i])
             labelElement.href = THUMBNAILS[objIds[i]]["link"];
             cellElement.appendChild(labelElement);
     

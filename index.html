@@ -22,7 +22,7 @@
                             Column width in pixels.
                             Updates on change (You might have to hit enter/return).
                         </div>
-                        <input class="global-option" id="colwidth"  type="number" step="1" value="100" placeholder="Col width [px]" onchange="updateGrid()">
+                        <input class="global-option" id="colwidth"  type="number" step="1" value="100" placeholder="Col width [px]" onchange="updateGridCell({replot:false})">
                     </div>
                     <div class="parameter">
                         <label for="rowheight">Row Height [px]</label>
@@ -30,7 +30,24 @@
                             Row height in pixels.
                             Updates on change (You might have to hit enter/return).
                         </div>
-                        <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGrid()">
+                        <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGridCell({replot:false})">
+                    </div>
+                    <div class="parameter">
+                        <label for="ncols">Number of Columns</label>
+                        <div class="tooltip">
+                            CURRENTLY NOT USED!
+                            Number of columns per page in the thumbnails mosaic.
+                            Updates on change (You might have to hit enter/return).
+                        </div>
+                        <input class="global-option" id="ncols"  type="number" step="1" value="3" placeholder="Number of Columns" onchange="updateGridGlobal()">
+                    </div>
+                    <div class="parameter">
+                        <label for="nrows">Number of Rows</label>
+                        <div class="tooltip">
+                            Number of Rows per page in the thumbnails mosaic.
+                            Updates on change (You might have to hit enter/return).
+                        </div>
+                        <input class="global-option" id="nrows"  type="number" step="1" value="3" placeholder="Number of Rows" onchange="updateGridGlobal()">
                     </div>
                     <div class="parameter">
                         <label for="zmin">Color Limits</label>
@@ -40,8 +57,8 @@
                             zmax sets the lower bound of the color-map (everything below that will be colored as the color representing the maximum).
                             Updates on change (You might have to hit enter/return).
                         </div>
-                        <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="updateGrid()">
-                        <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="updateGrid()">
+                        <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="updateGridCell({replot:true})">
+                        <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="updateGridCell({replot:true})">
                     </div>
                     <div class="parameter">
                         <label for="pixelmath">Pixel Math</label>
@@ -52,7 +69,7 @@
                             Some examples include `z` (display raw data); `log10(z)` (logscale); `abs(z)` (absolute of z).
                             Updates on change (You might have to hit enter/return).
                         </div>                        
-                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGrid()">
+                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGridCell({replot:false})">
                     </div>
                 </div>
                 <!-- <div class="global-selection">

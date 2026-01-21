@@ -3,12 +3,13 @@
 /**imports */
 import { THUMBNAILS } from "./base/base.js";
 import { exportSelection, invertSelection, selectAll } from "./ui/globalSelectors.js";
-import { fillGrid, updateGrid } from "./ui/mosaicGrid.js";
+import { fillGrid, updateGridCell, updateGridGlobal } from "./ui/mosaicGrid.js";
 import { downloadArrAsCsv, loadJSON, showError } from "./utils.js";
 
 /**expose to window */
 window.fillGrid = fillGrid;
-window.updateGrid = updateGrid;
+window.updateGridGlobal = updateGridGlobal;
+window.updateGridCell = updateGridCell;
 window.selectAll = selectAll;
 window.invertSelection = invertSelection;
 window.exportSelection = exportSelection;
@@ -45,7 +46,8 @@ async function uploadFiles() {
     };
     //update grid with uploaded objects
     fillGrid();
-    updateGrid();
+    updateGridGlobal();
+    updateGridCell({replot:true});
 }
 window.uploadFiles = uploadFiles;
 
@@ -53,7 +55,8 @@ window.uploadFiles = uploadFiles;
 /**executions */
 Object.assign(THUMBNAILS, await loadJSON("/data/processed/processed.json"));    //local file upload at startup
 fillGrid();
-updateGrid();
+updateGridGlobal();
+updateGridCell({replot:true});
 
 /**listeners */
 window.addEventListener("resize", () => {
@@ -68,8 +71,18 @@ document.addEventListener("keydown", (event) => {
     // };
 
     const thumbnailMosaic = document.getElementById("thumbnail-mosaic");
+    const mosaicGrid = document.getElementById("mosaic-grid");
+    const cell = mosaicGrid.getElementsByClassName("cell")[0];
+    const mosaicGridStyle = getComputedStyle(mosaicGrid);
+    const cellStyle = getComputedStyle(cell);
 
-    const scrollAmount = thumbnailMosaic.offsetWidth;
+    const containerWidth = parseInt(thumbnailMosaic.offsetWidth);
+    const colWidth = parseInt(cellStyle.width);                     //column width == cell width because all cells have same width
+    const gap = parseInt(mosaicGridStyle.gap);                      //gap between columns
+    const nCols = parseInt(containerWidth / (colWidth+gap));        //number of (fully) visible columns
+
+
+    const scrollAmount = colWidth*nCols + gap*nCols;                //width of the visible grid
     if (event.ctrlKey) {
         switch (event.key) {
             case "ArrowLeft":

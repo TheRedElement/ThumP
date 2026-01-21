@@ -69,7 +69,7 @@ export function plotImg(img, thumbnailElement, layout, config, {
  * - function to fill the grid of thumbnails
  * @param {Boolean} redraw
  *  - kwarg, optional
- *  - whether to redraw the entire grid
+ *  - whether to redraw the entire grid from scratch
  *      - removes all children before adding new ones
  *  - the default is `false`
  */
@@ -188,19 +188,39 @@ export async function fillGrid({
 }
 
 /**
- * updates grid based on `globalOptions`
+ * - makes updates to the global thumbnail-mosaic grid structure
+ * - i.e.
+ *      - number of rows
+ *      - number of columns
  */
-export function updateGrid() {
+export function updateGridGlobal() {
     const globalOptions = getGlobalOptions();
+    // console.log(globalOptions)
 
-    // const thumbnailElements = document.getElementsByClassName("plotly-wrapper");
-    // for (const thElement of thumbnailElements) {
-    //     thElement.style.setProperty("width", `${globalOptions["colwidth"]}px`);
-    //     thElement.style.setProperty("height", `${globalOptions["rowheight"]}px`);
-    // };
+    //global updates
+    const mosaicGrid = document.getElementById("mosaic-grid");
+    mosaicGrid.style.setProperty("grid-template-rows", `repeat(${globalOptions["nrows"]}, minmax(0,1fr))`)
+}
 
+/**
+ * - makes updates to the thumbnail-mosaic grid on a grid-cell-level
+ * @param {Boolean} replot
+ *  - kwarg, optional
+ *  - whether to also redraw the plot
+ *  - if `false`
+ *      - will only update layout elements
+ *  - if `true`
+ *      - will also update the actual data seen in the plot
+ *  - implemented for ui-reaction efficiency
+ *  - the default is `true`
+ */
+export function updateGridCell({
+    replot=true
+    } = {}) {
+    const globalOptions = getGlobalOptions();
+    // console.log(globalOptions)
 
-
+    //grid-cell update
     const thumbnailElements = document.getElementsByClassName("thumbnail");
     // const plotlyPlots = document.getElementsByClassName("plotly-plot");
     for (const thElement of thumbnailElements) {
@@ -214,35 +234,39 @@ export function updateGrid() {
         const thId = thElement.dataset["thumbnailId"];  //indices pointing into `THUMBNAILS`
         // console.log(objId, thId)
 
-        //apply pixel math
-        let img = structuredClone(THUMBNAILS[objId]["thumbnails"][thId]);    //original data (copy to not modify original)
-        for (let i = 0; i < img.length; i++) {
-            const row = img[i];
-            for (let j = 0; j < row.length; j++) {
-                img[i][j] = parseMath(globalOptions["pixelmath"], {z: img[i][j]});
+        if (replot) {
+            //only update plot-related things if `replot` is specified
+
+            //apply pixel math
+            let img = structuredClone(THUMBNAILS[objId]["thumbnails"][thId]);    //original data (copy to not modify original)
+            for (let i = 0; i < img.length; i++) {
+                const row = img[i];
+                for (let j = 0; j < row.length; j++) {
+                    img[i][j] = parseMath(globalOptions["pixelmath"], {z: img[i][j]});
+                };
             };
-        };
-
-        //apply updates to traces
-        let update = {
-            z: [
-                img
-            ],
-            colorscale: [
-                [
-                    [0, "#15284F"],
-                    [0.5, "#3C8DFF"],
-                    [1.0, "#D5D5D3"],
+    
+            //apply updates to traces
+            let update = {
+                z: [
+                    img
                 ],
-            ],
-            zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
-            zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            
-        }
-
-        const plotlyPlot = thElement.getElementsByClassName("plotly-plot")[0];
-        Plotly.restyle(
-            plotlyPlot,
-            update, [0]
-        )
+                colorscale: [
+                    [
+                        [0, "#15284F"],
+                        [0.5, "#3C8DFF"],
+                        [1.0, "#D5D5D3"],
+                    ],
+                ],
+                zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
+                zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            
+            };
+    
+            const plotlyPlot = thElement.getElementsByClassName("plotly-plot")[0];
+            Plotly.restyle(
+                plotlyPlot,
+                update, [0]
+            );
+        };
     }
 }

@@ -11,8 +11,7 @@
 - [x] only redraw plots upon request/page reload
     -  otherwise just update
     - https://www.google.com/search?q=plotly+js+update+trace+data&oq=plotly+js+update+tracw+&gs_lcrp=EgZjaHJvbWUqCAgCEAAYFhgeMgYIABBFGDkyCAgBEAAYFhgeMggIAhAAGBYYHjIHCAMQABjvBTIHCAQQIRiPAjIHCAUQIRiPAjIHCAYQIRiPAtIBCDc5OThqMGo0qAIKsAIB8QVeoKkuJi3YWQ&client=ms-android-google&sourceid=chrome-mobile&ie=UTF-8&aimos=1#lfId=ChxjMe
-- [ ] allow setting number of rows and columns in UI
-    - maybe instead of image width and height (scale image automatically)
+- [x] allow setting number of rows and columns in UI
 - [ ] scroll
     - save when moving to next page
     - [load when scrolling (only have current page objects in memory)]

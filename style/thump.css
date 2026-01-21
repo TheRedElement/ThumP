@@ -136,7 +136,9 @@ div.global-selection {
 section.thumbnail-mosaic {
     height: auto;
     width: 100%;
-    overflow-x: scroll;
+    overflow-x: auto;
+    /* scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain; */
 }
 
 .mosaic-grid {
@@ -146,13 +148,14 @@ section.thumbnail-mosaic {
     display: grid;
     gap: 15px;
     grid-auto-columns: 1fr;
-    grid-template-rows: repeat(3, minmax(0, 1fr));
     align-items: center;
     justify-items: center;
     overflow-y: hidden;
     overflow-x: visible;
     background-color: transparent;
-    padding: 3%;
+    padding: 1%;
+    /* fallback (set in js) */
+    grid-template-rows: repeat(3, minmax(0, 1fr));
 }
 .mosaic-grid .cell {
     height: 100%;

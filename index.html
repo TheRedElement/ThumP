@@ -191,6 +191,14 @@
         <h2>Thumbnails <button onclick="exportSelection()" class="io">Export Selection</button></h2>
         <div class="page-controls">
             <div class="parameter">
+                <label for="filesuffix">File Suffix</label>
+                <div class="tooltip">
+                    Suffix to add to all exported files. 
+                    Will be added to any file experted in the current session.
+                </div>
+                <input type="text" id="filesuffix" placeholder="file-suffix">
+            </div>
+            <div class="parameter">
                 <label for="autoexport">Export on Page Change?</label>
                 <div class="tooltip">
                     Whether the current selection will be exported whenever the page changes.

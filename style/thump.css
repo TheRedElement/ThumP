@@ -213,6 +213,14 @@ button.close::before {
 .heading {
     font-weight: bold;
 }
+.parameter {
+    display: flex;
+    width: max-content;
+    padding: 0;
+}
+.parameter > * {
+    margin: 5px;
+}
 
 div.global-controls {
     display: grid;
@@ -242,6 +250,15 @@ div.global-controls {
     column-gap: 10px;
     grid-template-columns: repeat(3, max-content);
 } */
+
+.page-controls {
+    display: grid;
+    column-gap: 0;
+    row-gap: 0;
+    grid-template-columns: repeat(auto-fit, minmax(280px, max-content));
+    grid-auto-rows: max-content;
+    /* overflow-x: auto; */
+}
 
 .thumbnail-mosaic-wrapper {
     /* wrapper to enable vertical scrolling of thumbnails */

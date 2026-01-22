@@ -109,6 +109,10 @@ export async function fillThumbnails() {
 export function exportSelection({pageNumber=undefined} = {}) {
     const objClassification = document.querySelectorAll("input[name='select-object']:checked");  //get all selected objects
 
+    //check for file suffix
+    let fileSuffix = document.getElementById("filesuffix").value;
+    fileSuffix = (fileSuffix === "") ? fileSuffix : "_" + fileSuffix
+    
     //relevant metadata
     pageNumber = (pageNumber === undefined) ? String(document.getElementById("pagenumber").value).padStart(4, 0) : pageNumber;
 
@@ -123,7 +127,7 @@ export function exportSelection({pageNumber=undefined} = {}) {
             [obj.dataset["objectId"], obj.value]
         )
     };
-    downloadArrAsCsv(objClass, `thump_classification_${METADATA["sessionId"]}_${pageNumber}`)
+    downloadArrAsCsv(objClass, `thump_classification_${METADATA["sessionId"]}_${pageNumber}${fileSuffix}`)
 }
 
 /**

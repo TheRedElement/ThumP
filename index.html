@@ -191,12 +191,20 @@
         <h2>Thumbnails <button onclick="exportSelection()" class="io">Export Selection</button></h2>
         <div class="page-controls">
             <div class="parameter">
+                <label for="autoexport">Export on Page Change?</label>
+                <div class="tooltip">
+                    Whether the current selection will be exported whenever the page changes.
+                </div>
+                <input type="checkbox" id="autoexport" value="false">
+            </div>
+            <div class="parameter">
                 <label for="pagenumber">Page</label>
                 <div class="tooltip">
                     Current page number.
                     Changing will reload the displayed thumbnails. 
+                    On request, the selection will be exported on page-change.
                 </div>
-                <input type="number" id="pagenumber" step="1" value="0" min="0" placeholder="Current Page Number" onchange="fillThumbnails()">
+                <input type="number" id="pagenumber" step="1" value="0" min="0" placeholder="Current Page Number" onchange="fillThumbnails({pageChange:true})" data-previous="0">
             </div>
             <div class="parameter">
                 <label for="obj-per-page">Objects Per Page</label>

@@ -46,7 +46,23 @@ async function showOverlayInfo(func, msg) {
     //remove popup
     overlay.remove();
 }
-window.fillThumbnails = () => {showOverlayInfo(fillThumbnails, "Loading Thumbnails... Please Wait...")};
+window.fillThumbnails = async ({pageChange=false} = {}) => {
+    if (pageChange) { 
+        //only on page-change
+        
+        //update pageNumber
+        const pageNumber = document.getElementById("pagenumber");
+        let prevPage = pageNumber.dataset["previous"];              //page before change
+        pageNumber.dataset["previous"] = pageNumber.value;          //update previous pageNumber
+    
+        if (document.getElementById("autoexport").checked) {
+            //export only if requested
+            await exportSelection({pageNumber:[prevPage]});
+        };
+        console.log("Page change: " + prevPage + "->"+pageNumber.value)
+    };
+    showOverlayInfo(fillThumbnails, "Loading Thumbnails... Please Wait...")
+}
 
 /**
  * function to show welcome box
@@ -76,6 +92,10 @@ window.addEventListener("DOMContentLoaded", () => {
         + String(currentDate.getMinutes()).padStart(2, 0)
         + String(currentDate.getSeconds()).padStart(2, 0)
     METADATA["sessionId"] = currentDate;
+
+    //set previous page number to current page
+    const pageNumber = document.getElementById("pagenumber");
+    pageNumber.dataset["previous"] = pageNumber.value;
 });
 
 /**executions */

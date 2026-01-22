@@ -101,12 +101,16 @@ export async function fillThumbnails() {
 
 /**
  * function to export all selected objects into tables
+ * @param {Int} pageNumber
+ *  - kwarg, optional
+ *  - override for currently displayed pageNumber
+ *  - to correct for wrong pageNumber when exporting on page-change
  */
-export function exportSelection() {
+export function exportSelection({pageNumber=undefined} = {}) {
     const objClassification = document.querySelectorAll("input[name='select-object']:checked");  //get all selected objects
 
     //relevant metadata
-    const pageNumber = String(document.getElementById("pagenumber").value).padStart(4, 0);
+    pageNumber = (pageNumber === undefined) ? String(document.getElementById("pagenumber").value).padStart(4, 0) : pageNumber;
 
     //init output array with column header
     let objClass = [

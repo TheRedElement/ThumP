@@ -130,8 +130,20 @@
                             zmax sets the lower bound of the color-map (everything below that will be colored as the color representing the maximum).
                             Updates on change (You might have to hit enter/return).
                         </div>
-                        <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="updateGridCell({replot:true})">
-                        <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="updateGridCell({replot:true})">
+                        <div style="display: grid;">
+                            <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="updateGridCell({replot:true})">
+                            <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="updateGridCell({replot:true})">
+                        </div>
+                    </div>
+                    <div class="parameter">
+                        <label for="colorscale">Colorscale</label>
+                        <div class="tooltip">
+                            Colorscale to use for encoding pixel values.
+                            Any colorscale supported by Plotly is allowed.
+                            Examples for named colormaps: Viridis, Jet.
+                            Also a list of [position, color] pairs is allowed: [[0.0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]].
+                        </div>                        
+                        <input type="text" id="colorscale" class="global-option" placeholder="color-map" value='[[0.0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]]' onchange="updateGridCell({replot:true})">
                     </div>
                     <div class="parameter">
                         <label for="pixelmath">Pixel Math</label>
@@ -189,39 +201,41 @@
             </div> 
         </section>
         <h2>Thumbnails <button onclick="exportSelection()" class="io">Export Selection</button></h2>
-        <div class="page-controls">
-            <div class="parameter">
-                <label for="filesuffix">File Suffix</label>
-                <div class="tooltip">
-                    Suffix to add to all exported files. 
-                    Will be added to any file experted in the current session.
+        <div class="controls-wrapper">
+            <div class="page-controls">
+                <div class="parameter">
+                    <label for="filesuffix">File Suffix</label>
+                    <div class="tooltip">
+                        Suffix to add to all exported files. 
+                        Will be added to any file experted in the current session.
+                    </div>
+                    <input type="text" id="filesuffix" placeholder="file-suffix">
                 </div>
-                <input type="text" id="filesuffix" placeholder="file-suffix">
-            </div>
-            <div class="parameter">
-                <label for="autoexport">Export on Page Change?</label>
-                <div class="tooltip">
-                    Whether the current selection will be exported whenever the page changes.
+                <div class="parameter">
+                    <label for="autoexport">Export on Page Change?</label>
+                    <div class="tooltip">
+                        Whether the current selection will be exported whenever the page changes.
+                    </div>
+                    <input type="checkbox" id="autoexport" value="true">
                 </div>
-                <input type="checkbox" id="autoexport" value="true">
-            </div>
-            <div class="parameter">
-                <label for="pagenumber">Page</label>
-                <div class="tooltip">
-                    Current page number.
-                    Changing will reload the displayed thumbnails. 
-                    On request, the selection will be exported on page-change.
+                <div class="parameter">
+                    <label for="pagenumber">Page</label>
+                    <div class="tooltip">
+                        Current page number.
+                        Changing will reload the displayed thumbnails. 
+                        On request, the selection will be exported on page-change.
+                    </div>
+                    <input type="number" id="pagenumber" step="1" value="0" min="0" placeholder="Current Page Number" onchange="fillThumbnails({pageChange:true})" data-previous="0">
                 </div>
-                <input type="number" id="pagenumber" step="1" value="0" min="0" placeholder="Current Page Number" onchange="fillThumbnails({pageChange:true})" data-previous="0">
-            </div>
-            <div class="parameter">
-                <label for="obj-per-page">Objects Per Page</label>
-                <div class="tooltip">
-                    Number of objects to display per page.
-                    Note that not all thumbnails might be visible (scroll to the left/right to see the rest). 
-                    Changing will reload the displayed thumbnails. 
-                </div>                                
-                <input type="number" id="obj-per-page" step="1" value="100" min="1" placeholder="Number of Objects to Render on Page" onchange="fillThumbnails()">
+                <div class="parameter">
+                    <label for="obj-per-page">Objects Per Page</label>
+                    <div class="tooltip">
+                        Number of objects to display per page.
+                        Note that not all thumbnails might be visible (scroll to the left/right to see the rest). 
+                        Changing will reload the displayed thumbnails. 
+                    </div>                                
+                    <input type="number" id="obj-per-page" step="1" value="100" min="1" placeholder="Number of Objects to Render on Page" onchange="fillThumbnails()">
+                </div>
             </div>
         </div>
         <div class="thumbnail-mosaic-wrapper">

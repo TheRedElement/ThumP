@@ -265,11 +265,12 @@ export function updateGridCell({
                     img
                 ],
                 colorscale: [
-                    [
-                        [0, "#15284F"],
-                        [0.5, "#3C8DFF"],
-                        [1.0, "#D5D5D3"],
-                    ],
+                    globalOptions["colorscale"].startsWith("[[") ? JSON.parse(globalOptions["colorscale"]) : globalOptions["colorscale"]
+                    // [
+                    //     [0, "#15284F"],
+                    //     [0.5, "#3C8DFF"],
+                    //     [1.0, "#D5D5D3"],
+                    // ],
                 ],
                 zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
                 zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            

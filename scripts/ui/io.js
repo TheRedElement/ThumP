@@ -35,23 +35,24 @@ export async function fillThumbnails() {
     
     //infer schema from first uploaded file
     const fileSchema = await getSchema(fileUploadElement.files[0]);
+    METADATA["filesUploaded"] = [...fileUploadElement.files].map(f => f.name);                               //store some metadata
 
     //reset `THUMBNAILS`
     Object.keys(THUMBNAILS).forEach(key => delete THUMBNAILS[key]);
     
     //populate thumbnails with relevant entries
     const pageIndex = document.getElementById("pagenumber").value;
-    let fileIdx = Math.trunc(objPerPage*pageIndex / fileSchema["length"]);
+    let fileIdx = Math.trunc(objPerPage*pageIndex / fileSchema["length"]);  //index of currently used file
     let curRenderedObj = 0;
-    let fileStart = fileIdx;    //for status report
-    let objIdxFileStart = 0;    //for status report
-    let objIdx = 0;             //for status report (endpoint)
-    let objIdxFile = 0;         //for status report (endpoint)
+    let objIdx = 0;                                                         //global object index
+    let objIdxFile = 0;                                                     //object index in the current file
+    METADATA["objPerPage"] = objPerPage                                     //for status report
+    METADATA["fileIdxStart"] = fileIdx;                                     //for status report
     while (curRenderedObj < objPerPage) {
         
         //get parameters for current iteration
-        objIdx = pageIndex*objPerPage + curRenderedObj;     //global object index
-        objIdxFile = objIdx - fileIdx*fileSchema["length"]  //object index in the current file
+        objIdx = pageIndex*objPerPage + curRenderedObj;     
+        objIdxFile = objIdx - fileIdx*fileSchema["length"]  
         let curFile = fileUploadElement.files[fileIdx];     //current file
 
         //read relevant file
@@ -68,9 +69,9 @@ export async function fillThumbnails() {
         };
 
         if (curRenderedObj == 0) {
-            objIdxFileStart = objIdxFile;
+            METADATA["objIdxStart"]     = objIdx;
+            METADATA["objIdxStartFile"] = objIdxFile;
         }
-
         
         //updates
         // console.log(objIdx + " " + objIdxFile)
@@ -88,13 +89,23 @@ export async function fillThumbnails() {
     updateGridGlobal();
     updateGridCell({replot:true});
 
+    //get more metadata
+    METADATA["fileIdxEnd"] = fileIdx;
+    METADATA["objIdxEnd"] = objIdx;
+    METADATA["objIdxEndFile"] = objIdxFile;
+    METADATA["renderedObjs"] = curRenderedObj;
+    METADATA["objsPerFile"] = fileSchema["length"];
+
     //update status bar
     document.getElementById("status-bar").innerText = `
     Loaded Objects:
-        Global Index: ${objIdx-(objPerPage-1)} - ${objIdx}
-        File Index: File ${fileStart} Obj ${objIdxFileStart} - File ${fileIdx} Obj ${objIdxFile}
-        Displayed Number: ${Object.keys(THUMBNAILS).length}
-        Objects Per File: ${fileSchema["length"]}
+        Global Index: ${METADATA["objIdxStart"]} - ${METADATA["objIdxEnd"]}
+        File Index: File ${METADATA["fileIdxStart"]} Obj ${METADATA["objIdxStartFile"]} - File ${METADATA["fileIdxEnd"]} Obj ${METADATA["objIdxEndFile"]}
+        Rendered Objects: ${METADATA["renderedObjs"]}
+        Objects Per File: ${METADATA["objsPerFile"]}
+    Loaded Files: ${METADATA["filesUploaded"]}
+        First: ${METADATA["filesUploaded"][0]}
+        Last: ${METADATA["filesUploaded"][METADATA["filesUploaded"].length-1]}
     `
     console.log("`fillThumbnails()`: finished rendering `THUMBNAILS`")
 }
@@ -117,17 +128,23 @@ export function exportSelection({pageNumber=undefined} = {}) {
     pageNumber = (pageNumber === undefined) ? String(document.getElementById("pagenumber").value).padStart(4, 0) : pageNumber;
 
     //init output array with column header
-    let objClass = [
-        ["object_id", "class"]
+    let csvComments = [
+        //comments
+        `#METADATA:${JSON.stringify(METADATA)}`,
+        "#object_id: id of the object as specified in the uploaded files",
+        "#class: classification based on the selection in the user interface",
+    ]
+    let csvContent = [
+        ["object_id", "class"], //header
     ];  //array for object classes
 
     //add respective objects to their selected class
     for (const obj of objClassification) {
-        objClass.push(
+        csvContent.push(
             [obj.dataset["objectId"], obj.value]
         )
     };
-    downloadArrAsCsv(objClass, `thump_classification_${METADATA["sessionId"]}_${pageNumber}${fileSuffix}`)
+    downloadArrAsCsv(csvContent, `thump_${METADATA["sessionId"]}_${pageNumber}${fileSuffix}`, csvComments)
 }
 
 /**

@@ -48,19 +48,25 @@ export async function loadJSON(path) {
  *  - data to be downloaded 
  * @param {String} exportName 
  *  - filename of the downloaded file
+ * @param {Array} comments
+ *  - comments to be  added above the header
  */
-export function downloadArrAsCsv(arr, exportName){
+export function downloadArrAsCsv(arr, exportName, comments=[]){
 
     //define download link
-    let csvContent = "data:text/csv;charset=utf-8,"
+    let csvContent = comments.join("\n") + "\n"
         + arr.map(e => e.join(",")).join("\n");
+    
+    const blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
 
     //encode to enable download in correct format
     csvContent = encodeURI(csvContent);
     
     //create temporary <a> element
     let downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href",     csvContent);
+    // downloadAnchorNode.setAttribute("href",     csvContent);
+    downloadAnchorNode.setAttribute("href",     url);
     downloadAnchorNode.setAttribute("download", exportName + ".csv");
     document.body.appendChild(downloadAnchorNode);  //required for firefox
     

@@ -171,7 +171,7 @@
                     <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" >
                     <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
                 </div> -->
-                <div class="file-upload">
+                <div class="parameter file-upload">
                     <label for="file-upload">Upload Files</label>
                     <div class="tooltip">
                         Upload the files that shall be displayed.
@@ -196,7 +196,7 @@
                         Entries across all files shall have the same number of thumbnails.
                         The first file will be used to obtain some global information about the file structure (i.e., length of all files).
                     </div>                                    
-                    <input type="file" id="file-upload" onchange="fillThumbnails()" multiple>
+                    <input type="file" id="file-upload" class="global-option" onchange="fillThumbnails({fileUpload:true})" multiple>
                 </div>
             </div> 
         </section>

@@ -142,11 +142,6 @@ button.close::before {
     visibility: visible;
     opacity: 0.95;    
 }
-/* .file-upload:hover > .tooltip {
-    display: block;
-    visibility: visible;
-    opacity: 0.95;    
-} */
 
 .overlay {
     height: 90%;
@@ -236,8 +231,9 @@ div.global-controls {
 }
 
 .status {
-    height: 2lh;
+    height: 5lh;
     min-width: 3em;
+    max-width: 95%;
     width: max-content;
     overflow-y: auto;
     background-color: color-mix(in srgb, var(--c_fink_4) 10%, var(--c_bg) 90%);

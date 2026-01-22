@@ -46,6 +46,12 @@ async function showOverlayInfo(func, msg) {
     //remove popup
     overlay.remove();
 }
+
+/**
+ * 
+ * @param {Boolean} pageChange
+ *  - whether the routines for a page-change shall be invoked
+ */
 window.fillThumbnails = async ({pageChange=false} = {}) => {
     if (pageChange) { 
         //only on page-change

@@ -20,9 +20,11 @@ logging.basicConfig(filename=None, level=logging.INFO)
 def read_files(fnames:List[str]) -> pl.LazyFrame:
     dfs = [(pl.scan_parquet(fn)
             .select(
+                # pl.col("*"),
+                #select what is needed
                 pl.col(r"^cutout.+$"),
-                pl.col("diaObject"),
-                pl.col("diaSource"),
+                pl.col("diaObject").struct.field("diaObjectId"),
+                pl.col("diaSource").struct.field("diaSourceId"),
     )) for fn in fnames]
 
     dfs = pl.concat(dfs)
@@ -48,8 +50,8 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
                 pl.col("cutoutScience"),
                 pl.col("cutoutTemplate"),
                 pl.col("cutoutDifference"),
-                pl.col("diaObject").struct.field("diaObjectId"),
-                pl.col("diaSource").struct.field("diaSourceId"),
+                pl.col("diaObjectId"),
+                pl.col("diaSourceId"),
             ).collect()
         except Exception as e:
             logger.warning(f"Exception at chunk {chunkidx}, object {i}: {e}")
@@ -116,7 +118,7 @@ def compile_files(ldf:pl.LazyFrame,
 
     """
 
-    #number of entries in dataset 
+    #number of entries in dataset
     height = ldf.select(ldf.collect_schema().names()[0]).collect().height
     print(f"nobj={height}")
 
@@ -138,8 +140,8 @@ def main():
     df = read_files(fnames)
 
     # compile_file(df)
-    compile_files(df, chunklen=100, chunk_start=126, nchunks=None)
-
+    compile_files(df, chunklen=100, chunk_start=0, nchunks=None)
+    
     return
 
 if __name__ == "__main__":

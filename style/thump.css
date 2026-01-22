@@ -135,7 +135,8 @@ button.close::before {
 :where(
     .hovertooltip:hover,
     .parameter:hover,
-    .file-upload:hover
+    .file-upload:hover,
+    .cell:hover
  ) > .tooltip {
     /* show tooltip on hover */
     display: block;

@@ -55,12 +55,6 @@
                             <input id="legend-bad" type="radio" class="bad" checked>
                         </label>
                     </div>
-                    <div class="hovertooltip">
-                        <button onclick="downloadSchema()">&#11015; Schema</button>
-                        <div class="tooltip">
-                            download an example file to get an idea of how compatible files should look like.
-                        </div>
-                    </div>
                     <button onclick="showWelcome()">Show Welcome</button>
                 </div>
             </div>
@@ -175,29 +169,16 @@
                     <label for="file-upload">Upload Files</label>
                     <div class="tooltip">
                         Upload the files that shall be displayed.
-                        Files shall be `.json` files with the following schema:
-                        <ul>
-                            <li>The key to each entry is the objectId (will be displayed on top of the thumbnail cells)</li>
-                            <li>The value of each objectId is another dictionary with the following keys:
-                                <ul>
-                                    <li>"link": some url linking to an external page (i.e. a database with auxiliary information to the object)</li>
-                                    <li>"thumbnails": a list of 2d arrays
-                                        <ul>
-                                            <li>each contained 2d array is a unique thumbnail</li>
-                                            <li>`Thump!` will automatically determine how many thumbnails shall be displayed</li>
-                                            <li>each entry in any of the 2d arrays represents a single pixel and its value the respective brightness</li>
-                                            <li>thumbnails are allowed to have different shapes for the same object and across objects (i.e., the first one is a 3x3 array, the second one 5x6 etc.)</li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                        Files shall have the same number of entries.
-                        Entries across all files shall have the same number of thumbnails.
-                        The first file will be used to obtain some global information about the file structure (i.e., length of all files).
+                        Files shall be `.json` files with the following schema (you can also download the schema by clicking the respective button).
                     </div>                                    
                     <input type="file" id="file-upload" class="global-option" onchange="fillThumbnails({fileUpload:true})" multiple>
                 </div>
+                <div class="hovertooltip">
+                    <button onclick="downloadSchema()">&#11015; Schema</button>
+                    <div class="tooltip">
+                        download an example file to get an idea of how compatible files should look like.
+                    </div>
+                </div>                
             </div> 
         </section>
         <h2>Thumbnails <button onclick="exportSelection()" class="io">Export Selection</button></h2>

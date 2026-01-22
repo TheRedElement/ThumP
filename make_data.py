@@ -57,12 +57,14 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
             logger.warning(f"Exception at chunk {chunkidx}, object {i}: {e}")
             continue
         
+        npixels = slice(0,-10)   #for testing
+        # npixels = slice(0,None)
         hdul = fits.open(BytesIO(row["cutoutScience"][0]))
-        science = hdul[0].data
+        science = hdul[0].data[:,npixels]
         science = np.where(np.isnan(science), None, science)    #NaN is not supported in json
         hdul.close()
         hdul = fits.open(BytesIO(row["cutoutTemplate"][0]))
-        template = hdul[0].data
+        template = hdul[0].data[npixels,:]
         template = np.where(np.isnan(template), None, template) #NaN is not supported in json
         hdul.close()
         hdul = fits.open(BytesIO(row["cutoutDifference"][0]))
@@ -87,6 +89,8 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
         ], rows=[1,1,1], cols=[1,2,3])
         fig.show() """
 
+        nthumbnails = slice(0,np.random.choice([1,2,3]))  #for testing
+        # nthumbnails = slice(0,None)
         data_json[str(row["diaSourceId"][0])] = dict(
             comments=[
                 f"ids: [{row['diaSourceId'][0]}, {row['diaObjectId'][0]}]",
@@ -94,11 +98,16 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
             link=f"https://lsst.fink-portal.org/{row['diaObjectId'][0]}",
             diaSourceId=str(row["diaSourceId"][0]),
             diaObjectId=str(row["diaObjectId"][0]),
+            thumbnailTypes=[
+                "science",
+                "template",
+                "differece",
+            ][nthumbnails],
             thumbnails=[
                 science.tolist(),
                 template.tolist(),
                 difference.tolist(),
-            ]
+            ][nthumbnails],
         )
 
     with open(f"./data/processed/processed_{chunkidx:04d}.json", "w") as f:
@@ -140,7 +149,7 @@ def main():
     df = read_files(fnames)
 
     # compile_file(df)
-    compile_files(df, chunklen=100, chunk_start=0, nchunks=None)
+    compile_files(df, chunklen=100, chunk_start=0, nchunks=5)
     
     return
 

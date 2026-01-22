@@ -48,8 +48,9 @@ export async function fillThumbnails() {
     let objIdxFile = 0;                                                     //object index in the current file
     METADATA["objPerPage"] = objPerPage                                     //for status report
     METADATA["fileIdxStart"] = fileIdx;                                     //for status report
-    while (curRenderedObj < objPerPage) {
-        
+    while ((curRenderedObj < objPerPage) & (fileIdx < METADATA["filesUploaded"].length)) {
+        //iterate until required number of objects reached or end of file-list reached
+
         //get parameters for current iteration
         objIdx = pageIndex*objPerPage + curRenderedObj;     
         objIdxFile = objIdx - fileIdx*fileSchema["length"]  

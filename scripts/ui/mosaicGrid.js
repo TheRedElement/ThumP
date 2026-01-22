@@ -122,8 +122,8 @@ export function fillGrid({
     };
 
     //load data
-    const objIds = Object.keys(THUMBNAILS);
-    const nThumbnails = THUMBNAILS[objIds[0]]["thumbnails"].length; //infer number of thumbnails from first entry in `THUMBNAILS`
+    const objIds = Object.keys(THUMBNAILS).filter((id) => (!id.startsWith("$")));
+    // const nThumbnails = THUMBNAILS[objIds[0]]["thumbnails"].length; //infer number of thumbnails from first entry in `THUMBNAILS`
 
     const nObj = objIds.length;
     for (let i = 0; i < nObj; i++) {
@@ -132,12 +132,24 @@ export function fillGrid({
             //deal with problems in the dataset
             console.warn(`objId for obj ${i} is not defined... ignoring...`)
         } else {
+
+            //get formatting parameters
+            let nThumbnails = THUMBNAILS[objIds[i]]["thumbnails"].length; //infer number of thumbnails
+
             //create grid cell (contains selection checkboxes, plot)
             const cellElement = document.createElement("div");
             cellElement.id = `cell-${i}`;
             cellElement.classList = ["cell"];
             cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
     
+            //tooltip
+            const tooltip = document.createElement("div");
+            tooltip.className = "tooltip";
+            tooltip.innerHTML = `
+                thumbnail order: ${THUMBNAILS[objIds[i]]["thumbnailTypes"]}
+            `
+            cellElement.appendChild(tooltip)
+
             //header
             const cellHeader = document.createElement("div");
             cellHeader.className = "cell-header";

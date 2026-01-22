@@ -138,13 +138,12 @@ export function fillGrid({
             cellElement.classList = ["cell"];
             cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
     
-            //label
-            const labelElement = document.createElement("a");
-            labelElement.textContent = objIds[i];
-            labelElement.href = THUMBNAILS[objIds[i]]["link"];
-            cellElement.appendChild(labelElement);
+            //header
+            const cellHeader = document.createElement("div");
+            cellHeader.className = "cell-header";
+            cellElement.appendChild(cellHeader)
     
-            //ui-elements
+            //selection interface
             const selectionContainer = document.createElement("form");
             selectionContainer.classList = ["selection-container"];
             selectionContainer.id = `selection-container-${i}`;
@@ -159,11 +158,19 @@ export function fillGrid({
                 selection.dataset["objectId"] = objIds[i];          //for saving the objId
                 selectionContainer.appendChild(selection);
             }
-            cellElement.appendChild(selectionContainer);
-    
+            cellHeader.appendChild(selectionContainer);
+            
+            //label
+            const labelElement = document.createElement("a");
+            labelElement.textContent = objIds[i];
+            labelElement.href = THUMBNAILS[objIds[i]]["link"];
+            cellHeader.appendChild(labelElement);
+
             //add thumbnails (plots)
             const thumbnailContainer = document.createElement("div");
             thumbnailContainer.className = "thumbnail-container";
+            thumbnailContainer.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
+
             for (let thi = 0; thi < nThumbnails; thi++) {
                 //get current thumbnail
                 let img = THUMBNAILS[objIds[i]]["thumbnails"][thi];

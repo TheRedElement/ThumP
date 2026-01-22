@@ -37,15 +37,15 @@ p {
 }
 
 a {
-    color: var(--c_fink_2);
+    color: var(--c_fink_1);
     text-decoration: none;
 }
 a:hover {
-    color: color-mix(in srgb, var(--c_fink_2) 70%, var(--c_body_text) 30%);
+    color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_body_text) 30%);
     text-decoration: underline;
 }
 a:visited {
-    color: color-mix(in srgb, var(--c_fink_2) 70%, var(--c_bg) 30%);
+    color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_bg) 30%);
 }
 
 button {
@@ -288,8 +288,28 @@ section.thumbnail-mosaic {
     grid-auto-columns: repeat(auto-fit, minmax(0, 1fr));
     box-shadow: 3px 3px 15px var(--c_fink_1);
 }
+.mosaic-grid .cell:has(input[value="good"]:checked) {
+    background-color: color-mix(in srgb, var(--c_fink_4) 90%, var(--c_bg) 10%);
+}
+.mosaic-grid .cell:has(input[value="maybe"]:checked) {
+    background-color: color-mix(in srgb, var(--c_fink_2) 50%, var(--c_bg) 50%);
+}
 
-.mosaic-grid .cell .selection-container {
+
+.mosaic-grid .cell .cell-header {
+    display: grid;
+    grid-auto-flow: column;
+    text-align: center;
+    flex: 1;
+    column-gap: 10px;
+    align-content: center;
+    align-items: center;
+}
+.mosaic-grid .cell .cell-header a {
+    font-size: 0.7em;
+}
+
+.mosaic-grid .cell .cell-header .selection-container {
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: 1fr;

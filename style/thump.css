@@ -258,6 +258,10 @@ div.global-controls {
     overflow-y: auto;
 }
 
+#resources {
+    display: flex;
+}
+
 
 /* thumbnails */
 .page-controls {

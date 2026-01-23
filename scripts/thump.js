@@ -3,7 +3,7 @@
 /**imports */
 import { BASEPATH, METADATA, THUMBNAILS } from "./base/base.js";
 import { invertSelection, selectAll } from "./ui/globalSelectors.js";
-import { downloadSchema, exportSelection, fillThumbnails } from "./ui/io.js";
+import { downloadExamples, downloadSchema, exportSelection, fillThumbnails } from "./ui/io.js";
 import { fillGrid, updateGridCell, updateGridGlobal } from "./ui/mosaicGrid.js";
 
 
@@ -15,6 +15,7 @@ window.selectAll = selectAll;
 window.invertSelection = invertSelection;
 window.exportSelection = exportSelection;
 window.downloadSchema = downloadSchema;
+window.downloadExamples = downloadExamples;
 
 /**constants */
 

@@ -188,12 +188,20 @@
                                 <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGridCell({replot:true})">
                             </div>
                         </div>
-                        <div id="schemadownload" class="hovertooltip">
-                            <button onclick="downloadSchema()">&#11015; Schema</button>
-                            <div class="tooltip">
-                                download an example file to get an idea of how compatible files should look like.
-                            </div>
-                        </div>                           
+                        <div id="resources">
+                            <div id="schemadownload" class="hovertooltip">
+                                <button onclick="downloadSchema()">&#11015; Schema</button>
+                                <div class="tooltip">
+                                    download an example file to get an idea of how compatible files should look like.
+                                </div>
+                            </div>        
+                            <div id="exampledownload" class="hovertooltip">
+                                <button onclick="downloadExamples()">&#11015; Examples</button>
+                                <div class="tooltip">
+                                    download some example files that work.
+                                </div>
+                            </div>        
+                        </div>
                         <div class="status" id="statusbar">
                             <!-- filled with js -->
                         </div>                        

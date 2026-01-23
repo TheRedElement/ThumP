@@ -2,8 +2,8 @@
  * defines global constants and objects relevant on EVERY page
  */
 
-// export const BASEPATH = "https://theredelement.github.io/";             //for deployment (github pages only)
-export const BASEPATH = "/";                                           //for dev
+export const BASEPATH = "https://theredelement.github.io/ThumP/";             //for deployment (github pages only)
+// export const BASEPATH = "/";                                           //for dev
 
 export const THUMBNAILS = {};   //object holding all thumbnails
 export const METADATA = {};     //other metadata required for execution

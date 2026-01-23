@@ -4,6 +4,7 @@ data/*
 
 #do not ignore
 !data/schema.json
+!data/examples
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

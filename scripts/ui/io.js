@@ -98,7 +98,7 @@ export async function fillThumbnails() {
     METADATA["objsPerFile"] = fileSchema["length"];
 
     //update status bar
-    document.getElementById("status-bar").innerText = `
+    document.getElementById("statusbar").innerText = `
     Loaded Objects:
         Global Index: ${METADATA["objIdxStart"]} - ${METADATA["objIdxEnd"]}
         File Index: File ${METADATA["fileIdxStart"]} Obj ${METADATA["objIdxStartFile"]} - File ${METADATA["fileIdxEnd"]} Obj ${METADATA["objIdxEndFile"]}

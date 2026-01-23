@@ -11,238 +11,194 @@
     <nav></nav>
     
     <main>
-        <div id="welcome" class="overlay hidden">
-            <div class="welcome">
-                <button class="close" onclick="hideWelcome()"></button>
-                <h2 style="background-color: inherit;">Welcome to ThumP!</h2>
-                <h3 style="background-color: inherit;">&copy;2026, Lukas Steinwender</h3>
-                <p>
-                    If you find this application useful in your work, an acknowledgement would be appreciated.
-                    If you want to cite this application you can use this in your bib-refs file:
-                    <pre><code>
-@online{Steinwender2025_ThumP,
-    author    = {{Steinwender}, Lukas},
-    title     = {ThumP!: Thumbnails? Prescreen!},
-    month     = Jan,
-    year      = 2026,
-    version   = {latest},
-    url       = {https://theredelement.github.io/Software#ThumP}
-}                            
-                    </code></pre>
-                </p>
-                <ul class="hint">
-                    <li>Checkout my <a href="https://theredelement.github.io/Software#ThumP">homepage</a> to find more tools.</li>
-                    <li>Hover/Tap on option-labels to get a description.</li>
-                </ul>                    
-            </div>
-        </div>        
-        <h1>ThumP! (Thumbnails? Prescreen!)</h1>
-        <section id="controls">
-            <h2 id="legend-head" class="controls-title">Legend</h2>
-            <div id="legend-wrapper" class="controls-wrapper">
-                <div class="legend-content">
-                    <div class="legend-selectors">
-                        <label for="legend-good">
-                            Good
-                            <input id="legend-good" type="radio" class="good" checked>
+        <h1 id="globalheader">ThumP! (Thumbnails? Prescreen!)</h1>
+        <div class="content">
+            <section id="thumbnails">
+                <div id="mosaicwrapper" class="thumbnail-mosaic-wrapper" >
+                    <div id="thumbnail-mosaic" class="thumbnail-mosaic"
+                    >
+                    <!-- style="width: 1200px; height: 1000px; background-image: linear-gradient(45deg, yellow, blue, green, orange);" -->
+                        <div id="mosaic-grid" class="mosaic-grid">
+                        </div>
+                    </div>
+                </div>
+                <div id="pagecontrols" class="content-wrapper">
+                    <div class="parameter file-upload" id="fileupload">
+                        <label for="file-upload" class="io">Upload Files
+                            <input type="file" id="file-upload" class="global-option" onchange="fillThumbnails({fileUpload:true})" multiple>
                         </label>
-                        <label for="legend-maybe">
-                            Maybe
-                            <input id="legend-maybe" type="radio" class="maybe" checked>
-                        </label>
-                        <label for="legend-bad">
-                            Bad
-                            <input id="legend-bad" type="radio" class="bad" checked>
-                        </label>
-                    </div>
-                    <button onclick="showWelcome()">Show Welcome</button>
-                </div>
-            </div>
-            <h2 id="navigation-head" class="controls-title">Navigation</h2>
-            <div id="navigation-wrapper" class="controls-wrapper">
-                <ul>
-                    <li>plots:
-                        <ul>
-                            <li>zoom: click + drag</li>
-                            <li>pan: shift + click + drag</li>
-                            <li>reset view: double click</li>
-                        </ul>
-                    </li>
-                    <li>thumbnail mosaic:
-                        <ul>
-                            <li>ctrl + right arrow: scroll entire window right</li>
-                            <li>ctrl + left arrow: scroll entire window left</li>
-                        </ul>
-                    </li>
-                </ul>
-
-            </div>
-            <h2 id="controls-head" class="controls-title">Controls</h2>
-            <div id="controls-wrapper" class="controls-wrapper">
-                <div class="status" id="status-bar">
-                    <!-- filled with js -->
-                </div>
-                <div class="global-controls">
-                    <div class="parameter">
-                        <label for="colwidth">Col Width [px]</label>
                         <div class="tooltip">
-                            Column width in pixels.
-                            Updates on change (You might have to hit enter/return).
+                            Upload the files that shall be displayed.
+                            Files shall be `.json` files with the following schema (you can also download the schema by clicking the respective button).
+                        </div>                                    
+                    </div>
+                    <button onclick="exportSelection()" class="io">Export Selection</button>
+                    <div class="page-controls">
+                        <div class="parameter">
+                            <label for="filesuffix">File Suffix</label>
+                            <div class="tooltip">
+                                Suffix to add to all exported files. 
+                                Will be added to any file experted in the current session.
+                            </div>
+                            <input type="text" id="filesuffix" placeholder="file-suffix">
                         </div>
-                        <input class="global-option" id="colwidth"  type="number" step="1" value="100" placeholder="Col width [px]" onchange="updateGridCell({replot:false})">
-                    </div>
-                    <div class="parameter">
-                        <label for="rowheight">Row Height [px]</label>
-                        <div class="tooltip">
-                            Row height in pixels.
-                            Updates on change (You might have to hit enter/return).
+                        <div class="parameter">
+                            <label for="autoexport">Export on Page Change?</label>
+                            <div class="tooltip">
+                                Whether the current selection will be exported whenever the page changes.
+                            </div>
+                            <input type="checkbox" id="autoexport" checked>
                         </div>
-                        <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGridCell({replot:false})">
-                    </div>
-                    <div class="parameter">
-                        <label for="ncols">Number of Columns</label>
-                        <div class="tooltip">
-                            CURRENTLY NOT USED!
-                            Number of columns per page in the thumbnails mosaic.
-                            Updates on change (You might have to hit enter/return).
+                        <div class="parameter">
+                            <label for="pagenumber">Page</label>
+                            <div class="tooltip">
+                                Current page number.
+                                Changing will reload the displayed thumbnails. 
+                                On request, the selection will be exported on page-change.
+                            </div>
+                            <input type="number" id="pagenumber" step="1" value="0" min="0" placeholder="Current Page Number" onchange="fillThumbnails({pageChange:true})" data-previous="0">
                         </div>
-                        <input class="global-option" id="ncols"  type="number" step="1" value="3" placeholder="Number of Columns" onchange="updateGridGlobal()">
-                    </div>
-                    <div class="parameter">
-                        <label for="nrows">Number of Rows</label>
-                        <div class="tooltip">
-                            Number of Rows per page in the thumbnails mosaic.
-                            Updates on change (You might have to hit enter/return).
+                        <div class="parameter">
+                            <label for="obj-per-page">Objects Per Page</label>
+                            <div class="tooltip">
+                                Number of objects to display per page.
+                                Note that not all thumbnails might be visible (scroll to the left/right to see the rest). 
+                                Changing will reload the displayed thumbnails. 
+                            </div>                                
+                            <input type="number" id="obj-per-page" step="1" value="100" min="1" placeholder="Number of Objects to Render on Page" onchange="fillThumbnails()">
                         </div>
-                        <input class="global-option" id="nrows"  type="number" step="1" value="3" placeholder="Number of Rows" onchange="updateGridGlobal()">
-                    </div>
-                    <div class="parameter">
-                        <label for="zmin">Color Limits</label>
-                        <div class="tooltip">
-                            Color limits/limits in z-direction.
-                            zmin sets the lower bound of the color-map (everything below that will be colored as the color representing the minimum).
-                            zmax sets the lower bound of the color-map (everything below that will be colored as the color representing the maximum).
-                            Updates on change (You might have to hit enter/return).
-                        </div>
-                        <div style="display: grid;">
-                            <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="updateGridCell({replot:true})">
-                            <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="updateGridCell({replot:true})">
-                        </div>
-                    </div>
-                    <div class="parameter">
-                        <label for="colorscale">Colorscale</label>
-                        <div class="tooltip">
-                            Colorscale to use for encoding pixel values.
-                            Any colorscale supported by Plotly is allowed.
-                            Examples for named colormaps: Viridis, Jet.
-                            Also a list of [position, color] pairs is allowed: [[0.0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]].
-                        </div>                        
-                        <input type="text" id="colorscale" class="global-option" placeholder="color-map" value='[[0.0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]]' onchange="updateGridCell({replot:true})">
-                    </div>
-                    <div class="parameter">
-                        <label for="pixelmath">Pixel Math</label>
-                        <div class="tooltip">
-                            Mathematical expression to evaluate on every pixel.
-                            The pixel-value is represented by $z$.
-                            Basic mathematical functions are supported as long as they are included in the <a href="https://github.com/silentmatt/expr-eval#readme">expr-eval</a> library.
-                            Some examples include `z` (display raw data); `log10(z)` (logscale); `abs(z)` (absolute of z).
-                            Updates on change (You might have to hit enter/return).
-                        </div>                        
-                        <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGridCell({replot:true})">
-                    </div>
-                </div>
-                <!-- <div class="global-selection">
-                    <span class="heading">Subset</span>
-                    <span class="heading">Select All</span>
-                    <span class="heading">Invert</span>
-                    <label for="select-all-good">Good</label>
-                    <input type="checkbox" id="select-all-good" class="select-all good" onchange="selectAll(this)" >
-                    <button id="invert-selection-good" class="invert-selection good" onclick="invertSelection(this)">&#10003;</button>
-                    <label for="select-all-maybe">Maybe</label>
-                    <input type="checkbox" id="select-all-maybe" class="select-all maybe" onchange="selectAll(this)" >
-                    <button id="invert-selection-maybe" class="invert-selection maybe" onclick="invertSelection(this)">&#10003;</button>
-                    <label for="select-all-bad">Bad</label>
-                    <input type="checkbox" id="select-all-bad" class="select-all bad" onchange="selectAll(this)" >
-                    <button id="invert-selection-bad" class="invert-selection bad" onclick="invertSelection(this)">&#10003;</button>
-                </div> -->
-                <div class="parameter file-upload">
-                    <label for="file-upload">Upload Files</label>
-                    <div class="tooltip">
-                        Upload the files that shall be displayed.
-                        Files shall be `.json` files with the following schema (you can also download the schema by clicking the respective button).
-                    </div>                                    
-                    <input type="file" id="file-upload" class="global-option" onchange="fillThumbnails({fileUpload:true})" multiple>
-                </div>
-                <div class="hovertooltip">
-                    <button onclick="downloadSchema()">&#11015; Schema</button>
-                    <div class="tooltip">
-                        download an example file to get an idea of how compatible files should look like.
                     </div>
                 </div>                
-            </div> 
-        </section>
-        <h2>Thumbnails <button onclick="exportSelection()" class="io">Export Selection</button></h2>
-        <div class="controls-wrapper">
-            <div class="page-controls">
-                <div class="parameter">
-                    <label for="filesuffix">File Suffix</label>
-                    <div class="tooltip">
-                        Suffix to add to all exported files. 
-                        Will be added to any file experted in the current session.
-                    </div>
-                    <input type="text" id="filesuffix" placeholder="file-suffix">
-                </div>
-                <div class="parameter">
-                    <label for="autoexport">Export on Page Change?</label>
-                    <div class="tooltip">
-                        Whether the current selection will be exported whenever the page changes.
-                    </div>
-                    <input type="checkbox" id="autoexport" checked>
-                </div>
-                <div class="parameter">
-                    <label for="pagenumber">Page</label>
-                    <div class="tooltip">
-                        Current page number.
-                        Changing will reload the displayed thumbnails. 
-                        On request, the selection will be exported on page-change.
-                    </div>
-                    <input type="number" id="pagenumber" step="1" value="0" min="0" placeholder="Current Page Number" onchange="fillThumbnails({pageChange:true})" data-previous="0">
-                </div>
-                <div class="parameter">
-                    <label for="obj-per-page">Objects Per Page</label>
-                    <div class="tooltip">
-                        Number of objects to display per page.
-                        Note that not all thumbnails might be visible (scroll to the left/right to see the rest). 
-                        Changing will reload the displayed thumbnails. 
-                    </div>                                
-                    <input type="number" id="obj-per-page" step="1" value="100" min="1" placeholder="Number of Objects to Render on Page" onchange="fillThumbnails()">
-                </div>
-            </div>
-        </div>
-        <div class="thumbnail-mosaic-wrapper">
-            <section id="thumbnail-mosaic" class="thumbnail-mosaic">
-                <div id="mosaic-grid" class="mosaic-grid">
-                    <!-- filled via JS -->
-                    <!-- <div class="cell">
-                        <a href="...">ObjId</a>
-                        <div class="selection-container">
-                            <input type="radar" class="select-object good">
-                            <input type="radar" class="select-object bad">
-                            <input type="radar" class="select-object maybe">
-                        </div>
-                        <div class="thumbnail-container">
-                            <div class="thumbnail">
-                                <div class="plotly-wrapper">
-                                    <div class="plotly-plot">
-                                        Some Plot
-                                    </div>
+            </section>
+            <div class="settings" id="settings">
+                <section id="controls">
+                    <h2 id="controls-head" class="controls-title">Controls</h2>
+                    <div id="controls-wrapper" class="content-wrapper">
+                        <div class="global-controls" id="globalcontrols">
+                            <div class="parameter">
+                                <label for="colwidth">Col Width [px]</label>
+                                <div class="tooltip">
+                                    Column width in pixels.
+                                    Updates on change (You might have to hit enter/return).
+                                </div>
+                                <input class="global-option" id="colwidth"  type="number" step="1" value="100" placeholder="Col width [px]" onchange="updateGridCell({replot:false})">
+                            </div>
+                            <div class="parameter">
+                                <label for="rowheight">Row Height [px]</label>
+                                <div class="tooltip">
+                                    Row height in pixels.
+                                    Updates on change (You might have to hit enter/return).
+                                </div>
+                                <input class="global-option" id="rowheight" type="number" step="1" value="100" placeholder="Row Height [px]" onchange="updateGridCell({replot:false})">
+                            </div>
+                            <div class="parameter">
+                                <label for="ncols">Number of Columns</label>
+                                <div class="tooltip">
+                                    CURRENTLY NOT USED!
+                                    Number of columns per page in the thumbnails mosaic.
+                                    Updates on change (You might have to hit enter/return).
+                                </div>
+                                <input class="global-option" id="ncols"  type="number" step="1" value="3" placeholder="Number of Columns" onchange="updateGridGlobal()">
+                            </div>
+                            <div class="parameter">
+                                <label for="nrows">Number of Rows</label>
+                                <div class="tooltip">
+                                    Number of Rows per page in the thumbnails mosaic.
+                                    Updates on change (You might have to hit enter/return).
+                                </div>
+                                <input class="global-option" id="nrows"  type="number" step="1" value="3" placeholder="Number of Rows" onchange="updateGridGlobal()">
+                            </div>
+                            <div class="parameter">
+                                <label for="zmin">Color Limits</label>
+                                <div class="tooltip">
+                                    Color limits/limits in z-direction.
+                                    zmin sets the lower bound of the color-map (everything below that will be colored as the color representing the minimum).
+                                    zmax sets the lower bound of the color-map (everything below that will be colored as the color representing the maximum).
+                                    Updates on change (You might have to hit enter/return).
+                                </div>
+                                <div style="display: grid;">
+                                    <input type="number" id="zmin" class="global-option" step="0.1" placeholder="zmin" value="" onchange="updateGridCell({replot:true})">
+                                    <input type="number" id="zmax" class="global-option" step="0.1" placeholder="zmax" value="" onchange="updateGridCell({replot:true})">
                                 </div>
                             </div>
-                            ... more thumbnails
+                            <div class="parameter">
+                                <label for="colorscale">Colorscale</label>
+                                <div class="tooltip">
+                                    Colorscale to use for encoding pixel values.
+                                    Any colorscale supported by Plotly is allowed.
+                                    Examples for named colormaps: Viridis, Jet.
+                                    Also a list of [position, color] pairs is allowed: [[0.0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]].
+                                </div>                        
+                                <input type="text" id="colorscale" class="global-option" placeholder="color-map" value='[[0.0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]]' onchange="updateGridCell({replot:true})">
+                            </div>
+                            <div class="parameter">
+                                <label for="pixelmath">Pixel Math</label>
+                                <div class="tooltip">
+                                    Mathematical expression to evaluate on every pixel.
+                                    The pixel-value is represented by $z$.
+                                    Basic mathematical functions are supported as long as they are included in the <a href="https://github.com/silentmatt/expr-eval#readme">expr-eval</a> library.
+                                    Some examples include `z` (display raw data); `log10(z)` (logscale); `abs(z)` (absolute of z).
+                                    Updates on change (You might have to hit enter/return).
+                                </div>                        
+                                <input type="text" id="pixelmath" class="global-option" placeholder="math expression" value="z" onchange="updateGridCell({replot:true})">
+                            </div>
                         </div>
-                    </div> -->
-                </div>
-            </section>
+                        <div id="schemadownload" class="hovertooltip">
+                            <button onclick="downloadSchema()">&#11015; Schema</button>
+                            <div class="tooltip">
+                                download an example file to get an idea of how compatible files should look like.
+                            </div>
+                        </div>                           
+                        <div class="status" id="statusbar">
+                            <!-- filled with js -->
+                        </div>                        
+                    </div> 
+                </section>
+                <section id="legend">
+                    <h2 id="legend-head" class="controls-title">Legend</h2>
+                    <div id="legend-wrapper" class="content-wrapper hidden">
+                        <div class="legend-content">
+                            <div class="legend-selectors">
+                                <label for="legend-good">
+                                    Good
+                                    <input id="legend-good" type="radio" class="good" checked>
+                                </label>
+                                <label for="legend-maybe">
+                                    Maybe
+                                    <input id="legend-maybe" type="radio" class="maybe" checked>
+                                </label>
+                                <label for="legend-bad">
+                                    Bad
+                                    <input id="legend-bad" type="radio" class="bad" checked>
+                                </label>
+                            </div>
+                            <button onclick="showWelcome()">Show Welcome</button>
+                        </div>
+                    </div>
+                </section>
+                <section id="navigation">
+                    <h2 id="navigation-head" class="controls-title">Navigation</h2>
+                    <div id="navigation-wrapper" class="content-wrapper hidden">
+                        <ul>
+                            <li>plots:
+                                <ul>
+                                    <li>zoom: click + drag</li>
+                                    <li>pan: shift + click + drag</li>
+                                    <li>reset view: double click</li>
+                                </ul>
+                            </li>
+                            <li>thumbnail mosaic:
+                                <ul>
+                                    <li>ctrl + right arrow: scroll entire window right</li>
+                                    <li>ctrl + left arrow: scroll entire window left</li>
+                                    <li>make sure that you have NOT clicked into the mosaic, because this adds an additional offset!</li>
+                                </ul>
+                            </li>
+                        </ul>
+        
+                    </div>
+                </section>
+            </div>
         </div>
     </main>
 

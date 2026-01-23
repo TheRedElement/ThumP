@@ -58,7 +58,7 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
             continue
         
         npixels = slice(0,-10)   #for testing
-        # npixels = slice(0,None)
+        npixels = slice(0,None)
         hdul = fits.open(BytesIO(row["cutoutScience"][0]))
         science = hdul[0].data[:,npixels]
         science = np.where(np.isnan(science), None, science)    #NaN is not supported in json
@@ -90,7 +90,7 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
         fig.show() """
 
         nthumbnails = slice(0,np.random.choice([1,2,3]))  #for testing
-        # nthumbnails = slice(0,None)
+        nthumbnails = slice(0,None)
         data_json[str(row["diaSourceId"][0])] = dict(
             comments=[
                 f"ids: [{row['diaSourceId'][0]}, {row['diaObjectId'][0]}]",

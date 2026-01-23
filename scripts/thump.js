@@ -32,13 +32,13 @@ async function showOverlayInfo(func, msg) {
     overlay.className = "overlay info";
     overlay.innerText = msg;
     document.body.appendChild(overlay);
-    
+
     //close button to not have overlay displayed when `func()` raises an error
     const closeBtn = document.createElement("button");
     closeBtn.className = "close"
-    closeBtn.onclick = () => {overlay.remove()};
+    closeBtn.onclick = () => { overlay.remove() };
     overlay.appendChild(closeBtn);
-    
+
 
     //async to make sure `func()` finishes before removal of popup
     await func();
@@ -52,20 +52,20 @@ async function showOverlayInfo(func, msg) {
  * @param {Boolean} pageChange
  *  - whether the routines for a page-change shall be invoked
  */
-window.fillThumbnails = async ({pageChange=false} = {}) => {
-    if (pageChange) { 
+window.fillThumbnails = async ({ pageChange = false } = {}) => {
+    if (pageChange) {
         //only on page-change
-        
+
         //update pageNumber
         const pageNumber = document.getElementById("pagenumber");
         let prevPage = pageNumber.dataset["previous"];              //page before change
         pageNumber.dataset["previous"] = pageNumber.value;          //update previous pageNumber
-    
+
         if (document.getElementById("autoexport").checked) {
             //export only if requested
-            await exportSelection({pageNumber:[prevPage]});
+            await exportSelection({ pageNumber: [prevPage] });
         };
-        console.log("Page change: " + prevPage + "->"+pageNumber.value)
+        console.log("Page change: " + prevPage + "->" + pageNumber.value)
     };
     showOverlayInfo(fillThumbnails, "Loading Thumbnails... Please Wait...")
 }
@@ -73,7 +73,7 @@ window.fillThumbnails = async ({pageChange=false} = {}) => {
 /**
  * function to show welcome box
  */
-function showWelcome(){
+function showWelcome() {
     document.getElementById("welcome").classList.remove("hidden");
 }
 window.showWelcome = showWelcome;
@@ -92,7 +92,7 @@ window.addEventListener("DOMContentLoaded", () => {
     //date and time when session started to have unique file-names that can be identified later-on
     let currentDate = new Date();
     currentDate = String(currentDate.getFullYear()).padStart(4, 0)
-        + String(currentDate.getMonth()+1).padStart(2, 0)
+        + String(currentDate.getMonth() + 1).padStart(2, 0)
         + String(currentDate.getDate()).padStart(2, 0)
         + String(currentDate.getHours()).padStart(2, 0)
         + String(currentDate.getMinutes()).padStart(2, 0)
@@ -127,34 +127,35 @@ document.addEventListener("keydown", (event) => {
     //     event.preventDefault();
     // };
 
-    const thumbnailMosaic = document.getElementById("thumbnail-mosaic");
+    const thumbnailMosaicGridWrapper = document.getElementById("mosaicwrapper");
+    // const thumbnailMosaic = document.getElementById("thumbnail-mosaic");    //not scrollable
     const mosaicGrid = document.getElementById("mosaic-grid");
     const cell = mosaicGrid.getElementsByClassName("cell")[0];
     const mosaicGridStyle = getComputedStyle(mosaicGrid);
     const cellStyle = getComputedStyle(cell);
 
-    const containerWidth = parseInt(thumbnailMosaic.offsetWidth);
+    const containerWidth = parseInt(thumbnailMosaicGridWrapper.offsetWidth);
     const colWidth = parseInt(cellStyle.width);                     //column width == cell width because all cells have same width
     const gap = parseInt(mosaicGridStyle.gap);                      //gap between columns
-    const nCols = parseInt(containerWidth / (colWidth+gap));        //number of (fully) visible columns
+    const nCols = parseInt(containerWidth / (colWidth + gap));        //number of (fully) visible columns
 
 
-    const scrollAmount = colWidth*nCols + gap*nCols;                //width of the visible grid
+    const scrollAmount = colWidth * nCols + gap * nCols;                //width of the visible grid
     if (event.ctrlKey) {
         switch (event.key) {
             case "ArrowLeft":
-                thumbnailMosaic.scrollBy({
+                thumbnailMosaicGridWrapper.scrollBy({
                     left: -scrollAmount,
                     behavior: "instant",
                 });
                 break;
             case "ArrowRight":
-                thumbnailMosaic.scrollBy({
+                thumbnailMosaicGridWrapper.scrollBy({
                     left: scrollAmount,
                     behavior: "instant",
                 });
                 break;
-        
+
             default:
                 break;
         };
@@ -164,7 +165,7 @@ const controlsHead = document.getElementById("controls-head");
 controlsHead.addEventListener("click", (event) => {
     //toggles hidden state
     const controlsWrapper = document.getElementById("controls-wrapper");
-    
+
     if ([...controlsWrapper.classList].includes("hidden")) {
         controlsWrapper.classList.remove("hidden");
     } else {
@@ -175,7 +176,7 @@ const legendHead = document.getElementById("legend-head");
 legendHead.addEventListener("click", (event) => {
     //toggles hidden state
     const legendWrapper = document.getElementById("legend-wrapper");
-    
+
     if ([...legendWrapper.classList].includes("hidden")) {
         legendWrapper.classList.remove("hidden");
     } else {
@@ -186,7 +187,7 @@ const navigationHead = document.getElementById("navigation-head");
 navigationHead.addEventListener("click", (event) => {
     //toggles hidden state
     const navigationWrapper = document.getElementById("navigation-wrapper");
-    
+
     if ([...navigationWrapper.classList].includes("hidden")) {
         navigationWrapper.classList.remove("hidden");
     } else {

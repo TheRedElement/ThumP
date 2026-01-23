@@ -64,7 +64,7 @@ window.fillThumbnails = async ({ pageChange = false } = {}) => {
 
         if (document.getElementById("autoexport").checked) {
             //export only if requested
-            await exportSelection({ pageNumber: [prevPage] });
+            await exportSelection({ pageNumber: [prevPage.padStart(4,0)] });
         };
         console.log("Page change: " + prevPage + "->" + pageNumber.value)
     };

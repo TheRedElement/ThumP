@@ -1,4 +1,4 @@
-# ThumP, Thumbnail Preselector
+# ThumP!, Thumbnails? Preselect!
 
 ## TODO
 - [x] color-limit selector

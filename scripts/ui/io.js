@@ -164,39 +164,3 @@ export async function downloadExamples() {
         downloadObjectAsJson(example, `example${String(i).padStart(2,0)}.json`);
     }
 }
-
-// /**
-//  * - retrieves files from file upload and updates `THUMBNAILS` with new data
-//  * - files have to have the following schema
-//  *      - <objectId> : {<thumbnails>: Array[3], <other attributes>}
-//  */
-// export async function uploadFiles() {
-//     const fileUploadElement = document.getElementById("file-upload");
-
-//     const wrongFiles = [];      //list of wrong files (for warning message)   
-//     for (const file of fileUploadElement.files) {
-//         if (!file.name.toLowerCase().endsWith(".json")) {
-//             //check for correct extension (take note if wrong extension)
-//             wrongFiles.push(file.name);
-//         } else {
-//             console.log(file)
-//             try {
-//                 const text = await file.text(); //read file
-//                 const data = JSON.parse(text);  //parse JSON
-                
-//                 Object.assign(THUMBNAILS, data);    //update `THUMBNAILS` with new uploaded data
-    
-//             } catch (err) {
-//                 showError(fileUploadElement, `Error reading ${file.name}: ${err}`);
-//                 console.error(`Error reading ${file.name}:`, err);
-//             };            
-//         };
-//     };
-//     //update grid with uploaded objects
-//     fillGrid();
-//     updateGridGlobal();
-//     updateGridCell({replot:true});
-
-//     //update status bar
-//     document.getElementById("numobjects").innerText = Object.keys(THUMBNAILS).length;
-// }

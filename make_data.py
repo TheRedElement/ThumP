@@ -25,7 +25,11 @@ def read_files(fnames:List[str]) -> pl.LazyFrame:
                 pl.col(r"^cutout.+$"),
                 pl.col("diaObject").struct.field("diaObjectId"),
                 pl.col("diaSource").struct.field("diaSourceId"),
-    )) for fn in fnames]
+        )
+        .filter(
+            pl.col("diaObjectId").is_not_null(),
+        )
+    ) for fn in fnames]
 
     dfs = pl.concat(dfs)
 

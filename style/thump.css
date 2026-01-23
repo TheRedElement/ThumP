@@ -319,12 +319,15 @@ section.thumbnail-mosaic {
 }
 .mosaic-grid .cell:has(input[value="good"]:checked) {
     background-color: color-mix(in srgb, var(--c_fink_4) 90%, var(--c_bg) 10%);
+    outline: 2px solid var(--c_body_text);
 }
 .mosaic-grid .cell:has(input[value="maybe"]:checked) {
     background-color: color-mix(in srgb, var(--c_fink_2) 50%, var(--c_bg) 50%);
+    outline: 2px solid var(--c_body_text);
 }
 
 .mosaic-grid .cell .cell-header {
+    font-size: 0.7em;
     display: grid;
     grid-auto-flow: column;
     text-align: center;
@@ -334,14 +337,15 @@ section.thumbnail-mosaic {
     align-items: center;
 }
 .mosaic-grid .cell .cell-header a {
-    font-size: 0.7em;
 }
 
+.mosaic-grid .cell .cell-header .cell-name {
+}
 .mosaic-grid .cell .cell-header .selection-container {
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: 1fr;
-}ail-mosa
+}
 
 .invert-selection {
     font-weight: bold;
@@ -458,7 +462,6 @@ section.thumbnail-mosaic {
         "mosaicwrapper"
         "pagecontrols"
     ;
-    outline: 1px solid red;
 }
 main .content {
     display: grid;

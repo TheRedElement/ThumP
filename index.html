@@ -11,14 +11,59 @@
     <nav></nav>
     
     <main>
+        <div id="welcome" class="overlay hidden">
+            <div class="welcome">
+                <button class="close" onclick="hideWelcome()"></button>
+                <h2 style="background-color: inherit;">Welcome to ThumP!</h2>
+                <h3 style="background-color: inherit;">&copy;2026, Lukas Steinwender</h3>
+                <p>
+                    If you find this application useful in your work, an acknowledgement would be appreciated.
+                    If you want to cite this application you can use this in your bib-refs file:
+                    <pre><code>
+@online{Steinwender2025_ThumP,
+    author    = {{Steinwender}, Lukas},
+    title     = {ThumP!: Thumbnails? Prescreen!},
+    month     = Jan,
+    year      = 2026,
+    version   = {latest},
+    url       = {https://theredelement.github.io/Software#ThumP}
+}                            
+                    </code></pre>
+                </p>
+                <ul class="hint">
+                    <li>Checkout my <a href="https://theredelement.github.io/Software#ThumP">homepage</a> to find more tools.</li>
+                    <li>Hover/Tap on option-labels to get a description.</li>
+                </ul>                    
+            </div>        
+        </div>        
         <h1 id="globalheader">ThumP! (Thumbnails? Prescreen!)</h1>
         <div class="content">
             <section id="thumbnails">
                 <div id="mosaicwrapper" class="thumbnail-mosaic-wrapper" >
-                    <div id="thumbnail-mosaic" class="thumbnail-mosaic"
-                    >
-                    <!-- style="width: 1200px; height: 1000px; background-image: linear-gradient(45deg, yellow, blue, green, orange);" -->
+                    <div id="thumbnail-mosaic" class="thumbnail-mosaic">
                         <div id="mosaic-grid" class="mosaic-grid">
+                            <!-- filled via JS -->
+                            <!-- <div class="cell">
+                                <div class="cell-header">
+                                    <div class="cell-name">...</div>
+                                    <div class="selection-container">
+                                        <input type="radio" name="select-object" class="select-object good">
+                                        <input type="radio" name="select-object" class="select-object maybe">
+                                        <input type="radio" name="select-object" class="select-object bad">
+                                    </div>
+                                    <a href="...">ObjId</a>
+                                </div>
+                                <div class="thumbnail-container">
+                                    <div class="thumbnail">
+                                        <div class="plotly-wrapper">
+                                            <div class="plotly-plot">
+                                                Some Plot
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ... more thumbnails
+                                </div>
+                            </div>                             -->
                         </div>
                     </div>
                 </div>

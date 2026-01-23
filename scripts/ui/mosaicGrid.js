@@ -6,6 +6,7 @@
 import { getGlobalOptions } from "./globalOptions.js";
 import { parseMath } from "../parsers/mathparser.js";
 import { THUMBNAILS } from "../base/base.js";
+import { abcRange } from "../utils.js";
 
 /**constants */
 const resizeObservers = [];
@@ -126,6 +127,7 @@ export function fillGrid({
     // const nThumbnails = THUMBNAILS[objIds[0]]["thumbnails"].length; //infer number of thumbnails from first entry in `THUMBNAILS`
 
     const nObj = objIds.length;
+    const cellNames = abcRange(nObj)
     for (let i = 0; i < nObj; i++) {
         
         if (objIds[i] === "undefined") {
@@ -154,6 +156,12 @@ export function fillGrid({
             const cellHeader = document.createElement("div");
             cellHeader.className = "cell-header";
             cellElement.appendChild(cellHeader)
+
+            //cellname
+            const cellNameContainer = document.createElement("div");
+            cellNameContainer.className = "cell-name";
+            cellNameContainer.innerText = cellNames[i];
+            cellHeader.appendChild(cellNameContainer)
     
             //selection interface
             const selectionContainer = document.createElement("form");

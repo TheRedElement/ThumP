@@ -16,6 +16,29 @@ export function randInt(min, max) {
 }
 
 /**
+ * computes cartesian product of `arrays`
+ * @param  {...any} arrays 
+ * @returns 
+ */
+function cartesian(...arrays) {
+  return arrays.reduce(
+        (acc, curr) =>
+            acc.flatMap(x => curr.map(y => [...x, y])),
+        [[]]
+  );
+}
+
+/**
+ * log of base `n`
+ * @param {*} n 
+ * @param {*} x 
+ * @returns 
+ */
+function logN(x, n) {
+    return Math.log(x) / Math.log(n);
+}
+
+/**
  * - function to load some preset
  * @param {String} preset
  *  - arg, required
@@ -121,4 +144,30 @@ export function showError(element, message, duration = 2000) {
     setTimeout(() => {
         element.classList.remove("error-highlight");
     }, duration);
+}
+
+/**
+ * - returns a sequence with length `num` of consecutive characters found in `options`
+ * @param {Int} num 
+ *  - number of consecutive elements to generate
+ * @param {String} options
+ *  - optional
+ *  - options to use for generating the sequence
+ *  - will iterate through `options` and append new characters when needed
+ *  - the default is `"abcdefghijklmnopqrstuvwxyz"`
+ *      - will result in
+ *          - num < 26: ["a", "b", "c", "d", ...]
+ *          - 26 < num < 26^2: ["aa", "ab", "ac", "ad", ..., "ba", "bb", ...]
+ *          - 26^2 < num < 26^3: ["aaa", "aab", "aac", "aad", ..., "baa", "bab", ...]
+ *          - etc.
+ * @returns {Array[String]} sequence
+ *  - generated sequence
+ */
+export function abcRange(num, options="abcdefghijklmnopqrstuvwxyz") {
+    const nOptions = options.length;
+    
+    const nChars = Math.ceil(logN(num, nOptions)); //number of characters to use
+    const sequence = cartesian(...Array(nChars).fill(options.split(""))).map(e => e.join(""));
+
+    return sequence.splice(0, num);
 }

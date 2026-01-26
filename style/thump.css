@@ -321,6 +321,10 @@ section.thumbnail-mosaic {
     grid-auto-columns: repeat(auto-fit, minmax(0, 1fr));
     box-shadow: 3px 3px 15px var(--c_fink_1);
 }
+.mosaic-grid .cell.col-highlight {
+    /* highlight specific cells to guide the eye */
+    background-color: color-mix(in srgb, var(--c_fink_4) 30%, var(--c_bg) 70%);
+}
 .mosaic-grid .cell:has(input[value="good"]:checked) {
     background-color: color-mix(in srgb, var(--c_fink_4) 90%, var(--c_bg) 10%);
     outline: 2px solid var(--c_body_text);

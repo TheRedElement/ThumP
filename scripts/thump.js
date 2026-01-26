@@ -102,7 +102,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     //set previous page number to current page
     const pageNumber = document.getElementById("pagenumber");
-    pageNumber.dataset["previous"] = pageNumber.value;
+    pageNumber.dataset["previous"] = pageNumber.value;    
 });
 
 /**executions */

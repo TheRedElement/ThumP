@@ -73,6 +73,7 @@ export async function fillThumbnails() {
             METADATA["objIdxStart"]     = objIdx;
             METADATA["objIdxStartFile"] = objIdxFile;
         }
+        METADATA["fileIdxEnd"] = fileIdx;   //before updating `filIdx` to avoid having non-existent file
         
         //updates
         // console.log(objIdx + " " + objIdxFile)
@@ -91,7 +92,6 @@ export async function fillThumbnails() {
     updateGridCell({replot:true});
 
     //get more metadata
-    METADATA["fileIdxEnd"] = fileIdx;
     METADATA["objIdxEnd"] = objIdx;
     METADATA["objIdxEndFile"] = objIdxFile;
     METADATA["renderedObjs"] = curRenderedObj;

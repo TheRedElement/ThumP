@@ -154,6 +154,14 @@
                                 <input class="global-option" id="nrows"  type="number" step="1" value="3" placeholder="Number of Rows" onchange="updateGridGlobal()">
                             </div>
                             <div class="parameter">
+                                <label for="highlightcells">Highlight</label>
+                                <div class="tooltip">
+                                    Value defining which cells to visually highlight compared to the rest.
+                                    Will alternate between highlighting blocks of n cells and not highlighting them.
+                                </div>
+                                <input type="number" id="highlightcells" class="global-option" placeholder="highlight blocks of n cells" value="3" step="1" min="0" onchange="updateGridGlobal()">
+                            </div>                            
+                            <div class="parameter">
                                 <label for="zmin">Color Limits</label>
                                 <div class="tooltip">
                                     Color limits/limits in z-direction.

@@ -141,7 +141,7 @@ export function fillGrid({
             //create grid cell (contains selection checkboxes, plot)
             const cellElement = document.createElement("div");
             cellElement.id = `cell-${i}`;
-            cellElement.classList = ["cell"];
+            cellElement.className = "cell";
             cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
     
             //tooltip
@@ -233,6 +233,8 @@ export function updateGridGlobal() {
     //global updates
     const mosaicGrid = document.getElementById("mosaic-grid");
     mosaicGrid.style.setProperty("grid-template-rows", `repeat(${globalOptions["nrows"]}, minmax(0,1fr))`)
+
+    formatGridRowsCols(globalOptions);
 }
 
 /**
@@ -303,4 +305,38 @@ export function updateGridCell({
             );
         };
     }
+}
+
+/**
+ * - formats entire grid rows and columns
+ * @param {Object} globalOptions
+ *  - global options of the app 
+ */
+export function formatGridRowsCols(globalOptions) {
+    const nRows = globalOptions["nrows"];
+    const highlightEvery = globalOptions["highlightcells"];
+
+    const mosaicGrid = document.getElementById("mosaic-grid");
+    const gridCells = mosaicGrid.getElementsByClassName("cell");
+
+    //highlight blocks of n cells
+    const nCells = gridCells.length;   //for highlighting block of n cells
+    for (let i = 0; i < nCells/highlightEvery; i++) {
+        const curCells = [...gridCells].slice(i*highlightEvery,(i+1)*highlightEvery);
+        if (i%2 === 0) {
+            curCells.map(cell => cell.classList.add("col-highlight"));
+        } else {
+            curCells.map(cell => cell.classList.remove("col-highlight"));
+        };
+    };
+    
+    // //highlight every n-th column
+    // for (let i = 0; i < gridCells.length; i++) {
+    //     const cell = gridCells[i];
+    //     if (i % (highlightEvery*nRows) < nRows){
+    //         cell.classList.add("col-highlight");
+    //     } else {
+    //         cell.classList.remove("col-highlight");
+    //     };
+    // };
 }

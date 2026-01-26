@@ -3,7 +3,9 @@
 ## TODO
 
 ## Current Best Settings
-* local: col width: 59; row height: 49; ncols: NaN; nrows: 4
+* local (half screen): col width: 59; row height: 49; ncols: NaN; nrows: 4; highlight: 4
+* local (full screen): col width: 66; row height: 66; ncols: NaN; nrows: 4; highlight: 4
+* local (wide screen): col width: 69; row height: 69; ncols: NaN; nrows: 5; highlight: 10
 
 ## Data Loading
 ```python

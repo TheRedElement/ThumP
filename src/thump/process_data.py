@@ -33,7 +33,7 @@ def read_files(fnames:List[str]) -> pl.LazyFrame:
 
     return dfs
 
-def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
+def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=False):
     """compiles a single chunk of len `chunklen` into a json file
 
     - use lazy frame to deal with huge amount of data
@@ -112,8 +112,9 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int):
             ][nthumbnails],
         )
 
-    with open(f"./data/processed/processed_{chunkidx:04d}.json", "w") as f:
-        json.dump(data_json, f, indent=2)
+    if isinstance(save_dir, str):
+        with open(f"{save_dir}processed_{chunkidx:04d}.json", "w") as f:
+            json.dump(data_json, f, indent=2)
 
 
     return

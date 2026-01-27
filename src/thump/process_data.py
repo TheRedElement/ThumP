@@ -122,6 +122,8 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=Fals
 def compile_files(ldf:pl.LazyFrame,
     chunklen:int=100,
     chunk_start:int=0, nchunks:int=None,
+    save_dir:str=False,
+    n_jobs:int=1,
     ):
     """extracts relevant information from all files and stores that in correct schema
 
@@ -137,11 +139,11 @@ def compile_files(ldf:pl.LazyFrame,
     nchunks = height//chunklen + (height%chunklen>0) if nchunks is None else nchunks
     print(f"{nchunks=}")
 
-    # _ = Parallel(n_jobs=1)(delayed(lambda chunkidx, chunklen: print(chunkidx*chunklen, chunkidx*chunklen+chunklen-1))(
-    _ = Parallel(n_jobs=1, backend="loky", verbose=1)(delayed(compile_file)(
+    _ = Parallel(n_jobs=n_jobs, backend="loky", verbose=1)(delayed(compile_file)(
         ldf=ldf.slice(chunkidx*chunklen, chunklen),
         chunkidx=chunkidx,
         chunklen=chunklen,
+        save_dir=save_dir,
     ) for chunkidx in range(chunk_start, nchunks))
 
     return

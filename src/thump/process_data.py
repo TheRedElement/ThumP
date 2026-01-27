@@ -58,7 +58,12 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=Fals
         except Exception as e:
             logger.warning(f"Exception at chunk {chunkidx}, object {i}: {e}")
             continue
+
+        if len(row) == 0:
+            #break if the chunk does not contain enough data (last file does not fill `chunklen`)
+            break
         
+        logger.info(f"{chunkidx=} {i=}")
         npixels = slice(0,-10)   #for testing
         npixels = slice(0,None)
         hdul = fits.open(BytesIO(row["cutoutScience"][0]))

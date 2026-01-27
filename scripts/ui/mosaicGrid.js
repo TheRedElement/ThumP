@@ -255,7 +255,9 @@ export function updateGridCell({
     const globalOptions = getGlobalOptions();
     // console.log(globalOptions)
 
-    //grid-cell update
+    //grid-cell updates
+
+    //thumbnails
     const thumbnailElements = document.getElementsByClassName("thumbnail");
     // const plotlyPlots = document.getElementsByClassName("plotly-plot");
     for (const thElement of thumbnailElements) {
@@ -305,6 +307,12 @@ export function updateGridCell({
             );
         };
     }
+
+    //cell headers
+    const cellHeaders = document.querySelectorAll(".mosaic-grid .cell .cell-header");
+    for (const element of cellHeaders) {
+        element.style.setProperty("font-size", globalOptions["headerfontsize"]);
+    };    
 }
 
 /**

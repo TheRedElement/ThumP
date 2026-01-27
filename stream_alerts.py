@@ -59,7 +59,6 @@ def simulate_alert_stream(df_test:pl.LazyFrame, maxtimeout:int=5) -> Tuple[str,p
     topic = "testing"
     alerts = pl.concat([df_test.slice(np.random.randint(0, noptions), 1) for _ in range(nalerts)])    #generate some number of alerts that will be output
     key = "testing"
-    # time.sleep(1)
     
     return topic, alerts, key
 
@@ -108,10 +107,12 @@ def poll_single_alert(
 
 
     if df_test is not None:
+        logger.info("simulated stream")
         #simulated alert stream
         topic, alert, key = simulate_alert_stream(df_test, maxtimeout)
         # print(alert)
     else:
+        logger.info("polling servers")
         #actual alerts
         # Instantiate a consumer
         consumer = AlertConsumer(topics, myconfig)
@@ -126,7 +127,7 @@ def poll_single_alert(
     #manipulate output
     state = topic is not None   #was an alert retrieved?
     if state:
-        print(type(alert))
+        logger.info(type(alert))
         nalerts = alert.select(alert.collect_schema().names()[0]).collect().height
         thpd.compile_file(alert,
             chunkidx=alert_idx,
@@ -134,7 +135,7 @@ def poll_single_alert(
             save_dir=save_dir,
         )
     else:
-        print(f"No alerts received in the last {maxtimeout} seconds")
+        logger.info(f"No alerts received in the last {maxtimeout} seconds")
     
     return state
 
@@ -205,7 +206,8 @@ def main():
     #global configs
     save_dir = f"./data/fink_stream/"
     fnames = sorted(glob.glob("./data/*/*.parquet"))
-    df = thpd.read_files(fnames)    
+    df = thpd.read_files(fnames)
+    df = None
 
     #fink configs
     creds = load_credentials()  #fink credentials
@@ -225,8 +227,6 @@ def main():
             save_dir=save_dir,
             alert_idx=alert_idx,
         ) #poll servers
-        
-        # time.sleep(1)
         
         #update
         poll_idx += 1

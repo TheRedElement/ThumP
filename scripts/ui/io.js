@@ -161,6 +161,6 @@ export async function downloadSchema() {
 export async function downloadExamples() {
     for (let i = 0; i < 5; i++) {
         const example = await loadJSON(`${BASEPATH}data/examples/example${String(i).padStart(2,0)}.json`);
-        downloadObjectAsJson(example, `example${String(i).padStart(2,0)}.json`);
+        downloadObjectAsJson(example, `example${String(i).padStart(2,0)}`);
     }
 }

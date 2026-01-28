@@ -219,7 +219,7 @@ def main():
     #listener
     poll_idx = 0                #init number of polls made
     alert_idx = 0               #init number of alerts received
-    reformat_every = 10     #how often to reformat the extracted alerts
+    reformat_every = 100         #how often to reformat the extracted alerts
     while True:
         state = poll_single_alert(myconfig, creds["mytopics"],
             maxtimeout=0.1,
@@ -233,7 +233,7 @@ def main():
         alert_idx += state
 
         if ((alert_idx % reformat_every) == 0):
-            reformat_processed(save_dir, chunklen=7)
+            reformat_processed(save_dir, chunklen=60)
 
 
 if __name__ == "__main__":

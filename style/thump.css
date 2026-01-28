@@ -433,7 +433,8 @@ section.thumbnail-mosaic {
 }
 #settings {
     height: auto;
-    max-height: 24vh;
+    min-height: auto;
+    max-height: auto;
     width: 97vw;
     grid-area: settings;
     display: grid;
@@ -462,8 +463,8 @@ section.thumbnail-mosaic {
     grid-area: thumbnails;
     grid-template-rows: 1fr auto;
     display: grid;
-    /* height: auto; */
-    height: 70vh;
+    height: auto;
+    min-height: 70vh;
     max-height: 70vh;
     width: 100vw;
     grid-template-areas: 
@@ -474,11 +475,12 @@ section.thumbnail-mosaic {
 main .content {
     display: grid;
     width: 100%;
-    height: 90%;
+    height: 100%;
     grid-area: content;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 3fr 1fr;
     grid-template-columns: 1fr;
     /* grid-auto-rows: minmax(60vh, max-content); */
+    overflow-y: hidden;
     grid-template-areas: 
         "thumbnails"
         "settings"
@@ -492,16 +494,16 @@ main .content {
 main {
     grid-area: main;
     display: grid;
-    height: 100%;
+    height: auto;
+    max-height: 95vh;
     width: 100vw;
     grid-template-columns: 1fr;
-    grid-template-rows: 4fr 1fr;
+    grid-template-rows: 1fr auto;
     grid-template-areas: 
         "globalheader"
         "content"
     ;
     overflow-y: hidden;
-    /* outline: 1px solid red; */
 }
 
 nav {
@@ -512,12 +514,13 @@ nav {
 footer {
     grid-area: footer;
     height: max-content;
+    max-height: 2vh;
     /* outline: 1px solid blue; */
 }
 body {
     display: grid;
     height: 98%;
-    grid-template-rows: 0fr 1fr min-content;
+    grid-template-rows: 0fr 1fr auto;
     grid-auto-columns: 1fr;
     row-gap: 10px;
     grid-template-areas: 

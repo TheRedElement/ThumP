@@ -1,6 +1,8 @@
 
 temp*
 data/*
+execlogs/*
+*.sh
 
 #do not ignore
 !data/schema.json

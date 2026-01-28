@@ -58,7 +58,7 @@ button {
     color: #ffffff;
     padding: 2px;
     border-radius: 7px;
-    box-shadow: 2px -2px 15px 1px var(--c_fink_1);
+    box-shadow: 5px 5px 15px color-mix(in srgb, var(--c_fink_1) 60%, var(--c_bg) 40%);
     margin-bottom: 20px;
 }
 .io > * {
@@ -327,11 +327,11 @@ section.thumbnail-mosaic {
 }
 .mosaic-grid .cell:has(input[value="good"]:checked) {
     background-color: color-mix(in srgb, var(--c_fink_4) 90%, var(--c_bg) 10%);
-    outline: 2px solid var(--c_body_text);
+    outline: 4px solid var(--c_body_text);
 }
 .mosaic-grid .cell:has(input[value="maybe"]:checked) {
-    background-color: color-mix(in srgb, var(--c_fink_2) 50%, var(--c_bg) 50%);
-    outline: 2px solid var(--c_body_text);
+    background-color: color-mix(in srgb, var(--c_fink_2) 70%, var(--c_bg) 30%);
+    outline: 4px solid var(--c_body_text);
 }
 
 .mosaic-grid .cell .cell-header {

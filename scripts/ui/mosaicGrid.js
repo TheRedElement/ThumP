@@ -5,7 +5,7 @@
 // import { loadJSON, randInt, reshapeArr } from "../utils.js"
 import { getGlobalOptions } from "./globalOptions.js";
 import { parseMath } from "../parsers/mathparser.js";
-import { THUMBNAILS } from "../base/base.js";
+import { colorScales, THUMBNAILS } from "../base/base.js";
 import { abcRange } from "../utils.js";
 
 /**constants */
@@ -289,17 +289,16 @@ export function updateGridCell({
             };
     
             //apply updates to traces
-            const customScales = {
-                csFink: `[[0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]]`,
-            };
+            let colorScale = colorScales[globalOptions["colorscale"]];
+            colorScale = (colorScale === undefined) ? globalOptions["colorscale"] : colorScale;
 
-            let curColorscale = (globalOptions["colorscale"] === "Fink") ? customScales["csFink"] : globalOptions["colorscale"];
+            // let curColorscale = (globalOptions["colorscale"] === "Fink") ? customScales["csFink"] : globalOptions["colorscale"];
             let update = {
                 z: [
                     img
                 ],
                 colorscale: [
-                    curColorscale.startsWith("[[") ? JSON.parse(curColorscale) : curColorscale
+                    colorScale.startsWith("[[") ? JSON.parse(colorScale) : colorScale
                 ],
                 zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
                 zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            

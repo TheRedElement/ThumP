@@ -207,7 +207,7 @@ def main():
     save_dir = f"./data/fink_stream/"
     fnames = sorted(glob.glob("./data/*/*.parquet"))
     df = thpd.read_files(fnames)
-    # df = None
+    df = None
 
     #fink configs
     creds = load_credentials()  #fink credentials
@@ -222,7 +222,7 @@ def main():
     reformat_every = 100         #how often to reformat the extracted alerts
     while True:
         state = poll_single_alert(myconfig, creds["mytopics"],
-            maxtimeout=0.1,
+            maxtimeout=5,
             df_test=df,
             save_dir=save_dir,
             alert_idx=alert_idx,

@@ -143,6 +143,9 @@ document.addEventListener("keydown", (event) => {
 
     const scrollAmount = colWidth * nCols + gap * nCols;                //width of the visible grid
     if (event.ctrlKey) {
+        //get relevant elements
+        const pageNumber = document.getElementById("pagenumber");
+        
         switch (event.key) {
             case "ArrowLeft":
                 thumbnailMosaicGridWrapper.scrollBy({
@@ -156,7 +159,14 @@ document.addEventListener("keydown", (event) => {
                     behavior: "instant",
                 });
                 break;
-
+            case "ArrowUp":
+                pageNumber.value ++;
+                window.fillThumbnails({pageChange:true});
+                break
+            case "ArrowDown":
+                pageNumber.value --;
+                window.fillThumbnails({pageChange:true});
+                break
             default:
                 break;
         };

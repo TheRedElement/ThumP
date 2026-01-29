@@ -284,17 +284,17 @@ export function updateGridCell({
             };
     
             //apply updates to traces
+            const customScales = {
+                csFink: `[[0, "#15284F"],[0.5, "#3C8DFF"],[1.0, "#D5D5D3"]]`,
+            };
+
+            let curColorscale = (globalOptions["colorscale"] === "Fink") ? customScales["csFink"] : globalOptions["colorscale"];
             let update = {
                 z: [
                     img
                 ],
                 colorscale: [
-                    globalOptions["colorscale"].startsWith("[[") ? JSON.parse(globalOptions["colorscale"]) : globalOptions["colorscale"]
-                    // [
-                    //     [0, "#15284F"],
-                    //     [0.5, "#3C8DFF"],
-                    //     [1.0, "#D5D5D3"],
-                    // ],
+                    curColorscale.startsWith("[[") ? JSON.parse(curColorscale) : curColorscale
                 ],
                 zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
                 zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            

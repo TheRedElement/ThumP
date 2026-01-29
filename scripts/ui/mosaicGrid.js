@@ -314,10 +314,9 @@ export function updateGridCell({
     }
 
     //cell headers
-    const cellHeaders = document.querySelectorAll(".mosaic-grid .cell .cell-header");
-    for (const element of cellHeaders) {
-        element.style.setProperty("font-size", globalOptions["headerfontsize"]);
-    };    
+    const root = document.documentElement;
+    root.style.setProperty("--s_ui", globalOptions["uifontsize"]) 
+    root.style.setProperty("--s_input", globalOptions["uifontsize"]) 
 }
 
 /**

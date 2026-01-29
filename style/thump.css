@@ -9,6 +9,8 @@
     --c_fink_2: #3C8DFF;
     --c_fink_3: #D5D5D3;
     --c_fink_4: #F5622E;
+    --s_ui: 1.0;    /* base scale for some fontsizes */
+    --s_input: 1.0; /* base scale for input elements */
 }
 
 html, body {
@@ -330,12 +332,16 @@ section.thumbnail-mosaic {
     outline: 4px solid var(--c_body_text);
 }
 .mosaic-grid .cell:has(input[value="maybe"]:checked) {
-    background-color: color-mix(in srgb, var(--c_fink_2) 70%, var(--c_bg) 30%);
+    background-color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_bg) 30%);
     outline: 4px solid var(--c_body_text);
+    color: var(--c_bg);
+}
+.mosaic-grid .cell:has(input[value="maybe"]:checked) > * > a {
+    color: var(--c_bg);
 }
 
 .mosaic-grid .cell .cell-header {
-    font-size: 0.7em;
+    font-size: calc(var(--s_ui) * 1em);
     display: grid;
     grid-auto-flow: column;
     text-align: center;
@@ -344,6 +350,12 @@ section.thumbnail-mosaic {
     align-content: center;
     align-items: center;
 }
+.thumbnail-mosaic-wrapper .cell-header > * > * {
+    -ms-transform: scale(var(--s_input));      /* IE 9 */
+    -webkit-transform: scale(var(--s_input));  /* Chrome, Safari, Opera */
+    transform: scale(var(--s_input));    
+}
+
 .mosaic-grid .cell .cell-header a {
 }
 
@@ -364,12 +376,12 @@ section.thumbnail-mosaic {
     background-color: var(--c_fink_4);
 }
 .bad {
-    accent-color: var(--c_fink_1);
-    background-color: var(--c_fink_1);
-}
-.maybe {
     accent-color: var(--c_fink_2);
     background-color: var(--c_fink_2);
+}
+.maybe {
+    accent-color: var(--c_fink_1);
+    background-color: var(--c_fink_1);
 }
 
 .mosaic-grid .cell .thumbnail-container {

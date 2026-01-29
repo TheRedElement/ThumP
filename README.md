@@ -1,5 +1,7 @@
 # ThumP!, Thumbnails? Preselect!
 
+![](./gfx/thump_icon.svg)
+
 ## TODO
 
 ## Current Best Settings

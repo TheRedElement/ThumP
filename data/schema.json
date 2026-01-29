@@ -3,13 +3,14 @@
         "objectId": [
             "string. ",
             "id of the object to be displayed above each cell in the thumbnail mosaic. ",
-            "each 'objectId' can have a different number of thumbnails (app will automatically adjust). "
+            "each `objectId` can have a different number of thumbnails (app will automatically adjust). "
         ],
         "link": [
             "string. ",
             "link to some other webpage related to the object. ",
-            "will be set as `href` for `objectId. ",
-            "for example link to a online database that has additional information (i.e., fink -- ztf.fink-portal.org). "
+            "will be set as `href` for `objectId`. ",
+            "for example link to a online database that has additional information (i.e., fink -- ztf.fink-portal.org). ",
+            "`link` shall NOT contain commas (',')!"
         ],
         "thumbnailTypes": [
             "List[string]. ",
@@ -23,7 +24,10 @@
             "the contained value in each cell defines it's brightness. ",
             "each thumbnail can have different dimensions (number of pixels) (app will adjust automatically). "
         ],
-        "$otherColumns": "additional columns that shall be added to the downloaded csv file"
+        "$otherColumns": [
+            "additional columns that shall be added to the downloaded csv file. ",
+            "content of `otherColumns` shall NOT contain commas (',')!"
+        ]
     },
     "object1": {
         "link": "https://theredelement.github.io",

@@ -1,0 +1,19 @@
+#!/bin/env bash
+
+
+#SBATCH --job-name=fink_stream
+#SBATCH --output=./execlogs/%x.out
+#SBATCH --output=./execlogs/%x.err
+
+#SBATCH --ntasks=20
+#SBATCH --mem=16G
+#SBATCH --time=0-01:00:00
+
+source ./.venv/bin/activate
+python3 src/thump/commands/fink_from_datatransfer_lsst.py \
+    "./data/*/*.parquet" --save "./data/processed/" \
+    --chunklen 60 --chunk_start 0 --nchunks 1 \
+    --njobs 1
+
+deactivate
+

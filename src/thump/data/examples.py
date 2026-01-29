@@ -1,3 +1,4 @@
+
 #%%imports
 import json
 import numpy as np
@@ -28,8 +29,8 @@ def make_examples(
                     np.random.randn(np.random.randint(10,15),np.random.randint(10,15)).tolist(),
                 ][nthumbnails],
                 #auxiliary fields
-                comment="a test-file",
-                aux_col="auxiliary column"
+                comment="a test-file. shall not contain commas!",
+                aux_col="auxiliary column. shall not contain commas!"
             )
         with open(f"./data/examples/example{f:02d}.json", "w") as f:
             json.dump(file, f, indent=2)

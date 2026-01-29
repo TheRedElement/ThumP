@@ -5,6 +5,7 @@ execlogs/*
 *.sh
 
 #do not ignore
+!thump.sh
 !data/schema.json
 !data/examples
 

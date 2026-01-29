@@ -26,6 +26,7 @@ p {
     width: max-content;
 }
 
+
 :is(h1,h2,h3) {
     margin-bottom: 0.2em;
     margin-top: 0.2em;
@@ -162,6 +163,7 @@ button.close::before {
     justify-content: center;
     align-items: top;
     overflow-y: scroll;
+    overflow-wrap: break-word;
     z-index: 1000;
 }
 .overlay.info {
@@ -183,7 +185,10 @@ button.close::before {
     z-index: 1000;
     box-shadow: 10px 10px 15px var(--c_body_text);
 }
-
+p{
+    width: auto;
+    overflow-wrap: anywhere;
+}
 /* =============================== */
 /* project specific */
 

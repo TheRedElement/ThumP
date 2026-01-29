@@ -189,6 +189,7 @@ export function fillGrid({
             const labelElement = document.createElement("a");
             labelElement.textContent = objIds[i];
             labelElement.href = THUMBNAILS[objIds[i]]["link"];
+            labelElement.target = "_blank";     //open in new tab/window
             cellHeader.appendChild(labelElement);
 
             //add thumbnails (plots)

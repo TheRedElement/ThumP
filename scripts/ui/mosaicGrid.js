@@ -176,6 +176,11 @@ export function fillGrid({
                 // selection.checked = Boolean(Math.round(Math.random(),0));    //random selection (for testing)
                 selection.value = kind;                             //for determining the quality/category
                 selection.dataset["objectId"] = objIds[i];          //for saving the objId
+                let auxCols = Object.keys(THUMBNAILS[objIds[i]]);
+                auxCols = auxCols.filter(c => (!["objectId","thumbnails","thumbnailTypes"].includes(c)))
+                for (const auxCol of auxCols) {
+                    selection.dataset[auxCol] = THUMBNAILS[objIds[i]][auxCol];
+                }
                 selectionContainer.appendChild(selection);
             }
             cellHeader.appendChild(selectionContainer);

@@ -21,13 +21,18 @@ def read_files(fnames:List[str]) -> pl.LazyFrame:
                 # pl.col("*"),
                 #select what is needed
                 pl.col(r"^cutout.+$"),
-                pl.col("diaObject").struct.field("diaObjectId"),
-                pl.col("diaSource").struct.field("diaSourceId"),
+                pl.col("diaObject").struct.field("diaObjectId").cast(pl.Utf8),
+                pl.col("diaSource").struct.field("diaSourceId").cast(pl.Utf8),
+                pl.col("diaSource").struct.field("midpointMjdTai").round(decimals=4),
+                pl.col("diaObject").struct.field("ra").round(decimals=2),
+                pl.col("diaObject").struct.field("dec").round(decimals=2),
+                pl.lit("").alias("comment")
         )
         .filter(
             pl.col("diaObjectId").is_not_null(),
         )
     ) for fn in fnames]
+    # for c in sorted(pl.read_parquet(fnames[0]).columns): print(c)
 
     dfs = pl.concat(dfs)
 
@@ -49,11 +54,7 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=Fals
         #only ever load one row in memory
         try:
             row = ldf.slice(offset=i, length=1).select(
-                pl.col("cutoutScience"),
-                pl.col("cutoutTemplate"),
-                pl.col("cutoutDifference"),
-                pl.col("diaObjectId"),
-                pl.col("diaSourceId"),
+                pl.col("*"),
             ).collect()
         except Exception as e:
             logger.warning(f"Exception at chunk {chunkidx}, object {i}: {e}")
@@ -67,15 +68,15 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=Fals
         npixels = slice(0,-10)   #for testing
         npixels = slice(0,None)
         hdul = fits.open(BytesIO(row["cutoutScience"][0]))
-        science = hdul[0].data[:,npixels]
+        science = np.round(hdul[0].data, 1)[:,npixels]
         science = np.where(np.isnan(science), None, science)    #NaN is not supported in json
         hdul.close()
         hdul = fits.open(BytesIO(row["cutoutTemplate"][0]))
-        template = hdul[0].data[npixels,:]
+        template = np.round(hdul[0].data, 1)[npixels,:]
         template = np.where(np.isnan(template), None, template) #NaN is not supported in json
         hdul.close()
         hdul = fits.open(BytesIO(row["cutoutDifference"][0]))
-        difference = hdul[0].data
+        difference = np.round(hdul[0].data, 1)
         difference = np.where(np.isnan(difference), None, difference)   #NaN is not supported in json
         hdul.close()
 
@@ -98,13 +99,10 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=Fals
 
         nthumbnails = slice(0,np.random.choice([1,2,3]))  #for testing
         nthumbnails = slice(0,None)
+        
+        #required fields
         data_json[str(row["diaSourceId"][0])] = dict(
-            comments=[
-                f"ids: [{row['diaSourceId'][0]}, {row['diaObjectId'][0]}]",
-            ],
             link=f"https://lsst.fink-portal.org/{row['diaObjectId'][0]}",
-            diaSourceId=str(row["diaSourceId"][0]),
-            diaObjectId=str(row["diaObjectId"][0]),
             thumbnailTypes=[
                 "science",
                 "template",
@@ -116,6 +114,10 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=Fals
                 difference.tolist(),
             ][nthumbnails],
         )
+
+        #auxiliary fields
+        for c in row.select(pl.exclude("^cutout.+$")).columns:
+            data_json[str(row["diaSourceId"][0])][c] = row[c][0]
 
     if isinstance(save_dir, str):
         with open(f"{save_dir}processed_{chunkidx:04d}.json", "w") as f:
@@ -152,3 +154,5 @@ def compile_files(ldf:pl.LazyFrame,
     ) for chunkidx in range(chunk_start, nchunks))
 
     return
+
+# %%

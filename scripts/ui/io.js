@@ -135,14 +135,16 @@ export function exportSelection({pageNumber=undefined} = {}) {
         "#object_id: id of the object as specified in the uploaded files",
         "#class: classification based on the selection in the user interface",
     ]
+    const auxCols = Object.keys(objClassification[0].dataset);
     let csvContent = [
-        ["object_id", "class"], //header
+        ["class", ...auxCols], //header
     ];  //array for object classes
-
+    
     //add respective objects to their selected class
     for (const obj of objClassification) {
+        // console.log(Object.keys(obj.dataset))
         csvContent.push(
-            [obj.dataset["objectId"], obj.value]
+            [obj.value, ...Object.values(obj.dataset)]
         )
     };
     downloadArrAsCsv(csvContent, `thump_${METADATA["sessionId"]}_${pageNumber}${fileSuffix}`, csvComments)

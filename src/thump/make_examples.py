@@ -13,9 +13,7 @@ def make_examples(
         for o in range(nobj_per_file):
             nthumbnails = slice(0, np.random.randint(1,4))
             file[f"file{f}_obj{o}"] = dict(
-                comments=[
-                    "a test-file"
-                ],
+                #required fields
                 link="https://theredelement.github.io",
                 thumbnailTypes=[
                     "thumbnail1",
@@ -29,6 +27,9 @@ def make_examples(
                     np.random.randn(np.random.randint(10,15),np.random.randint(10,15)).tolist(),
                     np.random.randn(np.random.randint(10,15),np.random.randint(10,15)).tolist(),
                 ][nthumbnails],
+                #auxiliary fields
+                comment="a test-file",
+                aux_col="auxiliary column"
             )
         with open(f"./data/examples/example{f:02d}.json", "w") as f:
             json.dump(file, f, indent=2)

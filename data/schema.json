@@ -11,12 +11,6 @@
             "will be set as `href` for `objectId. ",
             "for example link to a online database that has additional information (i.e., fink -- ztf.fink-portal.org). "
         ],
-        "comments": [
-            "list. ",
-            "each list entry is one unique comment. ",
-            "additional comments you might have. ",
-            "i.e.: alternate IDs. "
-        ],
         "thumbnailTypes": [
             "List[string]. ",
             "list of the type each thumbnail in 'thumbnails' represents. ",
@@ -28,15 +22,11 @@
             "each cell defines a single pixel in an image. ",
             "the contained value in each cell defines it's brightness. ",
             "each thumbnail can have different dimensions (number of pixels) (app will adjust automatically). "
-        ]
+        ],
+        "$otherColumns": "additional columns that shall be added to the downloaded csv file"
     },
     "object1": {
         "link": "https://theredelement.github.io",
-        "comments": [
-            "exemplary entry in the data-file. ",
-            "note, the different shapes of the thumbnails. ",
-            "this is another comment. "
-        ],
         "thumbnailTypes": [
             "4x3 thumbnail",
             "3x4 thumbnail",
@@ -59,15 +49,12 @@
                 [24, 25, 26],
                 [27, 28, 29]
             ]
-        ]
+        ],
+        "comment": "exemplary entry in the data-file. note, the different shapes of the thumbnails. this is another comment. ",
+        "auxCol1": "additional column"
     }, 
     "object2": {
         "link": "https://theredelement.github.io",
-        "comments": [
-            "exemplary entry in the data-file. ",
-            "this one has less thumbnails. ",
-            "this is another comment. "
-        ],
         "thumbnailTypes": [
             "3x3 thumbnail",
             "3x3 thumbnail"
@@ -83,6 +70,8 @@
                 [14, 15, 16],
                 [17, 18, 19]
             ]
-        ]
+        ],
+        "comment": "exemplary entry in the data-file. this one has less thumbnails. this is another comment. ",
+        "axuCol1": "additional column"
     } 
 }

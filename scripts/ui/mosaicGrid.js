@@ -143,7 +143,22 @@ export function fillGrid({
             cellElement.id = `cell-${i}`;
             cellElement.className = "cell";
             cellElement.style.setProperty("grid-auto-columns", `repeat(${nThumbnails}, minmax(0,1fr))`)
-    
+            cellElement.addEventListener("click", event => {
+                //listener to enable clicking a cell to cycle through selections
+                let selectionCycle = {
+                    bad: "maybe",
+                    maybe: "good",
+                    good: "bad", 
+                };
+                if (event.target === event.currentTarget) {
+                    //ignore if trigger is different than target (only activate if actual element and not its children are clicked )
+                    const selectObj = cellElement.querySelectorAll("input[name='select-object']:checked")[0];
+                    let curValue = selectObj.value;
+                    const radioBtn = cellElement.querySelectorAll(`.select-object.${selectionCycle[curValue]}`)[0]
+                    radioBtn.checked = true
+                };
+            })
+
             //tooltip
             const tooltip = document.createElement("div");
             tooltip.className = "tooltip";

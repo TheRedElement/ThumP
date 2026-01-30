@@ -1,4 +1,23 @@
+"""listens to fink-stream and reformats files to `ThumP!` schema
+
+- only designed for lsst alerts
+- listens to the stream and extracts 
+- reformats extracted data according to `ThumP!` schema
+- setting `--pat` will simulate a stream from files extracted via datatransfer
+
+Usage
+```bash
+    thump_fink_stream_lsst \
+        [--pat PATTERN] \
+        [--save DIRECTORY] \
+        [--chunklen CHUNKLEN] [--reformat_every REFORMAT_EVERY] \
+        [--njobs NJOBS] [--max_timeout MAX_TIMEOUT]
+```
+
+"""
+
 #%%imports
+import argparse
 from datetime import datetime
 from fink_client.consumer import AlertConsumer
 from fink_client.configuration import load_credentials
@@ -11,15 +30,17 @@ import os
 import time
 from typing import Tuple
 
-from thump import (
-    make_examples as thme,
-    process_data as thpd
-)
+os.environ["POLARS_MAX_THREADS"] = "1"  #to allow parallelization over chunks
+
+from thump.fink_lsst import process_data as thpd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 #%%definitions
-def simulate_alert_stream(df_test:pl.LazyFrame, maxtimeout:int=5) -> Tuple[str,pl.LazyFrame,str]:
+def simulate_alert_stream(df_test:pl.LazyFrame,
+    maxtimeout:int=1,
+    alerts_per_s:float=160, alerts_per_s_std:float=1,
+    ) -> Tuple[str,pl.LazyFrame,str]:
     """simulates an alert arriving
 
     - simulates an alert arriving by drawing from a database (`df_test`) of downloaded alerts
@@ -31,6 +52,16 @@ def simulate_alert_stream(df_test:pl.LazyFrame, maxtimeout:int=5) -> Tuple[str,p
         - `maxtimeout`
             - `int`, optional
             - timeout for not receiving an alert
+        - `alerts_per_s`
+            - `float`, optional
+            - expected number of alerts per second
+            - set as the mean of a normal distribution
+            - the default is `160`
+        - `alerts_per_s_std`
+            - `float`, optional
+            - standard deviation of expected number of alerts per second
+            - set as the std of a normal distribution
+            - the default is `1`
 
     Returns
         - `topic`
@@ -54,7 +85,7 @@ def simulate_alert_stream(df_test:pl.LazyFrame, maxtimeout:int=5) -> Tuple[str,p
 
     #alerts found
     noptions = df_test.select(df_test.collect_schema().names()[0]).collect().height #number of alerts in the database
-    nalerts = max(1,np.abs(np.random.normal(3, 1)).astype(int))                     #number of alerts to generate (at least 1 alert)
+    nalerts = max(1,np.abs(np.random.normal(alerts_per_s, alerts_per_s_std)).astype(int))                     #number of alerts to generate (at least 1 alert)
 
     topic = "testing"
     alerts = pl.concat([df_test.slice(np.random.randint(0, noptions), 1) for _ in range(nalerts)])    #generate some number of alerts that will be output
@@ -68,6 +99,7 @@ def poll_single_alert(
     df_test:pl.LazyFrame=None,
     save_dir:str=None,
     alert_idx:int=0,
+    simulate_alert_stream_kwargs:dict=None,
     ) -> True:
     """polls a single alert
 
@@ -98,19 +130,23 @@ def poll_single_alert(
             - `int`, optional
             - index of the currently processed alert
             - the default is `0`
+        - `simulate_alert_stream_kwargs`
+            - `dict`, optional
+            - additional kwargs to pass to `simulate_alert_stream()`
+            - the default is `None`
+                - set to `dict()`
 
     Returns
         - `state`
             - `bool`
             - whether an alert was retrieved or not
     """
-
+    if simulate_alert_stream_kwargs is None: simulate_alert_stream_kwargs = dict()
 
     if df_test is not None:
         logger.info("simulated stream")
         #simulated alert stream
-        topic, alert, key = simulate_alert_stream(df_test, maxtimeout)
-        # print(alert)
+        topic, alert, key = simulate_alert_stream(df_test, maxtimeout, **simulate_alert_stream_kwargs)
     else:
         logger.info("polling servers")
         #actual alerts
@@ -120,15 +156,15 @@ def poll_single_alert(
         # Poll the servers
         topic, alert, key = consumer.poll(maxtimeout)
 
-
         # Close the connection to the servers
         consumer.close()
 
+    
     #manipulate output
     state = topic is not None   #was an alert retrieved?
     if state:
-        logger.info(type(alert))
         nalerts = alert.select(alert.collect_schema().names()[0]).collect().height
+        logger.info(f"{type(alert)}, {nalerts=}")
         thpd.compile_file(alert,
             chunkidx=alert_idx,
             chunklen=nalerts,               #entire alert package in one single file
@@ -202,13 +238,83 @@ def reformat_processed(
 
 #%%main
 def main():
+    parser = argparse.ArgumentParser(
+    )
+    parser.add_argument(
+        "--pat",
+        type=str,
+        default=None,
+        required=False,
+        help="glob pattern to filter for files downloaded via `fink_client` datatransfer. serve as template to simulate data-stream. streams real data if omitted"
+    )
+    parser.add_argument(
+        "--alerts_per_s",
+        type=float,
+        default=100,
+        required=False,
+        help="only for simulated stream. expected number of alerts per second."
+    )
+    parser.add_argument(
+        "--alerts_per_s_std",
+        type=float,
+        default=1,
+        required=False,
+        help="only for simulated stream. variance of expected number of alerts per second."
+    )
+    parser.add_argument(
+        "--save",
+        type=str,
+        default="./data/fink_stream/",
+        required=False,
+        help="glob pattern to filter for files downloaded via `fink_client` datatransfer. serve as template to simulate data-stream"
+    )
+    parser.add_argument(
+        "--chunklen",
+        type=int,
+        default=100,
+        required=False,
+        help="number of objects each file shall contain"
+    )    
+    parser.add_argument(
+        "--reformat_every",
+        type=int,
+        default=100,
+        required=False,
+        help="after how many extracted alerts to reformat to `ThumP!` schema"
+    )    
+    parser.add_argument(
+        "--njobs",
+        type=int,
+        default=1,
+        required=False,
+        help="number of jobs to use for parallel processing chunks. -1 denotes all available cores"
+    )    
+    parser.add_argument(
+        "--maxtimeout",
+        type=float,
+        default=5,
+        required=False,
+        help="maximum amount of time to wait for an alert until trying again. in seconds"
+    )    
+    args=vars(parser.parse_args())
+
+    #create `./data/` if it does not exist and is requested
+    if not os.path.isdir("data/fink_stream/") and ("data/fink_stream" in args["save"]):
+        os.makedirs("./data/fink_stream/")
+
 
     #global configs
-    save_dir = f"./data/fink_stream/"
-    fnames = sorted(glob.glob("./data/*/*.parquet"))
-    df = thpd.read_files(fnames)
-    df = None
+    if args["pat"] is None:
+        #stream real alerts
+        df = None
+    else:
+        #artificial alerts
+        fnames = sorted(glob.glob(args["pat"]))
+        df = thpd.read_files(fnames)        
 
+    #saving
+    save_dir = args["save"]
+    
     #fink configs
     creds = load_credentials()  #fink credentials
     myconfig = {
@@ -219,21 +325,25 @@ def main():
     #listener
     poll_idx = 0                #init number of polls made
     alert_idx = 0               #init number of alerts received
-    reformat_every = 100         #how often to reformat the extracted alerts
     while True:
+        start = datetime.now()
         state = poll_single_alert(myconfig, creds["mytopics"],
-            maxtimeout=5,
+            maxtimeout=args["maxtimeout"],
             df_test=df,
             save_dir=save_dir,
             alert_idx=alert_idx,
+            simulate_alert_stream_kwargs=dict(alerts_per_s=args["alerts_per_s"], alerts_per_s_std=args["alerts_per_s_std"])
         ) #poll servers
+        logger.info(f"runtime alert processing {datetime.now() - start}")
         
         #update
         poll_idx += 1
         alert_idx += state
 
-        if ((alert_idx % reformat_every) == 0):
-            reformat_processed(save_dir, chunklen=60)
+        if ((alert_idx % args["reformat_every"]) == 0):
+            start = datetime.now()
+            reformat_processed(save_dir, chunklen=args["chunklen"])
+            logger.info(f"runtime alert processing {datetime.now() - start}")
 
 
 if __name__ == "__main__":

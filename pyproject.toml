@@ -23,6 +23,7 @@ dependencies = [
 thump_make_examples = "thump.commands:make_examples.main"
 thump_concat_output = "thump.commands:concat_output.main"
 thump_from_fink_datatransfer = "thump.commands:fink_from_datatransfer_lsst.main"
+thump_fink_stream_lsst = "thump.commands:fink_stream_alerts_lsst.main"
 
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]

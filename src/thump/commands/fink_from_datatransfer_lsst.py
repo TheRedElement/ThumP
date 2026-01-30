@@ -6,7 +6,10 @@
 
 Usage
 ```bash
-    thump_from_fink_datatransfer [--save DIRECTORY] [--chunklen CHUNKLEN] [--chunk_start CHUNK_START] [--nchunks NCHUNKS] [--njobs NJOBS] pat
+    thump_from_fink_datatransfer \
+        pat [--save DIRECTORY] \
+        [--chunklen CHUNKLEN] [--chunk_start CHUNK_START] [--nchunks NCHUNKS] \
+        [--njobs NJOBS]
 ```
 
 """

@@ -3,7 +3,7 @@
 
 #SBATCH --job-name=fink_stream
 #SBATCH --output=./execlogs/%x.out
-#SBATCH --output=./execlogs/%x.err
+#SBATCH --error=./execlogs/%x.err
 
 #SBATCH --ntasks=20
 #SBATCH --mem=16G

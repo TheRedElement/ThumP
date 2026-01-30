@@ -28,6 +28,7 @@ import logging
 import numpy as np
 import polars as pl
 import os
+import sys
 import time
 from typing import Tuple
 
@@ -37,6 +38,15 @@ from thump.fink_lsst import process_data as thpd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+stdout_handler.addFilter(lambda record: record.levelno <= logging.INFO)
+stderr_handler = logging.StreamHandler(sys.stderr)
+stderr_handler.setLevel(logging.WARNING)
+logger.handlers.clear()
+logger.addHandler(stdout_handler)
+logger.addHandler(stderr_handler)
+
 #%%definitions
 def simulate_alert_stream(df_test:pl.LazyFrame,
     maxtimeout:int=1,

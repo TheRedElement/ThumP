@@ -12,8 +12,15 @@
 source ./.venv/bin/activate
 # python3 src/thump/commands/fink_from_datatransfer_lsst.py \
 #     "./data/*/*.parquet" --save "./data/processed/" \
-#     --chunklen 60 --chunk_start 0 --nchunks 5 \
-#     --njobs 1
+#     --chunklen 60 --chunk_start 0 --nchunks 30 \
+#     --njobs 5
+
+# #real data
+# python3 src/thump/commands/fink_stream_alerts_lsst.py \
+#      --save "./data/fink_stream/" \
+#     --chunklen 60 --reformat_every 100 \
+#     --njobs 8 --maxtimeout 5 \
+#testing
 python3 src/thump/commands/fink_stream_alerts_lsst.py \
      --save "./data/fink_stream/" \
     --chunklen 60 --reformat_every 100 \

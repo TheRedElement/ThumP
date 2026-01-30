@@ -224,41 +224,6 @@ def reformat_processed(
         for fn in fnames:
             # logger.info(f"removing {fn}")
             os.remove(fn)
-
-    # #read files into a single object (DUPLICATE KEYS WILL BE OVERRIDDEN!)
-    # objs = {}
-    # for fn in fnames:
-    #     with open(fn, "r") as f:
-    #         objs = {**objs, **json.load(f)}
-
-    # #split all objects into chunks of desired length
-    # nobj = len(objs.keys())
-    # idxs = np.arange(chunklen, nobj, chunklen)
-    # chunked = np.array_split(list(objs.keys()), idxs, axis=0)
-    # logger.info((
-    #     f"reformatting {len(fnames)} files ({nobj} objs)."
-    #     f"{chunklen=}, len(chunks)={[len(c) for c in chunked]}"
-    # ))
-
-    # #reformat to files of desired `chunklen`
-    # fnames_reformatted = glob.glob(f"{save_dir}reformatted*.json")
-    # for cidx, chunk in enumerate(chunked):
-    #     file = {obj:objs.pop(obj) for obj in chunk} #objects of current chunk
-
-    #     if len(chunk) < chunklen:
-    #         #mark as file to be redone (not enough entries, will be added to next round of reformatting)
-    #         with open(f"{save_dir}processed_0000_{datetime.now()}.json", "w") as f:
-    #             json.dump(file, f, indent=2)
-    #     else:
-    #         #save a reformatted
-    #         with open(f"{save_dir}reformatted_{len(fnames_reformatted)+cidx:04d}.json", "w") as f:
-    #             json.dump(file, f, indent=2)
-    
-
-    # #delete formatted alerts
-    # for fn in fnames:
-    #     # logger.info(f"removing {fn}")
-    #     os.remove(fn)
     return
 
 #%%main

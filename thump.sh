@@ -5,6 +5,8 @@
 #SBATCH --output=./execlogs/%x.out
 #SBATCH --error=./execlogs/%x.err
 
+#SBATCH --partition=trevor
+
 #SBATCH --ntasks=20
 #SBATCH --mem=16G
 #SBATCH --time=0-01:00:00

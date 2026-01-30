@@ -38,10 +38,26 @@ def read_files(fnames:List[str]) -> pl.LazyFrame:
 
     return dfs
 
-def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=False):
+def compile_file(ldf:pl.LazyFrame, chunkidx:str, chunklen:int, save_dir:str=False):
     """compiles a single chunk of len `chunklen` into a json file
 
     - use lazy frame to deal with huge amount of data
+
+    Parameters
+        - `ldf`
+            - `pl.LazyFrame`
+            - each rows is a single alert
+        - `chunkidx`
+            - `str`
+            - some index/name for the extracted chunk
+            - used only in logging and name of saved file
+        - `chunklen`
+            - `int`
+            - number of objects per chunk
+            - equivalent to the number of objects the generated file will contain
+        - `save_dir`
+            - `bool`, optional
+            - directory to save generated file to
     """
 
     #number of entries in dataset 
@@ -120,9 +136,8 @@ def compile_file(ldf:pl.LazyFrame, chunkidx:int, chunklen:int, save_dir:str=Fals
             data_json[str(row["diaSourceId"][0])][c] = row[c][0]
 
     if isinstance(save_dir, str):
-        with open(f"{save_dir}processed_{chunkidx:04d}.json", "w") as f:
+        with open(f"{save_dir}processed_{chunkidx:s}.json", "w") as f:
             json.dump(data_json, f, indent=2)
-
 
     return
 
@@ -134,7 +149,7 @@ def compile_files(ldf:pl.LazyFrame,
     ):
     """extracts relevant information from all files and stores that in correct schema
 
-    - created files contains `chunklen` objects
+    - created files contain `chunklen` objects
     - use lazy frame to deal with huge amount of data
 
     """
@@ -148,7 +163,7 @@ def compile_files(ldf:pl.LazyFrame,
 
     _ = Parallel(n_jobs=n_jobs, backend="loky", verbose=1)(delayed(compile_file)(
         ldf=ldf.slice(chunkidx*chunklen, chunklen),
-        chunkidx=chunkidx,
+        chunkidx=f"{chunkidx:04d}",
         chunklen=chunklen,
         save_dir=save_dir,
     ) for chunkidx in range(chunk_start, nchunks))

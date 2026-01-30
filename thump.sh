@@ -12,12 +12,12 @@
 source ./.venv/bin/activate
 # python3 src/thump/commands/fink_from_datatransfer_lsst.py \
 #     "./data/*/*.parquet" --save "./data/processed/" \
-#     --chunklen 60 --chunk_start 0 --nchunks 1 \
+#     --chunklen 60 --chunk_start 0 --nchunks 5 \
 #     --njobs 1
 python3 src/thump/commands/fink_stream_alerts_lsst.py \
      --save "./data/fink_stream/" \
     --chunklen 60 --reformat_every 100 \
-    --njobs 1 --maxtimeout 0.01 \
+    --njobs 8 --maxtimeout 0.01 \
     --pat "./data/*/*.parquet" --alerts_per_s 16 --alerts_per_s_std 1 \
 
 deactivate

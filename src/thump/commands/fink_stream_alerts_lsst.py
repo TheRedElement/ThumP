@@ -23,6 +23,7 @@ from fink_client.consumer import AlertConsumer
 from fink_client.configuration import load_credentials
 import glob
 import json
+from joblib.parallel import Parallel, delayed
 import logging
 import numpy as np
 import polars as pl
@@ -99,6 +100,7 @@ def poll_single_alert(
     df_test:pl.LazyFrame=None,
     save_dir:str=None,
     alert_idx:int=0,
+    n_jobs:int=1,
     simulate_alert_stream_kwargs:dict=None,
     ) -> True:
     """polls a single alert
@@ -165,10 +167,15 @@ def poll_single_alert(
     if state:
         nalerts = alert.select(alert.collect_schema().names()[0]).collect().height
         logger.info(f"{type(alert)}, {nalerts=}")
-        thpd.compile_file(alert,
-            chunkidx=alert_idx,
-            chunklen=nalerts,               #entire alert package in one single file
-            save_dir=save_dir,
+
+        #process alerts in parallel
+        _ = Parallel(n_jobs=n_jobs, backend="threading")(
+            delayed(thpd.compile_file)(
+                alert,
+                chunkidx=f"{alert_idx:04d}_{aidx:02d}",
+                chunklen=1,               #entire alert package in one single file
+                save_dir=save_dir,
+            ) for aidx in range(nalerts)
         )
     else:
         logger.info(f"No alerts received in the last {maxtimeout} seconds")
@@ -196,44 +203,62 @@ def reformat_processed(
     """
 
     fnames = sorted(glob.glob(f"{save_dir}processed*.json"))
-    if len(fnames) == 0:
+    if len(fnames) < chunklen:
         #nothing to process
         return
+    else:
+        #merge into one file (every file contains one object)
+        
+        ##load pieces
+        fnames = fnames[0:chunklen]
+        objs = {}
+        for fn in fnames:
+            with open(fn, "r") as f:
+                objs = {**objs, **json.load(f)}
+        ##save as reformatted
+        fnames_reformatted = glob.glob(f"{save_dir}reformatted*.json")  #reformatted files
+        with open(f"{save_dir}reformatted_{len(fnames_reformatted)+1:04d}.json", "w") as f:
+            json.dump(objs, f, indent=2)
+        
+        #delete formatted alerts
+        for fn in fnames:
+            # logger.info(f"removing {fn}")
+            os.remove(fn)
 
-    #read files into a single object (DUPLICATE KEYS WILL BE OVERRIDDEN!)
-    objs = {}
-    for fn in fnames:
-        with open(fn, "r") as f:
-            objs = {**objs, **json.load(f)}
+    # #read files into a single object (DUPLICATE KEYS WILL BE OVERRIDDEN!)
+    # objs = {}
+    # for fn in fnames:
+    #     with open(fn, "r") as f:
+    #         objs = {**objs, **json.load(f)}
 
-    #split all objects into chunks of desired length
-    nobj = len(objs.keys())
-    idxs = np.arange(chunklen, nobj, chunklen)
-    chunked = np.array_split(list(objs.keys()), idxs, axis=0)
-    logger.info((
-        f"reformatting {len(fnames)} files ({nobj} objs)."
-        f"{chunklen=}, len(chunks)={[len(c) for c in chunked]}"
-    ))
+    # #split all objects into chunks of desired length
+    # nobj = len(objs.keys())
+    # idxs = np.arange(chunklen, nobj, chunklen)
+    # chunked = np.array_split(list(objs.keys()), idxs, axis=0)
+    # logger.info((
+    #     f"reformatting {len(fnames)} files ({nobj} objs)."
+    #     f"{chunklen=}, len(chunks)={[len(c) for c in chunked]}"
+    # ))
 
-    #reformat to files of desired `chunklen`
-    fnames_reformatted = glob.glob(f"{save_dir}reformatted*.json")
-    for cidx, chunk in enumerate(chunked):
-        file = {obj:objs.pop(obj) for obj in chunk} #objects of current chunk
+    # #reformat to files of desired `chunklen`
+    # fnames_reformatted = glob.glob(f"{save_dir}reformatted*.json")
+    # for cidx, chunk in enumerate(chunked):
+    #     file = {obj:objs.pop(obj) for obj in chunk} #objects of current chunk
 
-        if len(chunk) < chunklen:
-            #mark as file to be redone (not enough entries, will be added to next round of reformatting)
-            with open(f"{save_dir}processed_0000_{datetime.now()}.json", "w") as f:
-                json.dump(file, f, indent=2)
-        else:
-            #save a reformatted
-            with open(f"{save_dir}reformatted_{len(fnames_reformatted)+cidx:04d}.json", "w") as f:
-                json.dump(file, f, indent=2)
+    #     if len(chunk) < chunklen:
+    #         #mark as file to be redone (not enough entries, will be added to next round of reformatting)
+    #         with open(f"{save_dir}processed_0000_{datetime.now()}.json", "w") as f:
+    #             json.dump(file, f, indent=2)
+    #     else:
+    #         #save a reformatted
+    #         with open(f"{save_dir}reformatted_{len(fnames_reformatted)+cidx:04d}.json", "w") as f:
+    #             json.dump(file, f, indent=2)
     
 
-    #delete formatted alerts
-    for fn in fnames:
-        # logger.info(f"removing {fn}")
-        os.remove(fn)
+    # #delete formatted alerts
+    # for fn in fnames:
+    #     # logger.info(f"removing {fn}")
+    #     os.remove(fn)
     return
 
 #%%main
@@ -332,6 +357,7 @@ def main():
             df_test=df,
             save_dir=save_dir,
             alert_idx=alert_idx,
+            n_jobs=args["njobs"],
             simulate_alert_stream_kwargs=dict(alerts_per_s=args["alerts_per_s"], alerts_per_s_std=args["alerts_per_s_std"])
         ) #poll servers
         logger.info(f"runtime alert processing {datetime.now() - start}")
@@ -340,10 +366,11 @@ def main():
         poll_idx += 1
         alert_idx += state
 
-        if ((alert_idx % args["reformat_every"]) == 0):
-            start = datetime.now()
-            reformat_processed(save_dir, chunklen=args["chunklen"])
-            logger.info(f"runtime alert processing {datetime.now() - start}")
+        #reformat
+        # if ((alert_idx % args["reformat_every"]) == 0):
+        start = datetime.now()
+        reformat_processed(save_dir, chunklen=args["chunklen"])
+        logger.info(f"runtime alert processing {datetime.now() - start}")
 
 
 if __name__ == "__main__":

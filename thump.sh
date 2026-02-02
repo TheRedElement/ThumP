@@ -35,5 +35,9 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 #     --maxtimeout 1 \
 #     --pat "${THUMP_PATH}data/*/*.parquet" \
 
+#commands for monitoring
+# tail execlogs/fink_stream.* -f
+# watch -n 5 "ls data/fink_stream | tail "
+
 deactivate
 

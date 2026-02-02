@@ -26,7 +26,7 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --save "${THUMP_PATH}data/fink_stream/" \
     --chunklen 60 \
     --maxtimeout 90 \
-    --npolls 2
+    --npolls -1
 # mprof plot -o mprofile.png
 # #simulated alerts
 # python3 ${THUMP_PATH}/src/thump/commands/fink_stream_alerts_lsst.py \

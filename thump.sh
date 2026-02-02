@@ -50,7 +50,7 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 # watch -n 5 "ls data/fink_stream | tail "
 
 #commands for syncing
-# rsync -chavzP --delete "$SOURCE" "$DEST"
+# rsync -chavzP --delete "$SOURCE" "$DEST"  #SOURCE, DEST ... directories
 
 
 deactivate

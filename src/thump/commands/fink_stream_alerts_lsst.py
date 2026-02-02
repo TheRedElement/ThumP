@@ -185,8 +185,8 @@ def poll_single_alert(
                 diaObjectId=str(alert["diaObject"]["diaObjectId"]),
                 diaSourceId=str(alert["diaSource"]["diaSourceId"]),
                 midpointMjdTai=np.round(alert["diaSource"]["midpointMjdTai"], decimals=4),
-                ra=np.round(alert["diaObject"]["ra"], decimals=2),
-                dec=np.round(alert["diaObject"]["dec"], decimals=2),
+                ra=np.round(alert["diaObject"]["ra"], decimals=7),
+                dec=np.round(alert["diaObject"]["dec"], decimals=7),
                 comment="",
             )
         }

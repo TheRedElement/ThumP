@@ -132,7 +132,7 @@ export function exportSelection({pageNumber=undefined} = {}) {
     let csvComments = [
         //comments
         `#METADATA:${JSON.stringify(METADATA)}`,
-        "#object_id: id of the object as specified in the uploaded files",
+        "#objectId: id of the object as specified in the uploaded files (keys of entries)",
         "#class: classification based on the selection in the user interface",
     ]
     const auxCols = Object.keys(objClassification[0].dataset);

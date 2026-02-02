@@ -12,6 +12,7 @@ dependencies = [
     "ipykernel>=7.1.0",
     "joblib>=1.5.3",
     "kaleido>=1.2.0",
+    "lust-codesnippets-py",
     "nbformat>=5.10.4",
     "pandas>=2.3.3",
     "plotly>=6.5.2",
@@ -20,10 +21,11 @@ dependencies = [
 ]
 
 [project.scripts]
-thump_make_examples = "thump.commands:make_examples.main"
 thump_concat_output = "thump.commands:concat_output.main"
+thump_mag2absmag = "thump.commands:mag2absmag.main"
 thump_from_fink_datatransfer = "thump.commands:fink_from_datatransfer_lsst.main"
 thump_fink_stream_lsst = "thump.commands:fink_stream_alerts_lsst.main"
+thump_make_examples = "thump.commands:make_examples.main"
 
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]
@@ -34,3 +36,6 @@ dev = [
     "fink-client>=9.2",
     "memory-profiler>=0.61.0",
 ]
+
+[tool.uv.sources]
+lust-codesnippets-py = { git = "https://github.com/TheRedElement/LuStCodeSnippets.git", rev = "dev" }

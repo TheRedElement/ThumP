@@ -15,8 +15,6 @@ import argparse
 from astropy.cosmology import FlatLambdaCDM
 from lust_codesnippets_py.astronomy import absmag as lcaa
 
-from thump.data import output as thdo
-
 #%%definitions
 
 #%%main

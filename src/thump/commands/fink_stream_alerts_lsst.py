@@ -18,10 +18,12 @@ Usage
 
 #%%imports
 import argparse
+from astropy.io import fits
 from datetime import datetime
 from fink_client.consumer import AlertConsumer
 from fink_client.configuration import load_credentials
 import glob
+from io import BytesIO
 import json
 from joblib.parallel import Parallel, delayed
 import logging
@@ -30,49 +32,35 @@ import polars as pl
 import os
 import sys
 import time
-from typing import Tuple
+from typing import List, Tuple
 
-os.environ["POLARS_MAX_THREADS"] = "1"  #to allow parallelization over chunks
-
-from thump.fink_lsst import process_data as thpd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-# stdout_handler = logging.StreamHandler(sys.stdout)
-# stdout_handler.setLevel(logging.INFO)
-# stdout_handler.addFilter(lambda record: record.levelno <= logging.INFO)
-# stderr_handler = logging.StreamHandler(sys.stderr)
-# stderr_handler.setLevel(logging.WARNING)
-# logger.handlers.clear()
-# logger.addHandler(stdout_handler)
-# logger.addHandler(stderr_handler)
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+stdout_handler.addFilter(lambda record: record.levelno <= logging.INFO)
+stderr_handler = logging.StreamHandler(sys.stderr)
+stderr_handler.setLevel(logging.WARNING)
+logger.handlers.clear()
+logger.addHandler(stdout_handler)
+logger.addHandler(stderr_handler)
 
 #%%definitions
-def simulate_alert_stream(df_test:pl.LazyFrame,
+def simulate_alert_stream(fnames:List[str],
     maxtimeout:int=1,
-    alerts_per_s:float=160, alerts_per_s_std:float=1,
     ) -> Tuple[str,pl.LazyFrame,str]:
-    """simulates an alert arriving
+    """simulates a single alert arriving
 
-    - simulates an alert arriving by drawing from a database (`df_test`) of downloaded alerts
+    - simulates an alert arriving by drawing from a set of downloaded alerts (defined via `pat`)
 
     Parameters
-        - `df_test`
-            - `pl.LazyFrame`
-            - each row is one alert
+        - `fnames`
+            - `List[str]`
+            - list of files to use for drawing alerts from 
         - `maxtimeout`
             - `int`, optional
             - timeout for not receiving an alert
-        - `alerts_per_s`
-            - `float`, optional
-            - expected number of alerts per second
-            - set as the mean of a normal distribution
-            - the default is `160`
-        - `alerts_per_s_std`
-            - `float`, optional
-            - standard deviation of expected number of alerts per second
-            - set as the std of a normal distribution
-            - the default is `1`
 
     Returns
         - `topic`
@@ -80,12 +68,13 @@ def simulate_alert_stream(df_test:pl.LazyFrame,
             - subscribed topic
             - `None` if no alert was retrieved
         - `alert`
-            - `pl.LazyFrame`
-            - alerts that got emitted
+            - `dict`
+            - alert that got emitted
             - `None` if no alert was retrieved
         - `key`
-            - `str`
-            - alert ky?
+            - `dict`
+            - alert schema
+            - ignored here
             - `None` if no alert was retrieved
     """
     alerts_exist = np.random.choice([0,1], p=[0.3,0.7]).astype(bool)
@@ -95,22 +84,24 @@ def simulate_alert_stream(df_test:pl.LazyFrame,
         return None, None, None
 
     #alerts found
-    noptions = df_test.select(df_test.collect_schema().names()[0]).collect().height #number of alerts in the database
-    nalerts = max(1,np.abs(np.random.normal(alerts_per_s, alerts_per_s_std)).astype(int))                     #number of alerts to generate (at least 1 alert)
+    f = np.random.choice(fnames)    #choose random file
+    alert = pl.scan_parquet(f)
+    nalerts = alert.select(alert.collect_schema().names()[0]).collect().height
+    alert = alert.slice(np.random.randint(0, nalerts), 1)   #select single alert to emit
 
     topic = "testing"
-    alerts = pl.concat([df_test.slice(np.random.randint(0, noptions), 1) for _ in range(nalerts)])    #generate some number of alerts that will be output
-    key = "testing"
+    alert = alert.collect().to_dicts()[0]    #generate a single alert
     
-    return topic, alerts, key
+    #deal with images
+    key = dict(comment="testing")
+    
+    return topic, alert, key
 
 def poll_single_alert(
     myconfig, topics,
     maxtimeout:int=2,
-    df_test:pl.LazyFrame=None,
+    files:List[str]=None,
     save_dir:str=None,
-    alert_idx:int=0,
-    n_jobs:int=1,
     simulate_alert_stream_kwargs:dict=None,
     ) -> True:
     """polls a single alert
@@ -127,21 +118,14 @@ def poll_single_alert(
         - `maxtimeout`
             - `int`
             - maximum amount of time to wait until returning
-        - `df_test`
-            - `pl.LazyFrame`, optional
-            - database of stored alerts for simulating alert stream
-            - each row is one alert
-            - the default is `None`
-                - will use the actual alert stream
+        - `files`
+            - `List[str]`
+            - list of files to use for drawing alerts from 
         - `save_dir`
             - `str`, optional
             - directory to save processed alerts to
             - the default is `None`
                 - not saved
-        - `alert_idx`
-            - `int`, optional
-            - index of the currently processed alert
-            - the default is `0`
         - `simulate_alert_stream_kwargs`
             - `dict`, optional
             - additional kwargs to pass to `simulate_alert_stream()`
@@ -155,10 +139,10 @@ def poll_single_alert(
     """
     if simulate_alert_stream_kwargs is None: simulate_alert_stream_kwargs = dict()
 
-    if df_test is not None:
+    if files is not None:
         logger.info("simulated stream")
         #simulated alert stream
-        topic, alert, key = simulate_alert_stream(df_test, maxtimeout, **simulate_alert_stream_kwargs)
+        topic, alert, key = simulate_alert_stream(files, maxtimeout, **simulate_alert_stream_kwargs)
     else:
         logger.info("polling servers")
         #actual alerts
@@ -175,20 +159,56 @@ def poll_single_alert(
     #manipulate output
     state = topic is not None   #was an alert retrieved?
     if state:
-        nalerts = alert.select(alert.collect_schema().names()[0]).collect().height
-        logger.info(f"{type(alert)}, {nalerts=}")
+        start = datetime.now()
+        #process and save individual objects immediately (only max one alert per poll retrieved)
 
-        #process alerts in parallel
-        _ = Parallel(n_jobs=n_jobs, backend="threading")(
-            delayed(thpd.compile_file)(
-                alert,
-                chunkidx=f"{alert_idx:04d}_{aidx:02d}",
-                chunklen=1,               #entire alert package in one single file
-                save_dir=save_dir,
-            ) for aidx in range(nalerts)
-        )
+        #select/preprocess cutouts
+        hdul = fits.open(BytesIO(alert["cutoutScience"]))
+        science = np.round(hdul[0].data, 1)
+        science = np.where(np.isnan(science), None, science)    #NaN is not supported in json
+        hdul.close()
+        hdul = fits.open(BytesIO(alert["cutoutTemplate"]))
+        template = np.round(hdul[0].data, 1)
+        template = np.where(np.isnan(template), None, template) #NaN is not supported in json
+        hdul.close()
+        hdul = fits.open(BytesIO(alert["cutoutDifference"]))
+        difference = np.round(hdul[0].data, 1)
+        difference = np.where(np.isnan(difference), None, difference)   #NaN is not supported in json
+        hdul.close()
+
+        #compile file
+        data_json = {
+            alert['diaSource']['diaSourceId']: dict(
+                link=f"https://lsst.fink-portal.org/{alert['diaObject']['diaObjectId']}",
+                thumbnailTypes=[
+                    "science",
+                    "template",
+                    "differece",
+                ],
+                thumbnails=[
+                    science.tolist(),
+                    template.tolist(),
+                    difference.tolist(),
+                ],
+                diaObjectId=str(alert["diaObject"]["diaObjectId"]),
+                diaSourceId=str(alert["diaSource"]["diaSourceId"]),
+                midpointMjdTai=np.round(alert["diaSource"]["midpointMjdTai"], decimals=4),
+                ra=np.round(alert["diaObject"]["ra"], decimals=2),
+                dec=np.round(alert["diaObject"]["dec"], decimals=2),
+                comment="",
+            )
+        }
+        
+        if isinstance(save_dir, str):
+            with open(f"{save_dir}processed_{datetime.now()}.json", "w") as f:
+                json.dump(data_json, f, indent=2)
+        else:
+            logger.info("   alert received but not saved because `--save` is unset or `False`")
+
+        logger.info(f"  runtime alert processing: {datetime.now() - start}")
+
     else:
-        logger.info(f"No alerts received in the last {maxtimeout} seconds")
+        logger.info(f"  no alerts received in the last {maxtimeout} seconds")
     
     return state
 
@@ -248,23 +268,9 @@ def main():
         help="glob pattern to filter for files downloaded via `fink_client` datatransfer. serve as template to simulate data-stream. streams real data if omitted"
     )
     parser.add_argument(
-        "--alerts_per_s",
-        type=float,
-        default=100,
-        required=False,
-        help="only for simulated stream. expected number of alerts per second."
-    )
-    parser.add_argument(
-        "--alerts_per_s_std",
-        type=float,
-        default=1,
-        required=False,
-        help="only for simulated stream. variance of expected number of alerts per second."
-    )
-    parser.add_argument(
         "--save",
         type=str,
-        default="./data/fink_stream/",
+        default=False,
         required=False,
         help="glob pattern to filter for files downloaded via `fink_client` datatransfer. serve as template to simulate data-stream"
     )
@@ -274,21 +280,7 @@ def main():
         default=100,
         required=False,
         help="number of objects each file shall contain"
-    )    
-    parser.add_argument(
-        "--reformat_every",
-        type=int,
-        default=100,
-        required=False,
-        help="after how many extracted alerts to reformat to `ThumP!` schema"
-    )    
-    parser.add_argument(
-        "--njobs",
-        type=int,
-        default=1,
-        required=False,
-        help="number of jobs to use for parallel processing chunks. -1 denotes all available cores"
-    )    
+    )
     parser.add_argument(
         "--maxtimeout",
         type=float,
@@ -306,11 +298,12 @@ def main():
     #global configs
     if args["pat"] is None:
         #stream real alerts
-        df = None
+        fnames = None
     else:
         #artificial alerts
+        if not args["pat"].endswith(".parquet"):
+            raise ValueError("`--pat` has to end with `.parquet`")        
         fnames = sorted(glob.glob(args["pat"]))
-        df = thpd.read_files(fnames)        
 
     #saving
     save_dir = args["save"]
@@ -329,13 +322,11 @@ def main():
         start = datetime.now()
         state = poll_single_alert(myconfig, creds["mytopics"],
             maxtimeout=args["maxtimeout"],
-            df_test=df,
+            files=fnames,
             save_dir=save_dir,
-            alert_idx=alert_idx,
-            n_jobs=args["njobs"],
-            simulate_alert_stream_kwargs=dict(alerts_per_s=args["alerts_per_s"], alerts_per_s_std=args["alerts_per_s_std"])
+            simulate_alert_stream_kwargs=dict(),
         ) #poll servers
-        logger.info(f"runtime alert processing {datetime.now() - start}")
+        logger.info(f"runtime alert polling: {datetime.now() - start}")
         
         #update
         poll_idx += 1
@@ -345,7 +336,7 @@ def main():
         # if ((alert_idx % args["reformat_every"]) == 0):
         start = datetime.now()
         reformat_processed(save_dir, chunklen=args["chunklen"])
-        logger.info(f"runtime alert processing {datetime.now() - start}")
+        logger.info(f"runtime alert reformatting: {datetime.now() - start}")
 
 
 if __name__ == "__main__":

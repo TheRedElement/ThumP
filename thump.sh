@@ -19,17 +19,19 @@ source ${THUMP_PATH}.venv/bin/activate
 #     --chunklen 60 --chunk_start 0 --nchunks 30 \
 #     --njobs 5
 
-# #real data
-# python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
+# fink_consumer --save -outdir data/fink_stream/
+
+#real data
+python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
+    --save "${THUMP_PATH}data/fink_stream/" \
+    --chunklen 60 \
+    --maxtimeout 90 \
+# #simulated alerts
+# python3 ${THUMP_PATH}/src/thump/commands/fink_stream_alerts_lsst.py \
 #      --save "${THUMP_PATH}data/fink_stream/" \
-#     --chunklen 60 --reformat_every 100 \
-#     --njobs 8 --maxtimeout 5 \
-#testing
-python3 ${THUMP_PATH}/src/thump/commands/fink_stream_alerts_lsst.py \
-     --save "${THUMP_PATH}data/fink_stream/" \
-    --chunklen 60 --reformat_every 100 \
-    --njobs -1 --maxtimeout 0.01 \
-    --pat "${THUMP_PATH}data/*/*.parquet" --alerts_per_s 16 --alerts_per_s_std 1 \
+#     --chunklen 60 \
+#     --maxtimeout 1 \
+#     --pat "${THUMP_PATH}data/*/*.parquet" \
 
 deactivate
 

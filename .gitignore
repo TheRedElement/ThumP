@@ -3,6 +3,7 @@ temp*
 data/*
 execlogs/*
 *.sh
+mprofile*
 
 #do not ignore
 !thump.sh

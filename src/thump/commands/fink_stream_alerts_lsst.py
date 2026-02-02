@@ -37,14 +37,6 @@ from typing import List, Tuple
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
-stdout_handler.addFilter(lambda record: record.levelno <= logging.INFO)
-stderr_handler = logging.StreamHandler(sys.stderr)
-stderr_handler.setLevel(logging.WARNING)
-logger.handlers.clear()
-logger.addHandler(stdout_handler)
-logger.addHandler(stderr_handler)
 
 #%%definitions
 def simulate_alert_stream(fnames:List[str],
@@ -140,11 +132,11 @@ def poll_single_alert(
     if simulate_alert_stream_kwargs is None: simulate_alert_stream_kwargs = dict()
 
     if files is not None:
-        logger.info("simulated stream")
+        logger.info("poll_single_alert(): simulated stream")
         #simulated alert stream
         topic, alert, key = simulate_alert_stream(files, maxtimeout, **simulate_alert_stream_kwargs)
     else:
-        logger.info("polling servers")
+        logger.info("poll_single_alert(): polling servers")
         #actual alerts
         # Instantiate a consumer
         consumer = AlertConsumer(topics, myconfig)
@@ -203,12 +195,12 @@ def poll_single_alert(
             with open(f"{save_dir}processed_{datetime.now()}.json", "w") as f:
                 json.dump(data_json, f, indent=2)
         else:
-            logger.info("   alert received but not saved because `--save` is unset or `False`")
+            logger.info("poll_single_alert(): alert received but not saved because `--save` is unset or `False`")
 
-        logger.info(f"  runtime alert processing: {datetime.now() - start}")
+        logger.info(f"poll_single_alert(): runtime alert processing: {datetime.now() - start}")
 
     else:
-        logger.info(f"  no alerts received in the last {maxtimeout} seconds")
+        logger.info(f"poll_single_alert(): no alerts received in the last {maxtimeout} seconds")
     
     return state
 
@@ -287,7 +279,14 @@ def main():
         default=5,
         required=False,
         help="maximum amount of time to wait for an alert until trying again. in seconds"
-    )    
+    )
+    parser.add_argument(
+        "--npolls",
+        type=int,
+        default=-1,
+        required=False,
+        help="number of polls to make to fink. used for testing"
+    )
     args=vars(parser.parse_args())
 
     #create `./data/` if it does not exist and is requested
@@ -318,7 +317,8 @@ def main():
     #listener
     poll_idx = 0                #init number of polls made
     alert_idx = 0               #init number of alerts received
-    while True:
+    reached_npolls = False
+    while not reached_npolls:
         start = datetime.now()
         state = poll_single_alert(myconfig, creds["mytopics"],
             maxtimeout=args["maxtimeout"],
@@ -326,18 +326,20 @@ def main():
             save_dir=save_dir,
             simulate_alert_stream_kwargs=dict(),
         ) #poll servers
-        logger.info(f"runtime alert polling: {datetime.now() - start}")
+        logger.info(f"runtime(alert polling):      {datetime.now() - start}")
         
         #update
         poll_idx += 1
         alert_idx += state
 
+        reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
+
         #reformat
         # if ((alert_idx % args["reformat_every"]) == 0):
         start = datetime.now()
         reformat_processed(save_dir, chunklen=args["chunklen"])
-        logger.info(f"runtime alert reformatting: {datetime.now() - start}")
+        logger.info(f"runtime(alert reformatting): {datetime.now() - start}")
 
-
+    logger.info(f"finished after {poll_idx} polls")
 if __name__ == "__main__":
     main()

@@ -32,4 +32,5 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "fink-client>=9.2",
+    "memory-profiler>=0.61.0",
 ]

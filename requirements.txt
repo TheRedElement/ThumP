@@ -16,6 +16,8 @@ certifi==2026.1.4
     # via requests
 charset-normalizer==3.4.4
     # via requests
+choreographer==1.2.1
+    # via kaleido
 comm==0.2.3
     # via ipykernel
 confluent-kafka==2.13.0
@@ -48,6 +50,8 @@ fonttools==4.61.1
     # via matplotlib
 idna==3.11
     # via requests
+iniconfig==2.3.0
+    # via pytest
 ipykernel==7.1.0
     # via thump (pyproject.toml)
 ipython==9.9.0
@@ -69,14 +73,22 @@ jupyter-core==5.9.1
     #   ipykernel
     #   jupyter-client
     #   nbformat
+kaleido==1.2.0
+    # via thump (pyproject.toml)
 kiwisolver==1.4.9
     # via matplotlib
+logistro==2.0.1
+    # via
+    #   choreographer
+    #   kaleido
 matplotlib==3.10.8
     # via fink-client
 matplotlib-inline==0.2.1
     # via
     #   ipykernel
     #   ipython
+memory-profiler==0.61.0
+    # via thump (pyproject.toml:dev)
 narwhals==2.15.0
     # via plotly
 nbformat==5.10.4
@@ -91,12 +103,16 @@ numpy==2.4.1
     #   matplotlib
     #   pandas
     #   pyerfa
+orjson==3.11.6
+    # via kaleido
 packaging==26.0
     # via
     #   astropy
     #   ipykernel
+    #   kaleido
     #   matplotlib
     #   plotly
+    #   pytest
 pandas==3.0.0
     # via
     #   thump (pyproject.toml)
@@ -111,6 +127,8 @@ platformdirs==4.5.1
     # via jupyter-core
 plotly==6.5.2
     # via thump (pyproject.toml)
+pluggy==1.6.0
+    # via pytest
 polars==1.37.1
     # via thump (pyproject.toml)
 polars-runtime-32==1.37.1
@@ -121,6 +139,7 @@ psutil==7.2.1
     # via
     #   fink-client
     #   ipykernel
+    #   memory-profiler
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
@@ -135,8 +154,13 @@ pygments==2.19.2
     # via
     #   ipython
     #   ipython-pygments-lexers
+    #   pytest
 pyparsing==3.3.2
     # via matplotlib
+pytest==9.0.2
+    # via pytest-timeout
+pytest-timeout==2.4.0
+    # via kaleido
 python-dateutil==2.9.0.post0
     # via
     #   jupyter-client
@@ -160,6 +184,8 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
+simplejson==3.20.2
+    # via choreographer
 six==1.17.0
     # via python-dateutil
 stack-data==0.6.3

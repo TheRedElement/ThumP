@@ -219,7 +219,7 @@ def consume_alerts(
     state = (len(alerts) > 0)
     if state:
         logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
-        _ = Parallel(n_jobs=n_jobs, backend="threading")(
+        _ = Parallel(n_jobs=n_jobs, backend="threading", verbose=True)(
             delayed(process_single_alert)(
                 alert,
                 save_dir=save_dir

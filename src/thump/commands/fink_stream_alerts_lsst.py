@@ -224,8 +224,6 @@ def consume_alerts(
                 alert,
                 save_dir=save_dir
         ) for alert in alerts)
-        # for alert in alerts:
-        #     process_single_alert(alert, save_dir=save_dir)
     else:
         logger.info(f"consume_alerts(): no alerts received in the last {maxtimeout} seconds")
     
@@ -324,7 +322,7 @@ def main():
     parser.add_argument(
         "--njobs",
         type=int,
-        default=-2,
+        default=-1,
         required=False,
         help="number of jobs to use for parallel processing of individual alerts. -1 denotes all available cores"
     )    
@@ -365,6 +363,7 @@ def main():
         state = consume_alerts(myconfig, creds["mytopics"],
             maxtimeout=args["maxtimeout"],
             maxalerts=args["maxalerts"],
+            n_jobs=args["njobs"],
             files=fnames,
             save_dir=save_dir,
             simulate_alert_stream_kwargs=dict(),

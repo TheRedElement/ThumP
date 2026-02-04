@@ -39,6 +39,12 @@ os.environ["POLARS_MAX_THREADS"] = "1"  #to allow parallelization over chunks
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+try:
+    from mpi4py import MPI
+    mpi = True
+except Exception as e:
+    logger.warning(f"`mpi4py` not installed, using `joblib`")
+    mpi = False
 #%%definitions
 def simulate_alert_stream(fnames:List[str],
     maxtimeout:int=1,
@@ -219,11 +225,26 @@ def consume_alerts(
     state = (len(alerts) > 0)
     if state:
         logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
-        _ = Parallel(n_jobs=n_jobs, backend="threading", verbose=True)(
-            delayed(process_single_alert)(
-                alert,
-                save_dir=save_dir
-        ) for alert in alerts)
+        if mpi:
+            comm = MPI.COMM_WORLD
+            rank = comm.Get_rank()
+            size = comm.Get_size()
+
+            #init
+            if rank == 0:
+                args = alerts
+            else:
+                args = None
+
+            #run
+            args_local = comm.scatter(args, root=0)
+
+        else:
+            _ = Parallel(n_jobs=n_jobs, backend="threading", verbose=1)(
+                delayed(process_single_alert)(
+                    alert,
+                    save_dir=save_dir
+            ) for alert in alerts)
     else:
         logger.info(f"consume_alerts(): no alerts received in the last {maxtimeout} seconds")
     

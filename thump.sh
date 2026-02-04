@@ -6,7 +6,7 @@
 
 #SBATCH --partition=trevor  #ignored, directly access via ssh
 
-#SBATCH --ntasks=1
+#SBATCH --ntasks=20
 #SBATCH --mem=4G            #~200MiB for processing 5 alerts in parallel (based on memory-profiler)
 #SBATCH --time=0-01:00:00
 

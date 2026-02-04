@@ -24,7 +24,7 @@ source ${THUMP_PATH}.venv/bin/activate
 # fink_consumer --save -outdir data/fink_stream/
 
 #real data
-mprof run -M python ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
+python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --save "${THUMP_PATH}data/fink_stream/" \
     --chunklen 60 \
     --maxtimeout 90 \
@@ -32,7 +32,7 @@ mprof run -M python ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --npolls -1 \
     --njobs -1
 
-# python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
+# mprof run -M python ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 # mprof plot -o mprofile.png
 
 # #simulated alerts

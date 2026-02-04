@@ -220,34 +220,61 @@ def consume_alerts(
         #close the connection to the servers
         consumer.close()
 
-    
     #manipulate output
     state = (len(alerts) > 0)
     if state:
         logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
-        if mpi:
-            comm = MPI.COMM_WORLD
-            rank = comm.Get_rank()
-            size = comm.Get_size()
 
-            #init
-            if rank == 0:
-                args = alerts
-            else:
-                args = None
-
-            #run
-            args_local = comm.scatter(args, root=0)
-
-        else:
-            _ = Parallel(n_jobs=n_jobs, backend="threading", verbose=1)(
-                delayed(process_single_alert)(
-                    alert,
-                    save_dir=save_dir
-            ) for alert in alerts)
+        _ = Parallel(n_jobs=n_jobs, backend="threading", verbose=1)(
+            delayed(process_single_alert)(
+                alert,
+                save_dir=save_dir
+        ) for alert in alerts)
     else:
         logger.info(f"consume_alerts(): no alerts received in the last {maxtimeout} seconds")
+    return state
+
+def consume_alerts_mpi(
+    myconfig, topics,
+    maxtimeout:int=-1,
+    maxalerts:int=1,
+    save_dir:str=None,
+    ) -> True:
+    """mpi variant of `consume_alerts`
+    """
+    if mpi:
+        #init mpi (if available)
+        comm = MPI.COMM_WORLD
+        rank = comm.Get_rank()
+        size = comm.Get_size()
+    else:
+        comm = None
+        rank = None
+        size = None
+
+    if rank == 0:
+        logger.info("consume_alerts_mpi(): polling servers")
+        #actual alerts
+        #instantiate a consumer
+        consumer = AlertConsumer(topics, myconfig)
+
+        #poll the servers
+        alerts = consumer.consume(num_alerts=maxalerts, timeout=maxtimeout)
+
+        #close the connection to the servers
+        consumer.close()
+
+        state = (len(alerts) > 0)
+    else:
+        alerts = None
     
+    #manipulate output
+    if state:
+        alerts_loc = comm.scatter(alerts, root=0)
+        _ = process_single_alert(alerts_loc, save_dir=save_dir)
+    else:
+        logger.info(f"consume_alerts_mpi(): no alerts received in the last {maxtimeout} seconds")
+
     return state
 
 def reformat_processed(
@@ -347,6 +374,13 @@ def main():
         required=False,
         help="number of jobs to use for parallel processing of individual alerts. -1 denotes all available cores"
     )    
+    parser.add_argument(
+        "--mpi",
+        type=bool,
+        default=False,
+        required=False,
+        help="whether to use mpi for execution"
+    )    
     args=vars(parser.parse_args())
 
     #create `./data/` if it does not exist and is requested
@@ -381,14 +415,23 @@ def main():
     while not reached_npolls:
         logger.info(f"######### poll {poll_idx+1} #########")
         start = datetime.now()
-        state = consume_alerts(myconfig, creds["mytopics"],
-            maxtimeout=args["maxtimeout"],
-            maxalerts=args["maxalerts"],
-            n_jobs=args["njobs"],
-            files=fnames,
-            save_dir=save_dir,
-            simulate_alert_stream_kwargs=dict(),
-        ) #poll servers
+        if ~mpi | ~args["mpi"]:
+            state = consume_alerts(myconfig, creds["mytopics"],
+                maxtimeout=args["maxtimeout"],
+                maxalerts=args["maxalerts"],
+                n_jobs=args["njobs"],
+                save_dir=save_dir,
+                files=fnames,
+                simulate_alert_stream_kwargs=dict(),
+            ) #poll servers
+        else:
+            #use mpi instead
+            state = consume_alerts_mpi(myconfig, creds["mytopics"],
+                maxtimeout=args["maxtimeout"],
+                maxalerts=args["maxalerts"],
+                n_jobs=args["njobs"],
+                save_dir=save_dir,
+            )
         logger.info(f"runtime(consume_alerts):     {datetime.now() - start}")
         
         #update

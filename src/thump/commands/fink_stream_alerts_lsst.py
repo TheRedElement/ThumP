@@ -360,7 +360,7 @@ def main():
     alert_idx = 0               #init number of alerts received
     reached_npolls = False
     while not reached_npolls:
-        logger.log(f"######### poll {poll_idx+1} #########")
+        logger.info(f"######### poll {poll_idx+1} #########")
         start = datetime.now()
         state = consume_alerts(myconfig, creds["mytopics"],
             maxtimeout=args["maxtimeout"],

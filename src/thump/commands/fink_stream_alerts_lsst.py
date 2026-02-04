@@ -32,8 +32,9 @@ import polars as pl
 import os
 import sys
 import time
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
+os.environ["POLARS_MAX_THREADS"] = "1"  #to allow parallelization over chunks
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -89,11 +90,66 @@ def simulate_alert_stream(fnames:List[str],
     
     return topic, alert, key
 
-def poll_single_alert(
-    myconfig, topics,
-    maxtimeout:int=2,
-    files:List[str]=None,
+def process_single_alert(alert:List[Any], 
     save_dir:str=None,
+    ):
+    topic, alert, key = alert
+
+    start = datetime.now()
+
+    #select/preprocess cutouts
+    hdul = fits.open(BytesIO(alert["cutoutScience"]))
+    science = np.round(hdul[0].data, 1)
+    science = np.where(np.isnan(science), None, science)    #NaN is not supported in json
+    hdul.close()
+    hdul = fits.open(BytesIO(alert["cutoutTemplate"]))
+    template = np.round(hdul[0].data, 1)
+    template = np.where(np.isnan(template), None, template) #NaN is not supported in json
+    hdul.close()
+    hdul = fits.open(BytesIO(alert["cutoutDifference"]))
+    difference = np.round(hdul[0].data, 1)
+    difference = np.where(np.isnan(difference), None, difference)   #NaN is not supported in json
+    hdul.close()
+
+    #compile file
+    data_json = {
+        alert['diaSource']['diaSourceId']: dict(
+            link=f"https://lsst.fink-portal.org/{alert['diaObject']['diaObjectId']}",
+            thumbnailTypes=[
+                "science",
+                "template",
+                "differece",
+            ],
+            thumbnails=[
+                science.tolist(),
+                template.tolist(),
+                difference.tolist(),
+            ],
+            diaObjectId=str(alert["diaObject"]["diaObjectId"]),
+            diaSourceId=str(alert["diaSource"]["diaSourceId"]),
+            midpointMjdTai=np.round(alert["diaSource"]["midpointMjdTai"], decimals=4),
+            ra=np.round(alert["diaObject"]["ra"], decimals=7),
+            dec=np.round(alert["diaObject"]["dec"], decimals=7),
+            comment="",
+        )
+    }
+    
+    if isinstance(save_dir, str):
+        with open(f"{save_dir}processed_{datetime.now()}.json", "w") as f:
+            json.dump(data_json, f, indent=2)
+    else:
+        logger.info("process_single_alert(): alert received but not saved because `--save` is unset or `False`")
+
+    logger.info(f"process_single_alert(): runtime alert processing: {datetime.now() - start}")
+    return
+
+def consume_alerts(
+    myconfig, topics,
+    maxtimeout:int=-1,
+    maxalerts:int=1,
+    n_jobs:int=1, 
+    save_dir:str=None,
+    files:List[str]=None,
     simulate_alert_stream_kwargs:dict=None,
     ) -> True:
     """polls a single alert
@@ -110,14 +166,22 @@ def poll_single_alert(
         - `maxtimeout`
             - `int`
             - maximum amount of time to wait until returning
-        - `files`
-            - `List[str]`
-            - list of files to use for drawing alerts from 
+        - `maxalerts`
+            - `int`, optional
+            - maximum number of alerts to retrieve in one poll
+            - the default is `-1`
+        - `n_jobs`
+            - `int`, optional
+            - number of jobs to use for processing each individual retrieved alert
+            - the default is `-1`
         - `save_dir`
             - `str`, optional
             - directory to save processed alerts to
             - the default is `None`
                 - not saved
+        - `files`
+            - `List[str]`
+            - list of files to use for drawing alerts from
         - `simulate_alert_stream_kwargs`
             - `dict`, optional
             - additional kwargs to pass to `simulate_alert_stream()`
@@ -132,75 +196,38 @@ def poll_single_alert(
     if simulate_alert_stream_kwargs is None: simulate_alert_stream_kwargs = dict()
 
     if files is not None:
-        logger.info("poll_single_alert(): simulated stream")
+        logger.info("consume_alerts(): simulated stream")
         #simulated alert stream
-        topic, alert, key = simulate_alert_stream(files, maxtimeout, **simulate_alert_stream_kwargs)
+        alerts = []
+        for i in range(0, np.random.randint(maxalerts)):
+            topic, alert, key = simulate_alert_stream(files, maxtimeout, **simulate_alert_stream_kwargs)
+            alerts.append([topic, alert, key])
     else:
-        logger.info("poll_single_alert(): polling servers")
+        logger.info("consume_alerts(): polling servers")
         #actual alerts
-        # Instantiate a consumer
+        #instantiate a consumer
         consumer = AlertConsumer(topics, myconfig)
 
-        # Poll the servers
-        topic, alert, key = consumer.poll(maxtimeout)
+        #poll the servers
+        alerts = consumer.consume(num_alerts=maxalerts, timeout=maxtimeout)
 
-        # Close the connection to the servers
+        #close the connection to the servers
         consumer.close()
 
     
     #manipulate output
-    state = topic is not None   #was an alert retrieved?
+    state = (len(alerts) > 0)
     if state:
-        start = datetime.now()
-        #process and save individual objects immediately (only max one alert per poll retrieved)
-
-        #select/preprocess cutouts
-        hdul = fits.open(BytesIO(alert["cutoutScience"]))
-        science = np.round(hdul[0].data, 1)
-        science = np.where(np.isnan(science), None, science)    #NaN is not supported in json
-        hdul.close()
-        hdul = fits.open(BytesIO(alert["cutoutTemplate"]))
-        template = np.round(hdul[0].data, 1)
-        template = np.where(np.isnan(template), None, template) #NaN is not supported in json
-        hdul.close()
-        hdul = fits.open(BytesIO(alert["cutoutDifference"]))
-        difference = np.round(hdul[0].data, 1)
-        difference = np.where(np.isnan(difference), None, difference)   #NaN is not supported in json
-        hdul.close()
-
-        #compile file
-        data_json = {
-            alert['diaSource']['diaSourceId']: dict(
-                link=f"https://lsst.fink-portal.org/{alert['diaObject']['diaObjectId']}",
-                thumbnailTypes=[
-                    "science",
-                    "template",
-                    "differece",
-                ],
-                thumbnails=[
-                    science.tolist(),
-                    template.tolist(),
-                    difference.tolist(),
-                ],
-                diaObjectId=str(alert["diaObject"]["diaObjectId"]),
-                diaSourceId=str(alert["diaSource"]["diaSourceId"]),
-                midpointMjdTai=np.round(alert["diaSource"]["midpointMjdTai"], decimals=4),
-                ra=np.round(alert["diaObject"]["ra"], decimals=7),
-                dec=np.round(alert["diaObject"]["dec"], decimals=7),
-                comment="",
-            )
-        }
-        
-        if isinstance(save_dir, str):
-            with open(f"{save_dir}processed_{datetime.now()}.json", "w") as f:
-                json.dump(data_json, f, indent=2)
-        else:
-            logger.info("poll_single_alert(): alert received but not saved because `--save` is unset or `False`")
-
-        logger.info(f"poll_single_alert(): runtime alert processing: {datetime.now() - start}")
-
+        logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
+        _ = Parallel(n_jobs=n_jobs, backend="threading")(
+            delayed(process_single_alert)(
+                alert,
+                save_dir=save_dir
+        ) for alert in alerts)
+        # for alert in alerts:
+        #     process_single_alert(alert, save_dir=save_dir)
     else:
-        logger.info(f"poll_single_alert(): no alerts received in the last {maxtimeout} seconds")
+        logger.info(f"consume_alerts(): no alerts received in the last {maxtimeout} seconds")
     
     return state
 
@@ -281,12 +308,26 @@ def main():
         help="maximum amount of time to wait for an alert until trying again. in seconds"
     )
     parser.add_argument(
+        "--maxalerts",
+        type=int,
+        default=1,
+        required=False,
+        help="maximum number of alerts to retrieve in one poll."
+    )
+    parser.add_argument(
         "--npolls",
         type=int,
         default=-1,
         required=False,
         help="number of polls to make to fink. used for testing"
     )
+    parser.add_argument(
+        "--njobs",
+        type=int,
+        default=-2,
+        required=False,
+        help="number of jobs to use for parallel processing of individual alerts. -1 denotes all available cores"
+    )    
     args=vars(parser.parse_args())
 
     #create `./data/` if it does not exist and is requested
@@ -319,14 +360,16 @@ def main():
     alert_idx = 0               #init number of alerts received
     reached_npolls = False
     while not reached_npolls:
+        logger.log(f"######### poll {poll_idx+1} #########")
         start = datetime.now()
-        state = poll_single_alert(myconfig, creds["mytopics"],
+        state = consume_alerts(myconfig, creds["mytopics"],
             maxtimeout=args["maxtimeout"],
+            maxalerts=args["maxalerts"],
             files=fnames,
             save_dir=save_dir,
             simulate_alert_stream_kwargs=dict(),
         ) #poll servers
-        logger.info(f"runtime(alert polling):      {datetime.now() - start}")
+        logger.info(f"runtime(consume_alerts):     {datetime.now() - start}")
         
         #update
         poll_idx += 1
@@ -338,7 +381,7 @@ def main():
         # if ((alert_idx % args["reformat_every"]) == 0):
         start = datetime.now()
         reformat_processed(save_dir, chunklen=args["chunklen"])
-        logger.info(f"runtime(alert reformatting): {datetime.now() - start}")
+        logger.info(f"runtime(reformat_processed): {datetime.now() - start}")
 
     logger.info(f"finished after {poll_idx} polls")
 if __name__ == "__main__":

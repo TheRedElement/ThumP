@@ -7,7 +7,7 @@
 #SBATCH --partition=trevor  #ignored, directly access via ssh
 
 #SBATCH --ntasks=1
-#SBATCH --mem=4G            #~200MiB based on memory-profiler
+#SBATCH --mem=4G            #~200MiB for processing 5 alerts in parallel (based on memory-profiler)
 #SBATCH --time=0-01:00:00
 
 source ./_paths.sh
@@ -28,7 +28,10 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --save "${THUMP_PATH}data/fink_stream/" \
     --chunklen 60 \
     --maxtimeout 90 \
-    --npolls -1
+    --maxalerts 10 \
+    --npolls 13 \
+    --njobs -3
+
 # mprof run -M python ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 # mprof plot -o mprofile.png
 
@@ -37,6 +40,9 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 #      --save "${THUMP_PATH}data/fink_stream/" \
 #     --chunklen 60 \
 #     --maxtimeout 1 \
+#     --maxalerts 10 \
+#     --npolls -1 \
+#     --njobs -1  \
 #     --pat "${THUMP_PATH}data/*/*.parquet" \
 
 #concatenating output

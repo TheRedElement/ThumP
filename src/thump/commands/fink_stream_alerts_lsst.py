@@ -337,7 +337,7 @@ def run_joblib(args):
         #reformat
         start = datetime.now()
         reformat_processed(save_dir, chunklen=args["chunklen"])
-        logger.info(f"runtime(reformat_processed): {datetime.now() - start}")
+        logger.info(f"runtime(reformat_processed): {datetime.now() - start}\n")
 
     logger.info(f"finished after {poll_idx} polls")
     return

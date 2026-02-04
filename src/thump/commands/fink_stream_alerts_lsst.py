@@ -39,12 +39,6 @@ os.environ["POLARS_MAX_THREADS"] = "1"  #to allow parallelization over chunks
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-try:
-    from mpi4py import MPI
-    mpi = True
-except Exception as e:
-    logger.warning(f"`mpi4py` not installed, using `joblib`")
-    mpi = False
 #%%definitions
 def simulate_alert_stream(fnames:List[str],
     maxtimeout:int=1,
@@ -96,9 +90,21 @@ def simulate_alert_stream(fnames:List[str],
     
     return topic, alert, key
 
-def process_single_alert(alert:List[Any], 
+def process_single_alert(
+    alert:List[Any],
     save_dir:str=None,
     ):
+    """
+    Parameters
+        - `alert`
+            - `List[Any]`
+            - single alert to be processed
+        - `save_dir`
+            - `str`, optional
+            - directory to save processed alerts to
+            - the default is `None`
+                - not saved    
+    """
     topic, alert, key = alert
 
     start = datetime.now()
@@ -153,14 +159,12 @@ def consume_alerts(
     myconfig, topics,
     maxtimeout:int=-1,
     maxalerts:int=1,
-    n_jobs:int=1, 
-    save_dir:str=None,
     files:List[str]=None,
     simulate_alert_stream_kwargs:dict=None,
-    ) -> True:
-    """polls a single alert
+    ) -> Tuple[List[List[Any]], bool]:
+    """consumes a batch of alerts
 
-    - function to poll a single alert (maximum waiting time of `maxtimeout`)
+    - function to poll the database for a batch of alerts
 
     Parameters
         - `myconfig`
@@ -176,15 +180,6 @@ def consume_alerts(
             - `int`, optional
             - maximum number of alerts to retrieve in one poll
             - the default is `-1`
-        - `n_jobs`
-            - `int`, optional
-            - number of jobs to use for processing each individual retrieved alert
-            - the default is `-1`
-        - `save_dir`
-            - `str`, optional
-            - directory to save processed alerts to
-            - the default is `None`
-                - not saved
         - `files`
             - `List[str]`
             - list of files to use for drawing alerts from
@@ -195,6 +190,9 @@ def consume_alerts(
                 - set to `dict()`
 
     Returns
+        - `alerts`
+            - `List[List[Any]]`
+            - extracted alerts
         - `state`
             - `bool`
             - whether an alert was retrieved or not
@@ -209,6 +207,7 @@ def consume_alerts(
             topic, alert, key = simulate_alert_stream(files, maxtimeout, **simulate_alert_stream_kwargs)
             alerts.append([topic, alert, key])
     else:
+        start = datetime.now()
         logger.info("consume_alerts(): polling servers")
         #actual alerts
         #instantiate a consumer
@@ -219,63 +218,14 @@ def consume_alerts(
 
         #close the connection to the servers
         consumer.close()
-
-    #manipulate output
-    state = (len(alerts) > 0)
-    if state:
-        logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
-
-        _ = Parallel(n_jobs=n_jobs, backend="threading", verbose=1)(
-            delayed(process_single_alert)(
-                alert,
-                save_dir=save_dir
-        ) for alert in alerts)
-    else:
-        logger.info(f"consume_alerts(): no alerts received in the last {maxtimeout} seconds")
-    return state
-
-def consume_alerts_mpi(
-    myconfig, topics,
-    maxtimeout:int=-1,
-    maxalerts:int=1,
-    save_dir:str=None,
-    ) -> True:
-    """mpi variant of `consume_alerts`
-    """
-    if mpi:
-        #init mpi (if available)
-        comm = MPI.COMM_WORLD
-        rank = comm.Get_rank()
-        size = comm.Get_size()
-    else:
-        comm = None
-        rank = None
-        size = None
-
-    if rank == 0:
-        logger.info("consume_alerts_mpi(): polling servers")
-        #actual alerts
-        #instantiate a consumer
-        consumer = AlertConsumer(topics, myconfig)
-
-        #poll the servers
-        alerts = consumer.consume(num_alerts=maxalerts, timeout=maxtimeout)
-
-        #close the connection to the servers
-        consumer.close()
-
-        state = (len(alerts) > 0)
-    else:
-        alerts = None
+        logger.info(f"consume_alerts(consuming alerts): {datetime.now()-start}")
     
-    #manipulate output
-    if state:
-        alerts_loc = comm.scatter(alerts, root=0)
-        _ = process_single_alert(alerts_loc, save_dir=save_dir)
-    else:
-        logger.info(f"consume_alerts_mpi(): no alerts received in the last {maxtimeout} seconds")
+    logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
+    
+    #set state
+    state = (len(alerts) > 0)
 
-    return state
+    return alerts, state
 
 def reformat_processed(
     save_dir:str,
@@ -319,6 +269,162 @@ def reformat_processed(
         for fn in fnames:
             # logger.info(f"removing {fn}")
             os.remove(fn)
+    return
+
+#%%
+def run_joblib(args):
+    """run stream using joblib
+    """
+    #create `./data/` if it does not exist and is requested
+    if not os.path.isdir("data/fink_stream/") and ("data/fink_stream" in args["save"]):
+        os.makedirs("./data/fink_stream/")
+
+    #global configs
+    if args["pat"] is None:
+        #stream real alerts
+        fnames = None
+    else:
+        #artificial alerts
+        if not args["pat"].endswith(".parquet"):
+            raise ValueError("`--pat` has to end with `.parquet`")        
+        fnames = sorted(glob.glob(args["pat"]))
+
+    #saving
+    save_dir = args["save"]
+    
+    #fink configs
+    creds = load_credentials()  #fink credentials
+    myconfig = {
+        "bootstrap.servers": creds["servers"],
+        "group.id": creds["group_id"]
+    }
+
+    #listener
+    poll_idx = 0                #init number of polls made
+    alert_idx = 0               #init number of alerts received
+    reached_npolls = False
+    while not reached_npolls:
+        logger.info(f"######### poll {poll_idx+1} #########")
+        
+        #poll servers
+        start = datetime.now()
+        alerts, state = consume_alerts(myconfig, creds["mytopics"],
+            maxtimeout=args["maxtimeout"],
+            maxalerts=args["maxalerts"],
+            files=fnames,
+            simulate_alert_stream_kwargs=dict(),
+        )
+        if not state:
+            logger.info(f"no alerts in the last {args['maxtimeout']} seconds")
+        logger.info(f"runtime(consume_alerts):       {datetime.now() - start}")
+
+        #process extracted alerts
+        start = datetime.now()
+        _ = Parallel(n_jobs=args["njobs"], backend="threading", verbose=1)(
+            delayed(process_single_alert)(
+                alert,
+                save_dir=save_dir
+        ) for alert in alerts)
+        logger.info(f"runtime(process_single_alert): {datetime.now() - start}")
+        
+        #update
+        poll_idx += 1
+        alert_idx += state
+
+        reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
+
+        #reformat
+        start = datetime.now()
+        reformat_processed(save_dir, chunklen=args["chunklen"])
+        logger.info(f"runtime(reformat_processed): {datetime.now() - start}")
+
+    logger.info(f"finished after {poll_idx} polls")
+    return
+
+def run_mpi(args):
+    from mpi4py import MPI
+    
+    #init mpi
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+    
+    if rank == 0:
+        #create `./data/` if it does not exist and is requested
+        if not os.path.isdir("data/fink_stream/") and ("data/fink_stream" in args["save"]):
+            os.makedirs("./data/fink_stream/")
+
+        #global configs
+        if args["pat"] is None:
+            #stream real alerts
+            fnames = None
+        else:
+            #artificial alerts
+            if not args["pat"].endswith(".parquet"):
+                raise ValueError("`--pat` has to end with `.parquet`")        
+            fnames = sorted(glob.glob(args["pat"]))
+
+        #saving
+        save_dir = args["save"]
+        
+        #fink configs
+        creds = load_credentials()  #fink credentials
+        myconfig = {
+            "bootstrap.servers": creds["servers"],
+            "group.id": creds["group_id"]
+        }
+
+        #listener
+        poll_idx = 0                #init number of polls made
+        alert_idx = 0               #init number of alerts received
+        reached_npolls = False
+
+    while not reached_npolls:
+        if rank == 0:
+            logger.info(f"######### poll {poll_idx+1} #########")
+        
+            #poll servers
+            start = datetime.now()
+            alerts, state = consume_alerts(myconfig, creds["mytopics"],
+                maxtimeout=args["maxtimeout"],
+                maxalerts=args["maxalerts"],
+                files=fnames,
+                simulate_alert_stream_kwargs=dict(),
+            )
+            if not state:
+                logger.info(f"no alerts in the last {args['maxtimeout']} seconds")
+            logger.info(f"runtime(consume_alerts):       {datetime.now() - start}")
+        else:
+            alerts = None
+        
+        #workers wait until root is done
+        alerts = comm.bcast(alerts, root=0)
+
+        #process extracted alerts
+        start = datetime.now()
+        process_single_alert(
+                alerts,
+                save_dir=save_dir
+        )
+        logger.info(f"runtime(process_single_alert): {datetime.now() - start}")
+        
+        #wait until all workers are done
+        comm.Barrier()
+
+        #postprocessing
+        if rank == 0:
+            #update
+            poll_idx += 1
+            alert_idx += state
+
+            reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
+
+            #reformat
+            start = datetime.now()
+            reformat_processed(save_dir, chunklen=args["chunklen"])
+            logger.info(f"runtime(reformat_processed): {datetime.now() - start}")
+
+    logger.info(f"finished after {poll_idx} polls")    
     return
 
 #%%main
@@ -383,69 +489,8 @@ def main():
     )    
     args=vars(parser.parse_args())
 
-    #create `./data/` if it does not exist and is requested
-    if not os.path.isdir("data/fink_stream/") and ("data/fink_stream" in args["save"]):
-        os.makedirs("./data/fink_stream/")
+    run_joblib(args)    
+    # run_mpi(args)    
 
-
-    #global configs
-    if args["pat"] is None:
-        #stream real alerts
-        fnames = None
-    else:
-        #artificial alerts
-        if not args["pat"].endswith(".parquet"):
-            raise ValueError("`--pat` has to end with `.parquet`")        
-        fnames = sorted(glob.glob(args["pat"]))
-
-    #saving
-    save_dir = args["save"]
-    
-    #fink configs
-    creds = load_credentials()  #fink credentials
-    myconfig = {
-        "bootstrap.servers": creds["servers"],
-        "group.id": creds["group_id"]
-    }
-
-    #listener
-    poll_idx = 0                #init number of polls made
-    alert_idx = 0               #init number of alerts received
-    reached_npolls = False
-    while not reached_npolls:
-        logger.info(f"######### poll {poll_idx+1} #########")
-        start = datetime.now()
-        if ~mpi | ~args["mpi"]:
-            state = consume_alerts(myconfig, creds["mytopics"],
-                maxtimeout=args["maxtimeout"],
-                maxalerts=args["maxalerts"],
-                n_jobs=args["njobs"],
-                save_dir=save_dir,
-                files=fnames,
-                simulate_alert_stream_kwargs=dict(),
-            ) #poll servers
-        else:
-            #use mpi instead
-            state = consume_alerts_mpi(myconfig, creds["mytopics"],
-                maxtimeout=args["maxtimeout"],
-                maxalerts=args["maxalerts"],
-                n_jobs=args["njobs"],
-                save_dir=save_dir,
-            )
-        logger.info(f"runtime(consume_alerts):     {datetime.now() - start}")
-        
-        #update
-        poll_idx += 1
-        alert_idx += state
-
-        reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
-
-        #reformat
-        # if ((alert_idx % args["reformat_every"]) == 0):
-        start = datetime.now()
-        reformat_processed(save_dir, chunklen=args["chunklen"])
-        logger.info(f"runtime(reformat_processed): {datetime.now() - start}")
-
-    logger.info(f"finished after {poll_idx} polls")
 if __name__ == "__main__":
     main()

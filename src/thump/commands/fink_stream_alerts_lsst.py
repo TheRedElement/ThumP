@@ -94,7 +94,8 @@ def process_single_alert(
     alert:List[Any],
     save_dir:str=None,
     ):
-    """
+    """processes and a single alert and saves it as `ThumP!` format
+
     Parameters
         - `alert`
             - `List[Any]`
@@ -271,7 +272,7 @@ def reformat_processed(
             os.remove(fn)
     return
 
-#%%
+#%%frameworks
 def run_joblib(args):
     """run stream using joblib
     """
@@ -342,14 +343,36 @@ def run_joblib(args):
     return
 
 def run_mpi(args):
-    from mpi4py import MPI
+    """mpi variant of `run_joblib`
     
+    - implements FIFO queue
+    - will run until forceably terminated
+    """
+    from collections import deque
+    from mpi4py import MPI
+
+    #required by all workers
+    save_dir = args["save"]
+
     #init mpi
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
+
+    if size < 2:
+        logger.error("at least 2 workers required ")
+        exit()
     
+    STOP = None #stop execution
+
     if rank == 0:
+        ######
+        #ROOT#
+        ######
+
+        logger.info("using `mpi4py`")
+        logger.info(f"{size=}")
+
         #create `./data/` if it does not exist and is requested
         if not os.path.isdir("data/fink_stream/") and ("data/fink_stream" in args["save"]):
             os.makedirs("./data/fink_stream/")
@@ -363,9 +386,6 @@ def run_mpi(args):
             if not args["pat"].endswith(".parquet"):
                 raise ValueError("`--pat` has to end with `.parquet`")        
             fnames = sorted(glob.glob(args["pat"]))
-
-        #saving
-        save_dir = args["save"]
         
         #fink configs
         creds = load_credentials()  #fink credentials
@@ -377,10 +397,15 @@ def run_mpi(args):
         #listener
         poll_idx = 0                #init number of polls made
         alert_idx = 0               #init number of alerts received
-        reached_npolls = False
+        reached_npolls = False      #flag denoting if maximum number of polls has been reached
 
-    while not reached_npolls:
-        if rank == 0:
+        #fifo elements
+        queue = deque()
+        idle_workers = set()        
+        active_workers = size - 1
+
+        while active_workers > 0:
+            #ingest stream
             logger.info(f"######### poll {poll_idx+1} #########")
         
             #poll servers
@@ -391,40 +416,65 @@ def run_mpi(args):
                 files=fnames,
                 simulate_alert_stream_kwargs=dict(),
             )
+
             if not state:
                 logger.info(f"no alerts in the last {args['maxtimeout']} seconds")
+                continue
             logger.info(f"runtime(consume_alerts):       {datetime.now() - start}")
-        else:
-            alerts = None
-        
-        #workers wait until root is done
-        alerts = comm.bcast(alerts, root=0)
 
-        #process extracted alerts
-        start = datetime.now()
-        process_single_alert(
-                alerts,
-                save_dir=save_dir
-        )
-        logger.info(f"runtime(process_single_alert): {datetime.now() - start}")
-        
-        #wait until all workers are done
-        comm.Barrier()
-
-        #postprocessing
-        if rank == 0:
-            #update
+            #root postprocessing
+            ##update counters
             poll_idx += 1
             alert_idx += state
-
             reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
 
-            #reformat
+            ##reformat
             start = datetime.now()
             reformat_processed(save_dir, chunklen=args["chunklen"])
             logger.info(f"runtime(reformat_processed): {datetime.now() - start}")
 
-    logger.info(f"finished after {poll_idx} polls")    
+            #add to queue
+            if not reached_npolls and state:
+                queue.extend(alerts)
+                logger.info(f"LENGTH OF QUEUE {len(queue)}\n")
+
+            #worker request
+            worker = comm.recv(source=MPI.ANY_SOURCE)
+
+            #dispatch
+            if reached_npolls:
+                #always terminate after npolls has been reached
+                comm.send(STOP, dest=worker)
+                active_workers -= 1
+            elif queue:
+                comm.send(queue.popleft(), dest=worker)
+            else:
+                idle_workers.add(worker)    #nothing to do yet -> keep at disposal
+
+            #reactivate idle workers
+            while queue and idle_workers:
+                w = idle_workers.pop()
+                comm.send(queue.popleft(), dest=w)
+    else:
+        #########
+        #WORKERS#
+        #########
+
+        while True:
+            logger.info(f"{rank=}")
+            comm.send(rank, dest=0)     #request work
+            alert = comm.recv(source=0)
+
+            if alert is STOP:
+                break
+            
+            #process extracted alerts
+            start = datetime.now()
+            process_single_alert(
+                    alert,
+                    save_dir=save_dir
+            )
+            logger.info(f"runtime(process_single_alert): {datetime.now() - start}")
     return
 
 #%%main
@@ -489,8 +539,11 @@ def main():
     )    
     args=vars(parser.parse_args())
 
-    run_joblib(args)    
-    # run_mpi(args)    
+    if args["mpi"]:
+        run_mpi(args)
+    else:    
+        logger.info("using `joblib`")
+        run_joblib(args)    
 
 if __name__ == "__main__":
     main()

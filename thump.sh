@@ -24,16 +24,16 @@ source ${THUMP_PATH}.venv/bin/activate
 # fink_consumer --save -outdir data/fink_stream/
 
 #real data
-# mpiexec -n 20 python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
-python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
-    --save "${THUMP_PATH}data/fink_stream/" \
-    --chunklen 60 \
-    --maxtimeout -1 \
-    --maxalerts 100 \
-    --npolls -1 \
-    --njobs -1 \
+# # mpiexec -n 20 python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
+# python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
+#     --save "${THUMP_PATH}data/fink_stream/" \
+#     --chunklen 60 \
+#     --maxtimeout -1 \
+#     --maxalerts 100 \
+#     --npolls -1 \
+#     --njobs -1 \
 
-    # --mpi true \
+#     # --mpi true \
 # mprof run -M python ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 # mprof plot -o mprofile.png
 
@@ -49,6 +49,9 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 
 #concatenating output
 # python3 ${THUMP_PATH}/src/thump/commands/concat_output.py ./ --save ./data/inspected/inspected_0000.csv
+
+#remove files that have been completely inspected
+python3  ${THUMP_PATH}/src/thump/commands/remove_inspected.py --in_pat "${THUMP_PATH}data/fink_stream/reformatted*"  --out_pat "~/Downloads/thump_*" --dry_run false
 
 #computing absolute mag
 # python3 thump_mag2absmag <m> <z>

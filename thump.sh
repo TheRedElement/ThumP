@@ -51,7 +51,7 @@ source ${THUMP_PATH}.venv/bin/activate
 # python3 ${THUMP_PATH}/src/thump/commands/concat_output.py ./ --save ./data/inspected/inspected_0000.csv
 
 #remove files that have been completely inspected
-python3  ${THUMP_PATH}/src/thump/commands/remove_inspected.py --in_pat "${THUMP_PATH}data/fink_stream/reformatted*"  --out_pat "~/Downloads/thump_*" --dry_run false
+# python3  ${THUMP_PATH}/src/thump/commands/remove_inspected.py --in_pat "${THUMP_PATH}data/fink_stream/reformatted*"  --out_pat "~/Downloads/thump_*" --dry_run false
 
 #computing absolute mag
 # python3 thump_mag2absmag <m> <z>

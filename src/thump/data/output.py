@@ -74,6 +74,7 @@ def remove_inspected(in_pat:str, out_pat:str, dry_run:bool=False) -> pl.DataFram
 
     Dependencies
         - `glob`
+        - `json`
         - `os`
         - `polars`
 

@@ -28,7 +28,7 @@ source ${THUMP_PATH}.venv/bin/activate
 python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --save "${THUMP_PATH}data/fink_stream/" \
     --chunklen 60 \
-    --maxtimeout 120 \
+    --maxtimeout -1 \
     --maxalerts 100 \
     --npolls -1 \
     --njobs -1 \
@@ -39,10 +39,10 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 
 # #simulated alerts
 # python3 ${THUMP_PATH}/src/thump/commands/fink_stream_alerts_lsst.py \
-#      --save "${THUMP_PATH}data/fink_stream/" \
+#      --save "${THUMP_PATH}data/fink_stream_synth/" \
 #     --chunklen 60 \
-#     --maxtimeout 1 \
-#     --maxalerts 10 \
+#     --maxtimeout 0 \
+#     --maxalerts 100 \
 #     --npolls -1 \
 #     --njobs -1  \
 #     --pat "${THUMP_PATH}data/*/*.parquet" \

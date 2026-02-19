@@ -20,6 +20,7 @@ Usage
 import argparse
 from astropy.io import fits
 from datetime import datetime
+from datetime import timedelta
 from fink_client.consumer import AlertConsumer
 from fink_client.configuration import load_credentials
 import glob
@@ -41,7 +42,6 @@ logging.basicConfig(level=logging.INFO, force=True)
 
 #%%definitions
 def simulate_alert_stream(fnames:List[str],
-    maxtimeout:int=1,
     ) -> Tuple[str,pl.LazyFrame,str]:
     """simulates a single alert arriving
 
@@ -51,9 +51,6 @@ def simulate_alert_stream(fnames:List[str],
         - `fnames`
             - `List[str]`
             - list of files to use for drawing alerts from
-        - `maxtimeout`
-            - `int`, optional
-            - timeout for not receiving an alert
 
     Returns
         - `topic`
@@ -70,11 +67,6 @@ def simulate_alert_stream(fnames:List[str],
             - ignored here
             - `None` if no alert was retrieved
     """
-    alerts_exist = np.random.choice([0,1], p=[0.3,0.7]).astype(bool)
-    if not alerts_exist:
-        #no alerts generated
-        time.sleep(maxtimeout)
-        return None, None, None
 
     #alerts found
     f = np.random.choice(fnames)    #choose random file
@@ -85,7 +77,6 @@ def simulate_alert_stream(fnames:List[str],
     topic = "testing"
     alert = alert.collect().to_dicts()[0]    #generate a single alert
 
-    #deal with images
     key = dict(comment="testing")
 
     return topic, alert, key
@@ -141,8 +132,8 @@ def process_single_alert(
             diaObjectId=str(alert["diaObject"]["diaObjectId"]),
             diaSourceId=str(alert["diaSource"]["diaSourceId"]),
             midpointMjdTai=np.round(alert["diaSource"]["midpointMjdTai"], decimals=4),
-            ra=np.round(alert["diaObject"]["ra"], decimals=7),
-            dec=np.round(alert["diaObject"]["dec"], decimals=7),
+            ra=np.round(alert["diaObject"]["ra"], decimals=7) if alert["diaObject"]["ra"] is not None else None,
+            dec=np.round(alert["diaObject"]["dec"], decimals=7) if alert["diaObject"]["dec"] is not None else None,
             comment="",
         )
     }
@@ -204,9 +195,16 @@ def consume_alerts(
         logger.info("consume_alerts(): simulated stream")
         #simulated alert stream
         alerts = []
-        for i in range(0, np.random.randint(maxalerts)):
-            topic, alert, key = simulate_alert_stream(files, maxtimeout, **simulate_alert_stream_kwargs)
-            alerts.append([topic, alert, key])
+        alerts_exist = np.random.choice([0,1], p=[0.3,0.7]).astype(bool)
+        if not alerts_exist:
+            #no alerts generated
+            time.sleep(maxtimeout * (maxtimeout != -1))
+        else:
+            #generate alerts
+            for i in range(0, np.random.randint(maxalerts)):
+                topic, alert, key = simulate_alert_stream(files, **simulate_alert_stream_kwargs)
+                alerts.append([topic, alert, key])
+            time.sleep(maxtimeout * (maxtimeout != -1)) #simulate timeout
     else:
         start = datetime.now()
         logger.info("consume_alerts(): polling servers")
@@ -301,6 +299,7 @@ def run_joblib(args):
 
     #listener
     try:
+        start_metrics = datetime.now()
         poll_idx = 0                #init number of polls made
         alert_idx = 0               #init number of alerts received
         reached_npolls = False
@@ -330,15 +329,16 @@ def run_joblib(args):
 
             #update
             poll_idx += 1
-            alert_idx += state
+            alert_idx += len(alerts)
 
             reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
 
             #reformat
             start = datetime.now()
             reformat_processed(save_dir, chunklen=args["chunklen"])
-            logger.info(f"runtime(reformat_processed): {datetime.now() - start}\n")
+            logger.info(f"runtime(reformat_processed): {datetime.now() - start}")
 
+            logger.info(f"Average number of alerts: {alert_idx/timedelta.total_seconds(datetime.now() - start_metrics)} alerts/s ({alert_idx} total)\n")
         logger.info(f"finished after {poll_idx} polls")
     except KeyboardInterrupt:
         #cleanup
@@ -520,7 +520,7 @@ def main():
     parser.add_argument(
         "--maxtimeout",
         type=float,
-        default=5,
+        default=90,
         required=False,
         help="maximum amount of time to wait for an alert until trying again. in seconds"
     )

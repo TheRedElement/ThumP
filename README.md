@@ -21,8 +21,7 @@
 | Time [hh:mm] | Throughput ThumP! [alerts/s] | Throughput Consumer [alerts/s] |
 | :-: | :-: |
 | 09:30 | 3.5 | 3.8 |
-| 10:00 |  | |
-| 10:30 |  | |
+| 10:30 | 8.5 | |
 | 11:00 |  | |
 | 11:30 |  | |
 | 12:00 |  | |

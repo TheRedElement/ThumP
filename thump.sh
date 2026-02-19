@@ -6,8 +6,8 @@
 
 #SBATCH --partition=trevor  #ignored, directly access via ssh
 
-#SBATCH --ntasks=20
-#SBATCH --mem=4G            #~200MiB for processing 5 alerts in parallel (based on memory-profiler)
+#SBATCH --ntasks=12
+#SBATCH --mem=4G            #~200MiB for processing 30 alerts in parallel (based on memory-profiler)
 #SBATCH --time=0-01:00:00
 
 source ./_paths.sh
@@ -34,7 +34,15 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --njobs -1 \
 
     # --mpi true \
-# mprof run -M python ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
+
+# #profiling
+# mprof run -M python "${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py" \
+#     --save "${THUMP_PATH}data/fink_stream/" \
+#     --chunklen 60 \
+#     --maxtimeout 120 \
+#     --maxalerts 100 \
+#     --npolls 30 \
+#     --njobs 12
 # mprof plot -o mprofile.png
 
 # #simulated alerts

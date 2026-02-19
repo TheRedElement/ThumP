@@ -17,3 +17,12 @@
 * local (wide screen): col width: 69; row height: 69; ncols: NaN; nrows: 5; highlight: 10
 * discovery wall:      col width: 200; row height: 200; ncols: NaN; nrows: 10; highlight: 20; nobj: 60
 
+## Benchmarking
+| Time [hh:mm] | Throughput [alerts/s] |
+| :-: | :-: |
+| 09:30 | 3.5 |
+| 10:00 |  |
+| 10:30 |  |
+| 11:00 |  |
+| 11:30 |  |
+| 12:00 |  |

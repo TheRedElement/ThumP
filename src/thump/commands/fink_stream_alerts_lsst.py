@@ -1,7 +1,7 @@
 """listens to fink-stream and reformats files to `ThumP!` schema
 
 - only designed for lsst alerts
-- listens to the stream and extracts 
+- listens to the stream and extracts
 - reformats extracted data according to `ThumP!` schema
 - setting `--pat` will simulate a stream from files extracted via datatransfer
 
@@ -50,7 +50,7 @@ def simulate_alert_stream(fnames:List[str],
     Parameters
         - `fnames`
             - `List[str]`
-            - list of files to use for drawing alerts from 
+            - list of files to use for drawing alerts from
         - `maxtimeout`
             - `int`, optional
             - timeout for not receiving an alert
@@ -84,10 +84,10 @@ def simulate_alert_stream(fnames:List[str],
 
     topic = "testing"
     alert = alert.collect().to_dicts()[0]    #generate a single alert
-    
+
     #deal with images
     key = dict(comment="testing")
-    
+
     return topic, alert, key
 
 def process_single_alert(
@@ -104,7 +104,7 @@ def process_single_alert(
             - `str`, optional
             - directory to save processed alerts to
             - the default is `None`
-                - not saved    
+                - not saved
     """
     topic, alert, key = alert
 
@@ -146,7 +146,7 @@ def process_single_alert(
             comment="",
         )
     }
-    
+
     if isinstance(save_dir, str):
         with open(f"{save_dir}processed_{datetime.now()}.json", "w") as f:
             json.dump(data_json, f, indent=2)
@@ -212,7 +212,7 @@ def consume_alerts(
         logger.info("consume_alerts(): polling servers")
         #actual alerts
         #instantiate a consumer
-        consumer = AlertConsumer(topics, myconfig)
+        consumer = AlertConsumer(topics, myconfig, "lsst")
 
         #poll the servers
         alerts = consumer.consume(num_alerts=maxalerts, timeout=maxtimeout)
@@ -220,9 +220,9 @@ def consume_alerts(
         #close the connection to the servers
         consumer.close()
         logger.info(f"consume_alerts(consuming alerts): {datetime.now()-start}")
-    
+
     logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
-    
+
     #set state
     state = (len(alerts) > 0)
 
@@ -233,9 +233,9 @@ def reformat_processed(
     chunklen:int,
     ):
     """reformats processed alerts (.json files)
-    
+
     - reformats processed alerts (.json files) such that each reformatted file contains `chunklen` objects
-    
+
     Parameters
         - `save_dir`
             - `str`
@@ -254,7 +254,7 @@ def reformat_processed(
         return
     else:
         #merge into one file (every file contains one object)
-        
+
         ##load pieces
         fnames = fnames[0:chunklen]
         objs = {}
@@ -265,7 +265,7 @@ def reformat_processed(
         fnames_reformatted = glob.glob(f"{save_dir}reformatted*.json")  #reformatted files
         with open(f"{save_dir}reformatted_{len(fnames_reformatted)+1:04d}.json", "w") as f:
             json.dump(objs, f, indent=2)
-        
+
         #delete formatted alerts
         for fn in fnames:
             # logger.info(f"removing {fn}")
@@ -287,14 +287,14 @@ def run_joblib(args):
     else:
         #artificial alerts
         if not args["pat"].endswith(".parquet"):
-            raise ValueError("`--pat` has to end with `.parquet`")        
+            raise ValueError("`--pat` has to end with `.parquet`")
         fnames = sorted(glob.glob(args["pat"]))
 
     #saving
     save_dir = args["save"]
-    
+
     #fink configs
-    creds = load_credentials()  #fink credentials
+    creds = load_credentials(survey="lsst")  #fink credentials
     myconfig = {
         "bootstrap.servers": creds["servers"],
         "group.id": creds["group_id"]
@@ -306,7 +306,7 @@ def run_joblib(args):
     reached_npolls = False
     while not reached_npolls:
         logger.info(f"######### poll {poll_idx+1} #########")
-        
+
         #poll servers
         start = datetime.now()
         alerts, state = consume_alerts(myconfig, creds["mytopics"],
@@ -327,7 +327,7 @@ def run_joblib(args):
                 save_dir=save_dir
         ) for alert in alerts)
         logger.info(f"runtime(process_single_alert): {datetime.now() - start}")
-        
+
         #update
         poll_idx += 1
         alert_idx += state
@@ -344,7 +344,7 @@ def run_joblib(args):
 
 def run_mpi(args):
     """mpi variant of `run_joblib`
-    
+
     - implements FIFO queue
     - will run until forceably terminated
     """
@@ -362,7 +362,7 @@ def run_mpi(args):
     if size < 2:
         logger.error("at least 2 workers required ")
         exit()
-    
+
     STOP = None #stop execution
 
     if rank == 0:
@@ -384,9 +384,9 @@ def run_mpi(args):
         else:
             #artificial alerts
             if not args["pat"].endswith(".parquet"):
-                raise ValueError("`--pat` has to end with `.parquet`")        
+                raise ValueError("`--pat` has to end with `.parquet`")
             fnames = sorted(glob.glob(args["pat"]))
-        
+
         #fink configs
         creds = load_credentials()  #fink credentials
         myconfig = {
@@ -401,13 +401,13 @@ def run_mpi(args):
 
         #fifo elements
         queue = deque()
-        idle_workers = set()        
+        idle_workers = set()
         active_workers = size - 1
 
         while active_workers > 0:
             #ingest stream
             logger.info(f"######### poll {poll_idx+1} #########")
-        
+
             #poll servers
             start = datetime.now()
             alerts, state = consume_alerts(myconfig, creds["mytopics"],
@@ -467,7 +467,7 @@ def run_mpi(args):
 
             if alert is STOP:
                 break
-            
+
             #process extracted alerts
             start = datetime.now()
             process_single_alert(
@@ -529,21 +529,21 @@ def main():
         default=-1,
         required=False,
         help="number of jobs to use for parallel processing of individual alerts. -1 denotes all available cores"
-    )    
+    )
     parser.add_argument(
         "--mpi",
         type=bool,
         default=False,
         required=False,
         help="whether to use mpi for execution"
-    )    
+    )
     args=vars(parser.parse_args())
 
     if args["mpi"]:
         run_mpi(args)
-    else:    
+    else:
         logger.info("using `joblib`")
-        run_joblib(args)    
+        run_joblib(args)
 
 if __name__ == "__main__":
     main()

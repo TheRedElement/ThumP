@@ -37,7 +37,7 @@ from typing import Any, List, Tuple
 os.environ["POLARS_MAX_THREADS"] = "1"  #to allow parallelization over chunks
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, force=True)
 
 #%%definitions
 def simulate_alert_stream(fnames:List[str],

@@ -157,7 +157,7 @@ def process_single_alert(
     return
 
 def consume_alerts(
-    myconfig, topics,
+    consumer,
     maxtimeout:int=-1,
     maxalerts:int=1,
     files:List[str]=None,
@@ -211,14 +211,10 @@ def consume_alerts(
         start = datetime.now()
         logger.info("consume_alerts(): polling servers")
         #actual alerts
-        #instantiate a consumer
-        consumer = AlertConsumer(topics, myconfig, "lsst")
 
         #poll the servers
         alerts = consumer.consume(num_alerts=maxalerts, timeout=maxtimeout)
 
-        #close the connection to the servers
-        consumer.close()
         logger.info(f"consume_alerts(consuming alerts): {datetime.now()-start}")
 
     logger.info(f"consume_alerts(): extracted {len(alerts)} alerts")
@@ -300,46 +296,59 @@ def run_joblib(args):
         "group.id": creds["group_id"]
     }
 
+    #instantiate a consumer
+    consumer = AlertConsumer(creds["mytopics"], myconfig, "lsst")
+
     #listener
-    poll_idx = 0                #init number of polls made
-    alert_idx = 0               #init number of alerts received
-    reached_npolls = False
-    while not reached_npolls:
-        logger.info(f"######### poll {poll_idx+1} #########")
+    try:
+        poll_idx = 0                #init number of polls made
+        alert_idx = 0               #init number of alerts received
+        reached_npolls = False
+        while not reached_npolls:
+            logger.info(f"######### poll {poll_idx+1} #########")
 
-        #poll servers
-        start = datetime.now()
-        alerts, state = consume_alerts(myconfig, creds["mytopics"],
-            maxtimeout=args["maxtimeout"],
-            maxalerts=args["maxalerts"],
-            files=fnames,
-            simulate_alert_stream_kwargs=dict(),
-        )
-        if not state:
-            logger.info(f"no alerts in the last {args['maxtimeout']} seconds")
-        logger.info(f"runtime(consume_alerts):       {datetime.now() - start}")
+            #poll servers
+            start = datetime.now()
+            alerts, state = consume_alerts(consumer,
+                maxtimeout=args["maxtimeout"],
+                maxalerts=args["maxalerts"],
+                files=fnames,
+                simulate_alert_stream_kwargs=dict(),
+            )
+            if not state:
+                logger.info(f"no alerts in the last {args['maxtimeout']} seconds")
+            logger.info(f"runtime(consume_alerts):       {datetime.now() - start}")
 
-        #process extracted alerts
-        start = datetime.now()
-        _ = Parallel(n_jobs=args["njobs"], backend="threading", verbose=1)(
-            delayed(process_single_alert)(
-                alert,
-                save_dir=save_dir
-        ) for alert in alerts)
-        logger.info(f"runtime(process_single_alert): {datetime.now() - start}")
+            #process extracted alerts
+            start = datetime.now()
+            _ = Parallel(n_jobs=args["njobs"], backend="threading", verbose=1)(
+                delayed(process_single_alert)(
+                    alert,
+                    save_dir=save_dir
+            ) for alert in alerts)
+            logger.info(f"runtime(process_single_alert): {datetime.now() - start}")
 
-        #update
-        poll_idx += 1
-        alert_idx += state
+            #update
+            poll_idx += 1
+            alert_idx += state
 
-        reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
+            reached_npolls = False if (args["npolls"] < 0) else (poll_idx >= args["npolls"])
 
-        #reformat
-        start = datetime.now()
-        reformat_processed(save_dir, chunklen=args["chunklen"])
-        logger.info(f"runtime(reformat_processed): {datetime.now() - start}\n")
+            #reformat
+            start = datetime.now()
+            reformat_processed(save_dir, chunklen=args["chunklen"])
+            logger.info(f"runtime(reformat_processed): {datetime.now() - start}\n")
 
-    logger.info(f"finished after {poll_idx} polls")
+        logger.info(f"finished after {poll_idx} polls")
+    except KeyboardInterrupt:
+        #cleanup
+        
+        #close the connection to the servers
+        consumer.close()
+
+        #clean exit
+        sys.exit(0)
+
     return
 
 def run_mpi(args):
@@ -394,6 +403,9 @@ def run_mpi(args):
             "group.id": creds["group_id"]
         }
 
+        #instantiate a consumer
+        consumer = AlertConsumer(creds["mytopics"], myconfig, "lsst")
+
         #listener
         poll_idx = 0                #init number of polls made
         alert_idx = 0               #init number of alerts received
@@ -410,7 +422,7 @@ def run_mpi(args):
 
             #poll servers
             start = datetime.now()
-            alerts, state = consume_alerts(myconfig, creds["mytopics"],
+            alerts, state = consume_alerts(consumer, myconfig, creds["mytopics"],
                 maxtimeout=args["maxtimeout"],
                 maxalerts=args["maxalerts"],
                 files=fnames,
@@ -455,6 +467,9 @@ def run_mpi(args):
             while queue and idle_workers:
                 w = idle_workers.pop()
                 comm.send(queue.popleft(), dest=w)
+    
+        #close the connection to the servers
+        consumer.close()
     else:
         #########
         #WORKERS#

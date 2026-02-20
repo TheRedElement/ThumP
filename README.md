@@ -18,10 +18,10 @@
 * discovery wall:      col width: 200; row height: 200; ncols: NaN; nrows: 10; highlight: 20; nobj: 60
 
 ## Benchmarking
-| Time [hh:mm] | Throughput ThumP! [alerts/s] | Throughput Consumer [alerts/s] |
-| :-: | :-: |
-| 09:30 | 3.5 | 3.8 |
-| 10:30 | 8.5 | |
-| 11:00 |  | |
-| 11:30 |  | |
-| 12:00 |  | |
+| Time [hh:mm] | Throughput ThumP! [alerts/s] | Throughput Consumer [alerts/s] | Machine | # Polls (Thump!) |
+| :-: | :-: | :-: | :-: | :-: |
+| 09:30 | 3.5 | 3.8 | Local | 20 |
+| 10:30 | 8.5 | -   | OzStar| 30 |
+| 11:00 | 8.2 | 9.0 | OzStar| 45 |
+| 11:30 | 9.2 | 9.2 | OzStar| 50 |
+| 12:00 | 9.5 | 9.3 | OzStar| 40 |

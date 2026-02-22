@@ -5,6 +5,7 @@
 #SBATCH --error=./execlogs/%x.err
 
 #SBATCH --partition=trevor  #ignored, directly access via ssh
+#SBATCH --reservation=rubin
 
 #SBATCH --ntasks=12
 #SBATCH --mem=4G            #~200MiB for processing 30 alerts in parallel (based on memory-profiler)

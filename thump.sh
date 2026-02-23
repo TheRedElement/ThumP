@@ -29,7 +29,7 @@ source ${THUMP_PATH}.venv/bin/activate
 python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --save "${THUMP_PATH}data/fink_stream/" \
     --chunklen 60 \
-    --maxtimeout -1 \
+    --maxtimeout 120 \
     --maxalerts 100 \
     --npolls -1 \
     --njobs -1 \

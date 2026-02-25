@@ -550,11 +550,11 @@ body {
 /* ################################################################## */
 /* MEDIA QUERIES */
 @media (max-width: 768px) {
-    /* .tooltip {
+    .tooltip {
+        max-height: 2lh;
         pointer-events: all;
-    } */
+    }
     #globalheader{
         display: none;
     }
-
 }

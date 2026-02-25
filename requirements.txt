@@ -47,6 +47,8 @@ fastavro==1.9.4
     # via fink-client
 fastjsonschema==2.21.2
     # via nbformat
+fink-broker @ git+https://github.com/astrolabsoftware/fink-broker.git@49eec6daf8287b74a02918b547505c898da7ff0a
+    # via thump (pyproject.toml:dev)
 fink-client==10.0
     # via thump (pyproject.toml:dev)
 fonttools==4.61.1

@@ -34,8 +34,10 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "fink-client>=10.0",
+    "fink-broker>=4.1",
     "memory-profiler>=0.61.0",
 ]
 
 [tool.uv.sources]
 lust-codesnippets-py = { git = "https://github.com/TheRedElement/LuStCodeSnippets.git", rev = "dev" }
+fink-broker = { git = "https://github.com/astrolabsoftware/fink-broker.git" }

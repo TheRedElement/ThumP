@@ -23,6 +23,7 @@ from datetime import datetime
 from datetime import timedelta
 from fink_client.consumer import AlertConsumer
 from fink_client.configuration import load_credentials
+from fink_broker.rubin import decoding_utils as fink_du
 import glob
 from io import BytesIO
 import json
@@ -297,6 +298,9 @@ def run_joblib(args):
     #instantiate a consumer
     consumer = AlertConsumer(creds["mytopics"], myconfig, "lsst")
 
+    #adjust poll starting date
+    # fink_du.reset_offsets(consumer, "2026-01-20", creds["mytopics"], timeout=90, verbose=False)
+
     #listener
     try:
         start_metrics = datetime.now()
@@ -342,7 +346,7 @@ def run_joblib(args):
         logger.info(f"finished after {poll_idx} polls")
     except KeyboardInterrupt:
         #cleanup
-        
+
         #close the connection to the servers
         consumer.close()
 
@@ -467,7 +471,7 @@ def run_mpi(args):
             while queue and idle_workers:
                 w = idle_workers.pop()
                 comm.send(queue.popleft(), dest=w)
-    
+
         #close the connection to the servers
         consumer.close()
     else:

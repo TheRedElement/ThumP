@@ -165,4 +165,8 @@ export async function downloadExamples() {
         const example = await loadJSON(`${BASEPATH}data/examples/example${String(i).padStart(2,0)}.json`);
         downloadObjectAsJson(example, `example${String(i).padStart(2,0)}`);
     }
+    for (let i = 0; i < 9; i++) {
+        const example = await loadJSON(`${BASEPATH}data/examples/fink_${String(i).padStart(2,0)}.json`);
+        downloadObjectAsJson(example, `fink_${String(i).padStart(2,0)}`);
+    }
 }

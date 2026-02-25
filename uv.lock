@@ -568,6 +568,11 @@ wheels = [
 ]
 
 [[package]]
+name = "fink-broker"
+version = "4.1"
+source = { git = "https://github.com/astrolabsoftware/fink-broker.git#49eec6daf8287b74a02918b547505c898da7ff0a" }
+
+[[package]]
 name = "fink-client"
 version = "10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2144,6 +2149,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "fink-broker" },
     { name = "fink-client" },
     { name = "memory-profiler" },
 ]
@@ -2164,6 +2170,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "fink-broker", git = "https://github.com/astrolabsoftware/fink-broker.git" },
     { name = "fink-client", specifier = ">=10.0" },
     { name = "memory-profiler", specifier = ">=0.61.0" },
 ]

@@ -9,7 +9,7 @@
 
 #SBATCH --ntasks=12
 #SBATCH --mem=4G            #~200MiB for processing 30 alerts in parallel (based on memory-profiler)
-#SBATCH --time=0-01:00:00
+#SBATCH --time=0-11:00:00
 
 source ./_paths.sh
 

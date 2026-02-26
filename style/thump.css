@@ -404,7 +404,7 @@ section.thumbnail-mosaic {
 }
 
 .mosaic-grid .cell .thumbnail {
-    background-color: var(--c_tre_1);
+    background-color: var(--c_bg);
     width: 100%;
     height: 100%;
 }

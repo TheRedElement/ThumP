@@ -25,7 +25,6 @@ source ${THUMP_PATH}.venv/bin/activate
 # fink_consumer --save -outdir data/fink_stream/
 
 #real data
-# mpiexec -n 20 python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
 python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --save "${THUMP_PATH}data/fink_stream/" \
     --chunklen 60 \
@@ -33,8 +32,6 @@ python3 ${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py \
     --maxalerts 100 \
     --npolls -1 \
     --njobs -1 \
-
-    # --mpi true \
 
 # #profiling
 # mprof run -M python "${THUMP_PATH}src/thump/commands/fink_stream_alerts_lsst.py" \

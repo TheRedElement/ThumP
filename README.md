@@ -4,6 +4,7 @@
 
 ## TODO
 * [] Documentation
+* [] Demos
 
 ## Current Best Settings
 * local (half screen): col width: 59; row height: 49; ncols: NaN; nrows: 4; highlight: 4

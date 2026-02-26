@@ -2,13 +2,14 @@
 /* =============================== */
 /* base */
 :root {
-    --c_bg: #ffffff;
-    --c_body_text: #303030;
+    --c_bg: #000000;
+    --c_body_text: #ffffff;
     --c_tre: #c80000;
-    --c_fink_1: #15284F;
-    --c_fink_2: #3C8DFF;
-    --c_fink_3: #D5D5D3;
-    --c_fink_4: #F5622E;
+    --c_link: #c80000;
+    --c_tre_1: #333333;
+    --c_tre_2: #777777;
+    --c_tre_3: #555555;
+    --c_tre_4: #a10000;
     --s_ui: 1.0;    /* base scale for some fontsizes */
     --s_input: 1.0; /* base scale for input elements */
 }
@@ -35,15 +36,15 @@ p {
 }
 
 a {
-    color: var(--c_fink_1);
+    color: var(--c_link);
     text-decoration: none;
 }
 a:hover {
-    color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_body_text) 30%);
+    color: color-mix(in srgb, var(--c_link) 70%, var(--c_body_text) 30%);
     text-decoration: underline;
 }
 a:visited {
-    color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_bg) 30%);
+    color: color-mix(in srgb, var(--c_link) 70%, var(--c_bg) 30%);
 }
 
 button {
@@ -61,7 +62,7 @@ button {
     color: #ffffff;
     padding: 2px;
     border-radius: 7px;
-    box-shadow: 5px 5px 15px color-mix(in srgb, var(--c_fink_1) 60%, var(--c_bg) 40%);
+    box-shadow: 5px 5px 15px color-mix(in srgb, var(--c_tre_1) 60%, var(--c_bg) 40%);
     margin-bottom: 20px;
 }
 .io > * {
@@ -69,7 +70,7 @@ button {
 }
 button.io:hover {
     cursor: pointer;
-    background-color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_fink_3) 30%);
+    background-color: color-mix(in srgb, var(--c_tre_1) 70%, var(--c_tre_3) 30%);
 }
 button.close {
     position: absolute;
@@ -202,7 +203,7 @@ p{
 .controls-title:hover {
     cursor: pointer;
     text-decoration: underline;
-    color: var(--c_fink_2);
+    color: var(--c_tre_2);
 }
 /* content */
 .content-wrapper {
@@ -242,7 +243,7 @@ p{
     width: 96%;
     /* justify-self: center; */
     overflow-y: auto;
-    background-color: color-mix(in srgb, var(--c_fink_4) 10%, var(--c_bg) 90%);
+    background-color: color-mix(in srgb, var(--c_tre_4) 10%, var(--c_bg) 90%);
     border-radius: 10px;
     padding: 10px;
     margin-top: 10px;
@@ -319,30 +320,33 @@ section.thumbnail-mosaic {
     grid-template-rows: repeat(3,minmax(0, max-content));
     gap: 10px;
     margin: 10px;
-    background-color: color-mix(in srgb, var(--c_fink_4) 10%, var(--c_bg) 90%);
-    outline: 1px var(--c_fink_3) solid;
+    background-color: color-mix(in srgb, var(--c_tre_4) 10%, var(--c_bg) 90%);
+    outline: 1px var(--c_tre_3) solid;
     border-radius: 15px;
     align-items: center;
     justify-items: center;
     /* fallback (set in js) */
     grid-auto-columns: repeat(auto-fit, minmax(0, 1fr));
-    box-shadow: 3px 3px 7px color-mix(in srgb, var(--c_fink_1) 60%, var(--c_bg) 40%);
+    box-shadow: 3px 3px 7px color-mix(in srgb, var(--c_tre_1) 60%, var(--c_bg) 40%);
 }
 .mosaic-grid .cell.col-highlight {
     /* highlight specific cells to guide the eye */
-    background-color: color-mix(in srgb, var(--c_fink_4) 30%, var(--c_bg) 70%);
+    background-color: color-mix(in srgb, var(--c_tre_4) 30%, var(--c_bg) 70%);
 }
 .mosaic-grid .cell:has(input[value="good"]:checked) {
-    background-color: color-mix(in srgb, var(--c_fink_4) 90%, var(--c_bg) 10%);
+    background-color: color-mix(in srgb, var(--c_tre_4) 90%, var(--c_bg) 10%);
     outline: 4px solid var(--c_body_text);
 }
 .mosaic-grid .cell:has(input[value="maybe"]:checked) {
-    background-color: color-mix(in srgb, var(--c_fink_1) 70%, var(--c_bg) 30%);
+    background-color: color-mix(in srgb, var(--c_tre_1) 70%, var(--c_bg) 30%);
     outline: 4px solid var(--c_body_text);
     color: var(--c_bg);
 }
-.mosaic-grid .cell:has(input[value="maybe"]:checked) > * > a {
+.mosaic-grid .cell:has(input[value="good"]:checked) > * > a {
     color: var(--c_bg);
+}
+.mosaic-grid .cell:has(input[value="good"]:checked) > * > a:visited {
+    color: color-mix(in srgb, var(--c_link) 50%, var(--c_body_text) 50%);
 }
 
 .mosaic-grid .cell .cell-header {
@@ -377,16 +381,16 @@ section.thumbnail-mosaic {
     color: #ffffff;
 }
 .good {
-    accent-color: var(--c_fink_4);
-    background-color: var(--c_fink_4);
+    accent-color: var(--c_tre_4);
+    background-color: var(--c_tre_4);
 }
 .bad {
-    accent-color: var(--c_fink_2);
-    background-color: var(--c_fink_2);
+    accent-color: var(--c_tre_2);
+    background-color: var(--c_tre_2);
 }
 .maybe {
-    accent-color: var(--c_fink_1);
-    background-color: var(--c_fink_1);
+    accent-color: var(--c_tre_1);
+    background-color: var(--c_tre_1);
 }
 
 .mosaic-grid .cell .thumbnail-container {
@@ -395,7 +399,7 @@ section.thumbnail-mosaic {
 }
 
 .mosaic-grid .cell .thumbnail {
-    background-color: var(--c_fink_1);
+    background-color: var(--c_tre_1);
     width: 100%;
     height: 100%;
 }
@@ -456,7 +460,7 @@ section.thumbnail-mosaic {
     grid-area: settings;
     display: grid;
     overflow-y: scroll;
-    background-color: var(--c_fink_3);
+    background-color: var(--c_tre_3);
     border-radius: 15px;
     margin-top: 10px;
     padding: 5px;

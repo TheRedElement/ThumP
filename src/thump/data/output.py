@@ -39,7 +39,7 @@ def concat(dir:str, save:str=False) -> pl.DataFrame:
     
 
     df = pl.concat([pl.scan_csv(fn, comment_prefix="#") for fn in fnames]).collect()
-    print(df)    
+    print(df)
     #saving
     if isinstance(save, str): df.write_csv(save)
 

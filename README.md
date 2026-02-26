@@ -3,25 +3,10 @@
 ![](./gfx/thump_icon.svg)
 
 ## TODO
-1. [laptop]: init fink-stream on HPC (trevor)
-1. [laptop]: setup script-output monitoring in HPC (execlogs/*.*)
-1. [laptop]: setup stream-output monitoring in HPC (directory)
-2. [discovery-wall 1]: setup file-syncing (HPC -> discovery wall)
-2. [discovery-wall 1]: setup file-syncing (HPC -> discovery wall)
-3. [discovery wall 2--1]: setup ThumP instances
-4. [laptop]: setup sync to gdrive
+* [] Documentation
 
 ## Current Best Settings
 * local (half screen): col width: 59; row height: 49; ncols: NaN; nrows: 4; highlight: 4
 * local (full screen): col width: 66; row height: 66; ncols: NaN; nrows: 4; highlight: 4
 * local (wide screen): col width: 69; row height: 69; ncols: NaN; nrows: 5; highlight: 10
 * discovery wall:      col width: 200; row height: 200; ncols: NaN; nrows: 10; highlight: 20; nobj: 60
-
-## Benchmarking
-| Time [hh:mm] | Throughput ThumP! [alerts/s] | Throughput Consumer [alerts/s] | Machine | # Polls (Thump!) |
-| :-: | :-: | :-: | :-: | :-: |
-| 09:30 | 3.5 | 3.8 | Local | 20 |
-| 10:30 | 8.5 | -   | OzStar| 30 |
-| 11:00 | 8.2 | 9.0 | OzStar| 45 |
-| 11:30 | 9.2 | 9.2 | OzStar| 50 |
-| 12:00 | 9.5 | 9.3 | OzStar| 40 |

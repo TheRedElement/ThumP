@@ -5,6 +5,9 @@
 export const BASEPATH = "thump.lukassteinwender.com";           //for deployment (github pages only)
 // export const BASEPATH = "/";                                 //for dev
 
+export const DATAPATH = "https://raw.githubusercontent.com/TheRedElement/ThumP/main/data/"
+// export const DATAPATH = "theredelement.github.io/ThumP/data/"
+
 export const THUMBNAILS = {};   //object holding all thumbnails
 export const METADATA = {};     //other metadata required for execution
 export const colorScales = {    //custom color scales

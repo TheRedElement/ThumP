@@ -2,7 +2,7 @@
 
 
 /**imports */
-import { BASEPATH, METADATA, THUMBNAILS } from "../base/base.js";
+import { DATAPATH, METADATA, THUMBNAILS } from "../base/base.js";
 import { downloadArrAsCsv, downloadObjectAsJson, loadJSON, showError } from "../utils.js";
 
 /**definitions */
@@ -154,7 +154,8 @@ export function exportSelection({pageNumber=undefined} = {}) {
  * function to download schema.json
  */
 export async function downloadSchema() {
-    const schema = await loadJSON(`${BASEPATH}data/schema.json`);
+    console.log(`${DATAPATH}schema.json`)
+    const schema = await loadJSON(`${DATAPATH}schema.json`);
     downloadObjectAsJson(schema, "schema");
 }
 /**
@@ -162,11 +163,11 @@ export async function downloadSchema() {
  */
 export async function downloadExamples() {
     for (let i = 0; i < 5; i++) {
-        const example = await loadJSON(`${BASEPATH}data/examples/example${String(i).padStart(2,0)}.json`);
+        const example = await loadJSON(`${DATAPATH}examples/example${String(i).padStart(2,0)}.json`);
         downloadObjectAsJson(example, `example${String(i).padStart(2,0)}`);
     }
     for (let i = 0; i < 9; i++) {
-        const example = await loadJSON(`${BASEPATH}data/examples/fink_${String(i).padStart(2,0)}.json`);
+        const example = await loadJSON(`${DATAPATH}examples/fink_${String(i).padStart(2,0)}.json`);
         downloadObjectAsJson(example, `fink_${String(i).padStart(2,0)}`);
     }
 }

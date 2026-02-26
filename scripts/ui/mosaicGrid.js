@@ -253,7 +253,7 @@ export function updateGridGlobal() {
 
     //global updates
     const mosaicGrid = document.getElementById("mosaic-grid");
-    mosaicGrid.style.setProperty("grid-template-rows", `repeat(${globalOptions["nrows"]}, minmax(0,1fr))`)
+    mosaicGrid.style.setProperty("grid-template-rows", `repeat(${globalOptions["nrows"]}, minmax(0,max-content))`)
 
     formatGridRowsCols(globalOptions);
 }

@@ -316,8 +316,7 @@ section.thumbnail-mosaic {
     width: 100%;
     display: grid;
     grid-auto-flow: column;
-    /* grid-template-rows: minmax(0, 1fr); */
-    grid-template-rows: repeat(3,minmax(0, max-content));
+    grid-template-rows: repeat(2,minmax(0, max-content));
     gap: 10px;
     margin: 10px;
     background-color: color-mix(in srgb, var(--c_tre_4) 10%, var(--c_bg) 90%);
@@ -356,6 +355,7 @@ section.thumbnail-mosaic {
     text-align: center;
     flex: 1;
     column-gap: 10px;
+    height: var(--s_ui);    /* height reacts to fontsize */
     align-content: center;
     align-items: center;
 }

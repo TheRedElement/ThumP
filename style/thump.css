@@ -340,10 +340,16 @@ section.thumbnail-mosaic {
     outline: 4px solid var(--c_body_text);
     color: var(--c_bg);
 }
-.mosaic-grid .cell:has(input[value="good"]:checked) > * > a {
+:where(
+    .mosaic-grid .cell:has(input[value="good"]:checked),
+    .mosaic-grid .cell:has(input[value="maybe"]:checked)
+ ) > * > a {
     color: var(--c_bg);
 }
-.mosaic-grid .cell:has(input[value="good"]:checked) > * > a:visited {
+:where(
+    .mosaic-grid .cell:has(input[value="good"]:checked),
+    .mosaic-grid .cell:has(input[value="maybe"]:checked)
+ ) > * > a:visited {
     color: color-mix(in srgb, var(--c_link) 50%, var(--c_body_text) 50%);
 }
 

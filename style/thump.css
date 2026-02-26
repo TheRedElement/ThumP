@@ -6,9 +6,9 @@
     --c_body_text: #ffffff;
     --c_tre: #c80000;
     --c_link: #c80000;
-    --c_tre_1: #333333;
-    --c_tre_2: #777777;
-    --c_tre_3: #555555;
+    --c_tre_1: #b1b1b1;
+    --c_tre_2: #5f5f5f;
+    --c_tre_3: #414141;
     --c_tre_4: #a10000;
     --s_ui: 1.0;    /* base scale for some fontsizes */
     --s_input: 1.0; /* base scale for input elements */
@@ -203,7 +203,6 @@ p{
 .controls-title:hover {
     cursor: pointer;
     text-decoration: underline;
-    color: var(--c_tre_2);
 }
 /* content */
 .content-wrapper {

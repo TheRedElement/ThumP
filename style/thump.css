@@ -330,7 +330,7 @@ section.thumbnail-mosaic {
 }
 .mosaic-grid .cell.col-highlight {
     /* highlight specific cells to guide the eye */
-    background-color: color-mix(in srgb, var(--c_tre_4) 30%, var(--c_bg) 70%);
+    background-color: color-mix(in srgb, var(--c_tre_4) 50%, var(--c_bg) 50%);
 }
 .mosaic-grid .cell:has(input[value="good"]:checked) {
     background-color: color-mix(in srgb, var(--c_tre_4) 90%, var(--c_bg) 10%);

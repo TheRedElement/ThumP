@@ -188,9 +188,10 @@
                                 <label for="colorscale">Colorscale</label>
                                 <div class="tooltip">
                                     Colorscale to use for encoding pixel values.
-                                    Any colorscale supported by Plotly is allowed.
-                                    Examples for named colorscales: Viridis, Jet.
-                                    I provide some custom named colorscales: TRE, Fink.
+                                    Also used as the colorway for plotting different 1d series (`line`, `scatter`).
+                                    Any colorscale supported by Plotly is allowed (<span style="color: var(--c_tre);">Note, that some might not be available for use with 1d series!</span>).
+                                    Examples for named colorscales: Viridis, Jet, Spectral.
+                                    I provide some custom named colorscales: TRE, Fink, RdBu.
                                     Also a list of [position, color] pairs is allowed: [[0.0, "hsl(0,0%,95%)"],[0.3, "hsl(0,0%,75%)"],[0.8, "hsl(0,0%,30%)"],[0.9, "hsl(0,100%,22%)"],[1.0, "hsl(0,100%,15%)"]].
                                 </div>                        
                                 <input type="text" id="colorscale" class="global-option" placeholder="color-map" value='TRE' onchange="updateGridCell({replot:true})">
@@ -333,6 +334,9 @@
     <!-- expr-eval -->
     <script src="https://unpkg.com/expr-eval@2.0.2/dist/bundle.min.js"></script>
     
+    <!-- chroma -->
+    <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js"></script>
+
     <!-- custom -->
     <!-- <script src="https://github.com/TheRedElement/LuStCodeSnippets/blob/dev/lustCodeSnippets_js/arrFunctions.js"></script> -->
     <script type="module" src="./scripts/thump.js"></script>

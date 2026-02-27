@@ -6,7 +6,7 @@
 import { getGlobalOptions } from "./globalOptions.js";
 import { parseMath } from "../parsers/mathparser.js";
 import { colorScales, THUMBNAILS } from "../base/base.js";
-import { abcRange } from "../utils.js";
+import { abcRange, generateColorWay } from "../utils.js";
 
 /**constants */
 const resizeObservers = [];
@@ -331,6 +331,8 @@ export function updateGridCell({
                 traceUpdate = [];    //clear update
                 const nSeries = (globalOptions["seriespattern"] === "xy") ? Math.trunc(img.length / 2) : img.length
 
+                let colorWay = generateColorWay(nSeries, curColorScale);
+
                 //fill update
                 for (let idx = 0; idx < nSeries; idx++) {
                     let xi = (globalOptions["seriespattern"] === "xy") ? img[idx*2] : undefined;
@@ -346,10 +348,11 @@ export function updateGridCell({
                     });
                 };
                 layoutUpdate = {
+                    colorway: colorWay,
                     yaxis: {
                         scaleanchor: undefined,
                         scaleratio: undefined,
-                    },                        
+                    },
                 };
             };
     

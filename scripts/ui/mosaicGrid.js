@@ -6,7 +6,7 @@
 import { getGlobalOptions } from "./globalOptions.js";
 import { parseMath } from "../parsers/mathparser.js";
 import { colorScales, THUMBNAILS } from "../base/base.js";
-import { abcRange } from "../utils.js";
+import { abcRange, generateColorWay } from "../utils.js";
 
 /**constants */
 const resizeObservers = [];
@@ -307,24 +307,63 @@ export function updateGridCell({
             //apply updates to traces
             let colorScale = colorScales[globalOptions["colorscale"]];
             colorScale = (colorScale === undefined) ? globalOptions["colorscale"] : colorScale;
+            let curColorScale = colorScale.startsWith("[[") ? JSON.parse(colorScale) : colorScale;  //colorscale to use
 
             // let curColorscale = (globalOptions["colorscale"] === "Fink") ? customScales["csFink"] : globalOptions["colorscale"];
-            let update = {
-                z: [
-                    img
-                ],
-                colorscale: [
-                    colorScale.startsWith("[[") ? JSON.parse(colorScale) : colorScale
-                ],
-                zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
-                zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            
+            let traceUpdate = [];     //init update
+            let layoutUpdate = {};    //init update
+            if (globalOptions["seriestype"] === "heatmap") {
+                traceUpdate = [{
+                    z: img,
+                    colorscale: curColorScale,
+                    zmin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
+                    zmax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),
+                    type: globalOptions["seriestype"],
+                    showscale: false,
+                }];
+                layoutUpdate = {
+                    yaxis: {
+                        scaleanchor: "x",
+                        scaleratio: 1,
+                    },                     
+                };
+            } else {
+                traceUpdate = [];    //clear update
+                const nSeries = (globalOptions["seriespattern"] === "xy") ? Math.trunc(img.length / 2) : img.length
+
+                let colorWay = generateColorWay(nSeries, curColorScale);
+
+                //fill update
+                for (let idx = 0; idx < nSeries; idx++) {
+                    let xi = (globalOptions["seriespattern"] === "xy") ? img[idx*2] : undefined;
+                    let yi = (globalOptions["seriespattern"] === "xy") ? img[idx*2+1] : img[idx];
+                    traceUpdate.push({
+                        x: xi,
+                        y: yi,
+                        ymin: (globalOptions["zmin"].length > 0) ? parseFloat(globalOptions["zmin"]) : Math.min(...img.flat()),
+                        ymax: (globalOptions["zmax"].length > 0) ? parseFloat(globalOptions["zmax"]) : Math.max(...img.flat()),            
+                        type: "scatter",
+                        mode: globalOptions["seriestype"],
+                        showlegend: false,
+                    });
+                };
+                layoutUpdate = {
+                    colorway: colorWay,
+                    yaxis: {
+                        scaleanchor: undefined,
+                        scaleratio: undefined,
+                    },
+                };
             };
     
             const plotlyPlot = thElement.getElementsByClassName("plotly-plot")[0];
-            Plotly.restyle(
-                plotlyPlot,
-                update, [0]
-            );
+            Plotly.deleteTraces(plotlyPlot, Array.from(Array(plotlyPlot.data.length).keys()));  //remove all existing traces
+            Plotly.addTraces(plotlyPlot, traceUpdate);                                               //add updated versions of traces
+            Plotly.relayout(plotlyPlot, layoutUpdate);
+            // Plotly.restyle(
+            //     plotlyPlot,
+            //     update, [0]
+            // );
         };
     }
 

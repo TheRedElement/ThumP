@@ -13,7 +13,7 @@
     <nav></nav>
     
     <main>
-        <div id="welcome" class="overlay">
+        <div id="welcome" class="overlay hidden">
             <div class="welcome">
                 <button class="close" onclick="hideWelcome()"></button>
                 <h2 style="background-color: inherit;">Welcome to ThumP!
@@ -188,9 +188,10 @@
                                 <label for="colorscale">Colorscale</label>
                                 <div class="tooltip">
                                     Colorscale to use for encoding pixel values.
-                                    Any colorscale supported by Plotly is allowed.
-                                    Examples for named colorscales: Viridis, Jet.
-                                    I provide some custom named colorscales: TRE, Fink.
+                                    Also used as the colorway for plotting different 1d series (`line`, `scatter`).
+                                    Any colorscale supported by Plotly is allowed (<span style="color: var(--c_tre);">Note, that some might not be available for use with 1d series!</span>).
+                                    Examples for named colorscales: Viridis, Jet, Spectral.
+                                    I provide some custom named colorscales: TRE, Fink, RdBu.
                                     Also a list of [position, color] pairs is allowed: [[0.0, "hsl(0,0%,95%)"],[0.3, "hsl(0,0%,75%)"],[0.8, "hsl(0,0%,30%)"],[0.9, "hsl(0,100%,22%)"],[1.0, "hsl(0,100%,15%)"]].
                                 </div>                        
                                 <input type="text" id="colorscale" class="global-option" placeholder="color-map" value='TRE' onchange="updateGridCell({replot:true})">
@@ -212,6 +213,33 @@
                                     Scale of the fontsize for thumbnail headers.
                                 </div>                        
                                 <input type="number" id="uifontsize" class="global-option" placeholder="font-size" value="1.0" step="0.1" onchange="updateGridCell({replot:false})">
+                            </div>
+                            <div class="parameter">
+                                <label for="seriestype">Series Type</label>
+                                <div class="tooltip">
+                                    How to display the series.
+                                    `heatmap` will show the plain heatmap.
+                                    `scatter` will show a scatter plot.
+                                    `line` will show a line plot.
+                                </div>             
+                                <select name="seriestype" id="seriestype" class="global-option" onchange="updateGridCell({replot:true})">
+                                    <option value="heatmap">Heatmap</option>
+                                    <option value="markers">Scatter</option>
+                                    <option value="lines">Line</option>
+                                </select>           
+                            </div>
+                            <div class="parameter">
+                                <label for="seriespattern">Series Pattern</label>
+                                <div class="tooltip">
+                                    How to read the shown series.
+                                    Only applies to `line` and `scatter`.
+                                    `xy` will interpret the `thumbnails` field as [x1,y1,x2,y2,...].
+                                    `y only` will interpret the `thumbnails` field as [y1,y2,y3,y4,...].
+                                </div>             
+                                <select name="seriespattern" id="seriespattern" class="global-option" onchange="updateGridCell({replot:true})">
+                                    <option value="y only">y only</option>
+                                    <option value="xy">xy</option>
+                                </select>           
                             </div>
                         </div>
                         <div id="resources">
@@ -306,6 +334,9 @@
     <!-- expr-eval -->
     <script src="https://unpkg.com/expr-eval@2.0.2/dist/bundle.min.js"></script>
     
+    <!-- chroma -->
+    <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js"></script>
+
     <!-- custom -->
     <!-- <script src="https://github.com/TheRedElement/LuStCodeSnippets/blob/dev/lustCodeSnippets_js/arrFunctions.js"></script> -->
     <script type="module" src="./scripts/thump.js"></script>

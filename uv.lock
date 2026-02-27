@@ -568,11 +568,6 @@ wheels = [
 ]
 
 [[package]]
-name = "fink-broker"
-version = "4.1"
-source = { git = "https://github.com/astrolabsoftware/fink-broker.git#49eec6daf8287b74a02918b547505c898da7ff0a" }
-
-[[package]]
 name = "fink-client"
 version = "10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2132,10 +2127,11 @@ wheels = [
 
 [[package]]
 name = "thump"
-version = "0.1.0"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "astropy" },
+    { name = "fink-client" },
     { name = "ipykernel" },
     { name = "joblib" },
     { name = "kaleido" },
@@ -2149,14 +2145,13 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "fink-broker" },
-    { name = "fink-client" },
     { name = "memory-profiler" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "astropy", specifier = ">=7.2.0" },
+    { name = "fink-client", specifier = ">=10.0" },
     { name = "ipykernel", specifier = ">=7.1.0" },
     { name = "joblib", specifier = ">=1.5.3" },
     { name = "kaleido", specifier = ">=1.2.0" },
@@ -2169,11 +2164,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "fink-broker", git = "https://github.com/astrolabsoftware/fink-broker.git" },
-    { name = "fink-client", specifier = ">=10.0" },
-    { name = "memory-profiler", specifier = ">=0.61.0" },
-]
+dev = [{ name = "memory-profiler", specifier = ">=0.61.0" }]
 
 [[package]]
 name = "tomli"

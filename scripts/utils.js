@@ -171,3 +171,26 @@ export function abcRange(num, options="abcdefghijklmnopqrstuvwxyz") {
 
     return sequence.splice(0, num);
 }
+
+/**
+ * - returns `Array` of `num` consecutive colors sampled from `colorScale`
+ * @param {Int} num
+ *  - number of colors to generate 
+ * @param {Object,String} colorScale
+ *  - color scale to use for generation of colors 
+ * @returns {Array} colorWay
+ *  - `Array` of `num` consecutive colors sampled from `colorScale`
+ */
+export function generateColorWay(num, colorScale) {
+    let scale = undefined
+    if (typeof(colorScale) === "string") {
+        scale = chroma.scale(colorScale);
+    } else {
+        scale = chroma
+            .scale(colorScale.map(element => element[1]))
+            .domain(colorScale.map(element => element[0]));
+    } 
+
+    let colorWay = scale.colors(num);
+    return colorWay
+}
